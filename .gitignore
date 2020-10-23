@@ -3,3 +3,4 @@ images/*
 .ipynb_checkpoints/*
 data
 images
+.ipynb_checkpoints
