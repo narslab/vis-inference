@@ -1,0 +1,1286 @@
+\documentclass[11pt,twoside]{article}
+\usepackage{etex, soul}
+\newcommand{\num}{6{} }
+
+\raggedbottom
+
+%geometry (sets margin) and other useful packages
+\usepackage{geometry}
+\geometry{top=1.2in, left=1in,right=1in,bottom=1in,headsep=6pt}
+ \usepackage{graphicx,booktabs,calc}
+
+%=== GRAPHICS PATH ===========
+\graphicspath{{./images/}}
+% Marginpar width
+%Marginpar width
+\newcommand{\pts}[1]{\marginpar{ \small\hspace{0pt} \textit{[#1]} } }
+\setlength{\marginparwidth}{.5in}
+%\reversemarginpar
+%\setlength{\marginparsep}{.02in}
+
+%% Fonts
+% \usepackage{fourier}
+% \usepackage[T1]{pbsi}
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+%\usepackage{minted}
+
+\usepackage{rotating}
+%% Cite Title
+\usepackage[style=numeric,backend=biber,natbib,sorting=none,maxcitenames=2,maxbibnames=99,doi=false,isbn=false,url=false,eprint=false]{biblatex}
+\addbibresource{../../bems-references.bib}
+\addbibresource{../../covid-mobility-gvar.bib}
+
+%%% Counters
+\usepackage{chngcntr,mathtools}
+\counterwithout{figure}{section}
+\counterwithout{table}{section}
+
+\numberwithin{equation}{section}
+
+%% Captions
+\usepackage{caption}
+\captionsetup{
+  labelsep=quad,
+  justification=raggedright,
+  labelfont=sc
+}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{bm}
+\usepackage[mathscr]{eucal}
+\usepackage{colortbl}
+\usepackage{color}
+
+\DeclareRobustCommand{\hlcyan}[1]{{\sethlcolor{cyan}\hl{#1}}}
+
+\usepackage{epstopdf,subfigure,hyperref,enumerate,polynom,polynomial}
+\usepackage{multirow,minitoc,fancybox,array,multicol}
+
+\definecolor{slblue}{rgb}{0,.3,.62}
+\hypersetup{
+    colorlinks,%
+    citecolor=blue,%
+    filecolor=blue,%
+    linkcolor=blue,
+    urlcolor=slblue
+}
+
+%%%TIKZ
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{pgfgantt}
+\pgfplotsset{compat=newest}
+
+\usetikzlibrary{arrows,shapes,positioning}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{shadows,automata}
+\usetikzlibrary{patterns,fit}
+%\usetikzlibrary{circuits.ee.IEC}
+\usetikzlibrary{decorations.text}
+% For Sagnac Picture
+\usetikzlibrary{%
+    decorations.pathreplacing,%
+    decorations.pathmorphing%
+}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newenvironment{question}{\@startsection
+	{section}
+	{1}
+	{-.2em}
+	{-3.5ex plus -1ex minus -.2ex}
+    	{1.3ex plus .2ex}
+    	{\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+	\large\bf\noindent{Question }
+	}
+	}
+	%{\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+	%\begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+%
+%Fancy-header package to modify header/page numbering
+%
+%\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
+\renewcommand{\sectionmark}[1]{ \markright{#1}{} }
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%\fancyheadoffset{30pt}
+%\fancyfootoffset{30pt}
+\fancyhead[LO,RE]{\small  \it \nouppercase{\leftmark}}
+\fancyhead[RO,LE]{\small Page \thepage}
+\fancyfoot[RO,LE]{\small }% PR \num S-2015}
+\fancyfoot[LO,RE]{\small }%\scshape MODL}
+\cfoot{}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0pt}
+%\setlength\voffset{-0.25in}
+%\setlength\textheight{648pt}
+
+
+\usepackage{paralist}
+
+
+%%% FORMAT PYTHON CODE
+\usepackage{listings}
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{8}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+%\usepackage{listings}
+
+% % Python style for highlighting
+% \newcommand\pythonstyle{\lstset{
+% language=Python,
+% basicstyle=\footnotesize\ttm,
+% otherkeywords={self},             % Add keywords here
+% keywordstyle=\footnotesize\ttb\color{deepblue},
+% emph={MyClass,__init__},          % Custom highlighting
+% emphstyle=\footnotesize\ttb\color{deepred},    % Custom highlighting style
+% stringstyle=\color{deepgreen},
+% frame=tb,                         % Any extra options here
+% showstringspaces=false            %
+% }}
+
+% % Python environment
+% \lstnewenvironment{python}[1][]
+% {
+% \pythonstyle
+% \lstset{#1}
+% }
+% {}
+
+% % Python for external files
+% \newcommand\pythonexternal[2][]{{
+% \pythonstyle
+% \lstinputlisting[#1]{#2}}}
+
+% % Python for inline
+% \newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+
+\newcommand{\osn}{\oldstylenums}
+\newcommand{\dg}{^{\circ}}
+\newcommand{\lt}{\left}
+\newcommand{\rt}{\right}
+\newcommand{\pt}{\phantom}
+\newcommand{\tf}{\therefore}
+\newcommand{\?}{\stackrel{?}{=}}
+\newcommand{\fr}{\frac}
+\newcommand{\dfr}{\dfrac}
+%\newcommand{\ul}{\underline}
+\newcommand{\tn}{\tabularnewline}
+\newcommand{\nl}{\newline}
+\newcommand\relph[1]{\mathrel{\phantom{#1}}}
+\newcommand{\cm}{\checkmark}
+\newcommand{\ol}{\overline}
+\newcommand{\rd}{\color{red}}
+\newcommand{\bl}{\color{blue}}
+\newcommand{\pl}{\color{purple}}
+\newcommand{\og}{\color{orange!90!black}}
+\newcommand{\gr}{\color{green!40!black}}
+\newcommand{\nin}{\noindent}
+\newcommand{\la}{\lambda}
+\renewcommand{\th}{\theta}
+\newcommand{\al}{\alpha}
+\newcommand{\G}{\Gamma}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,thick,inner sep=1pt] (char) {\small #1};}}
+
+\newcommand{\bc}{\begin{compactenum}[\quad--]}
+\newcommand{\ec}{\end{compactenum}}
+
+\newcommand{\p}{\partial}
+\newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\dpd}[2]{\dfrac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pdd}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\vspace{-16ex}
+\title{\vspace{-7ex}
+  Machine learning-enabled spatio-temporal scenario discovery framework for sustainable building energy systems}
+%\author{}
+\date{}
+\maketitle
+
+%\thispagestyle{empty}
+
+%\tableofcontents
+
+\vspace{-12ex}
+
+\section{Introduction}
+Residential and commercial buildings account for nearly 40\% of the total energy demand in both the US and in Europe
+\cite{amasyali2018review,liu2019accuracy}, and nearly 50\% of demand in China \cite{li2020energya}. Given the ongoing
+climate change crisis, and imminent threats from current and future disruptive events, such as natural disasters and
+pandemics, there is a growing need for more robust and resilient sustainability planning to reduce energy expenditures,
+and consequently environmental impacts. To facilitate such decision-making, innovative modeling approaches that combine
+the power and flexibility of machine learning algorithms with the fundamental knowledge of relationships governing
+energy conversion and occupant flows among buildings are required. Such models should also be adaptable to various
+temporal scales, from the short term to the long term.
+
+Communities and organizations, such as colleges and universities, have ambitious climate goals, but have met them by
+purchasing carbon credits rather than reducing energy use or emissions at their own facilities. In the long term, local
+energy efficiency (EE) and renewable energy (RE) use will be necessary to meet national and global climate goals. While
+EE and RE projects can lower operational costs, a key challenge for organizations in undertaking EE and RE projects in
+their facilities is allocating capital. These projects compete for capital with activities that directly support the
+organization's mission and despite the long term potential for lower costs, it may be difficult to allocate or acquire
+the necessary funds to purchase new equipment. Few decision tools have considered this decision frame and generally
+considered only financial costs, energy consumption and emissions, while ignoring the key issue of organizational
+mission.
+
+Thus, we propose an approach for decision-focused modeling of occupant interactions with buildings in concert
+with their physical energy use properties. % \hl{I added this last sentence here because I think we want to
+  % make it clear right away that we're looking at both the traditional building physics and energy stuff AND trying to
+  % get a better handle on occupant behavior too because I think this is a key intellectual merit/novelty point of the
+  % project}
+Our research will advance the fields of machine learning, energy systems model and sustainability science. Using
+detailed datasets from commercial and educational entities, we will train a flexible machine learning model with an
+architecture informed by the physics of building energy consumption. We will investigate the correspondence between
+known physical relationships and inferred functional relationships between energy and building characteristics. This
+will generate new knowledge on building energy processes and advance interpretability in machine learning models.  We
+will also infer the impacts of behavioral patterns on building energy demand via latent variable methods.
+%The proposed model will be developed into a
+%scalable and deployable framework. % that can be easily adapted to any system of buildings.
+We will also extend scenario discovery to analyze the multi-dimensional vulnerabilities in energy, emissions and cost
+outcomes within a decision-making component of the framework.  %This is expected to provide pathways for sustainable future outcomes.
+%within building systems.
+% parameter updates based on new observations from continually updated datasets.
+This involves augmenting energy model for costs and emissions prediction, quantifying the uncertainty of relevant model
+parameters, and then simulating the model across numerous stochastic realizations from the uncertain parameters and under
+various potential enumerated strategies. We will use data mining algorithms to obtain scenarios of high interest from
+the high-dimensional dataset of simulation results and thus elicit more robust sustainable pathways.
+
+The entire framework will be validated on a separate system of buildings to ensure and demonstrate that
+similarly useful results can be generated in various complexes, campuses or communities. The framework will be publicly
+available to facilitate resilience and sustainability planning for various entities and agencies. We will also promote
+educational outreach by engaging students in competitions that allow them to engage with the proposed framework on a
+user-friendly platform in order to gain energy and sustainability literacy.
+
+% discover vulnerabilities and thus obtain scenarios of interest. Thus, instead of exploring only a
+% narrow range of scenarios, we use a data-driven discovery method. This hybrid framework will be publicly available for
+% use to help commercial entities and public agencies plan for resilience and achieve sustainability goals.
+
+
+% \begin{table}[t!]
+%   \centering
+%   \begin{tabular}{l l}\toprule
+%     \bf Acronym & \bf Meaning \\ \midrule    
+%     CART & Classification and Regression Trees \\
+%     EE & Energy Efficiency \\
+%     NN & Neural Network \\
+%     RDM & Robust Decision Making \\
+%     RE & Renewable Energy \\
+%     SD & Scenario Discovery \\
+%     (G)VAR & (Global) Vector AutoRegression \\ \bottomrule
+%   \end{tabular}
+%   \caption{List of abbreviations and acronyms}
+%   \label{tab:abbr}
+% \end{table}
+
+
+\section{Background and Significance}
+
+\subsection{Building Energy Consumption Modeling}
+
+Globally, buildings accounted for 36\% (125 EJ) of annual energy expenditure, and close to 40\% (9.7
+GtCO\textsubscript{2}e) of carbon dioxide emissions (including construction) in 2018 \cite{abergel20192019}.  Between
+2010 and 2018, building energy consumption increased by 7\% (8 EJ), with corresponding electricity use estimated to have
+increased by 19\% (6.5 EJ) during the same period.  It was estimated that buildings would need to reduce their energy
+intensity (consumption per square footage) by 30\% in 2030 in order to meet the Paris Agreement goal of keeping the
+global temperature increase within 2$^\circ$C of pre-industrial levels \cite{abergel2017global}.  The growth in building
+energy consumption has been largely driven by increasing population and floor space, which have offset gains in energy
+efficiency \cite{abergel20192019}.  Human factors are also critical to reducing the energy, and consequently, emissions,
+impacts of buildings. Based on the 2012 Commercial Building Energy Consumption Survey (CBECS) administered by the
+U.S. Department of Energy, approximately 34\% of commercial buildings are part of a campus or complex with multiple
+buildings and make up 44\% of energy consumption in commercial buildings \cite{energy}. Buildings in such campuses would
+have relationships in their energy consumption patterns through correlated behavior, network flows of people, or both.
+
+The crucial role of the building sector (in particular, networked buildings) in overall energy demand and emissions
+highlights the need for reliable and readily deployable models for building energy consumption. Improved predictive
+and inferential capabilities can better enable decisionmakers test the impacts of resilience strategies and lead to more
+effective planning. Such efforts can benefit the owners and operators of buildings, as well as the utilities serving
+those buildings, as they offer alternative sustainable pathways that are potentially cost-saving
+(e.g.\ limiting the need for building new power plants).%, which is a difficult and costly undertaking.
+
+Traditionally, building energy models have relied on detailed descriptions of the complex physical and thermal processes
+underlying energy demand \cite{krarti2018chapter}. These have resulted in computationally demanding deterministic
+bottom-up models that have been challenging to scale. Alternatively, top-down and statistical bottom-up estimation
+methods (e.g.\ \cite{zhang2017generalizable}) have been demonstrated for city and regional applications. At the macro
+scale, these statistical approaches provide insight into the impacts of urban form, industrial composition, household
+characteristics and other demographic factors on energy consumption. Yet, the advantage of the physics-based
+deterministic models lies in their ability to detail exactly how energy depends on geometry, efficiency and behavioral
+characteristics, thus easily allowing planners to estimate the impacts of potential interventions or mitigatory
+measures. Much progress has been made in scaling physical models using ensemble methods for developing archetype or
+prototype versions for buildings with similar characteristics
+\cite{caputo2013supporting,cerezodavila2016modeling}. Urban areas have received particular attention, spawning the
+relatively recent subdomain of Urban Building Energy Modeling (UBEM) \cite{reinhart2016urban}. By prototyping and
+scaling, researchers and practitioners have been able to exploit physics-based modeling capabilities (such as the
+Department of Energy's EnergyPlus platform \cite{crawley2000energyplus}) in order to simulate large-scale energy demand. Yet with
+all these developments, key gaps remain in (a) understanding the network effects on building energy consumption,
+especially within institutions and communities; and (b) adapting these models for the purpose of resilience planning and
+robust decision making for sustainable outcomes.
+
+
+\subsection{Machine Learning}
+Rapidly advancing machine learning (ML) algorithms have emerged as a viable approach for estimating building energy
+models for prediction. The most widely used algorithms in this instance are support vector machines (SVM) and neural
+networks (NN) \cite{amasyali2018review,wei2018review,seyedzadeh2018machine}.  The SVM (introduced by
+\cite{vapnik1995nature}) estimates a classification or regression function based on a quadratic optimization problem in
+which error tolerance and cost parameters are specified by the model. SVMs can handle highly nonlinear relationships via
+kernels (such as polynomials and radial basis functions). Artificial neural networks (ANNs) are considered universal
+function approximators and consist of nodes connected in layers that transform ``signals'' from input parameters to the
+output(s). Node activation functions determine threshold ``firing'' values of outgoing signals, while weights determine
+how incoming signals are combined at each node. The ANN ``learns'' by optimizing nodes weights for minimum output error
+in an iterative fashion. This is usually achieved via backpropagation \cite{rumelhart1986learning} algorithms that allow
+for the implementation of a variety of gradient descent methods for efficient learning.  In order to handle time-series
+data among other properties, various recurrent neural network (RNN) architectures \cite{elman1990finding} have been
+developed. RNN variants, such as the long-short term memory network (LSTM) \cite{hochreiter1997long,gers2000learning}
+and the gated recurrent unit network (GRU) \cite{cho2014learning}, have been successfully applied to capture complex
+dynamical processes in a wide variety of energy systems
+\cite{wang2020lstm,yan2019hybrid,saleh2019recurrent,gao2019predicting}.
+% However, SVM and multiple linear regression \citep{zeng2019comparative} have been shown to perform well across these
+% two dimensions.
+
+
+While the predictive accuracy of machine learning models is expected to continue to improve, their inferential
+capabilities receive little attention. Neural networks, in particular, are often treated like a black-box. However, it
+is certainly possible to analyze the numerous training parameter estimates to obtain complex functional relationships
+between model input parameters and the output \citep{montavon2018methods}, and new methods are being introduced in this
+nascent subdomain. For instance, autoencoders can be applied to hidden layers in a neural network to learn the salient
+or relevant features that give rise to the model's predictions \citep{charte2020analysis}. By mapping these features to
+the input space, we can obtain either (a) novel domain knowledge, or (b) explicit hyperparameter correspondence to known
+physical relationships. Other explanatory approaches include layer-wise relevance propagation (LRP)
+\citep{bach2015pixelwise} and deep learning important features (DeepLIFT) \citep{shrikumar2019learning}.
+
+In order to bridge the inferential gap, other modeling techniques are applicable.  A key example is vector
+autoregression (VAR) \cite{lutkepohl2007vector}, which explicitly accounts for interdependencies among endogenous
+time-series variables and their lags. For a system of connected units (e.g.\ buildings), global vector
+autoregression (GVAR) models \cite{pesaran2004modeling,dees2007exploring} can further estimate the effects of
+cross-linkages as weakly exogenous variables. The GVAR framework is favored for its relative simplicity, compared to
+neural networks. It has been used extensively for macroeconomic forecasting and understanding cross-country trade
+impacts (e.g.\ \cite{qin2011rise,gutierrez2015global,chudik2016theory}). The application of GVAR to energy modeling has
+been rarer (e.g.\ \cite{liu2018vector}), but there is a potential for future use, given that GVAR lends itself
+well to inference.
+
+
+The selection of a modeling framework often involves a tradeoff between explainability and prediction accuracy.  The
+explosion of computational power and developments in learning algorithms have drastically increased the accuracy of
+these models.
+% which have successfully predicted short term (i.e. hourly, daily) energy consumption, 
+Yet, their capabilities for actual decision making toward reducing energy consumption, emissions and costs remain
+limited \citep{amasyali2018review}.  Therefore, there is a need for interpretable modeling frameworks that facilitate
+both inference and prediction, such that they can be effectively employed in simulating outcomes under various future
+states while providing explicit levers for investigating the propagation of exogenous or endogenous changes on the
+system.  Furthermore, explainable models can provide new insights into the impacts of building occupancy and other
+behavioral factors on energy consumption.
+%Another frontier in ML approaches is the hybridization of modeling frameworks.
+
+% Machine learning has gained increasing importance for modeling building energy consumption.
+
+% So, while the motivation and application lie in building energy
+% prediction, this effort would contribute to recent and ongoing methods in interpreting/explaining ML algorithms, which
+% is also important to other fields, such as transportation, water systems, among others.
+
+
+% \hl{Jimi - something about different types of models, parametric vs nonparametric, black box vs grey box? I think you've
+%   talked about some of the different aspects of machine learning that could be useful and relevant here, so it might be
+%   good to briefly summarize them here-ish. ANN and SVM seem to be the most popular in the literature, so how will this
+%   differ from those approaches?}
+% \hlcyan{Zana - yes, still need to better flesh out this part}
+
+\subsection{Scenario Discovery}
+In light of the ongoing climate change crisis, organizations require strategies to ensure future climate goals are met
+under a wide range of potential future scenarios, i.e.\ robust plans for reducing energy use and associated emissions.
+Also, given the deep uncertainty regarding key parameters governing building energy consumption, there is a need for a
+framework that leverages on interpretable machine learning-enabled models to provide a robust decision support tool to
+policymakers and planners.  Such a tool would be user-friendly, requiring minimal data input and no need for deep expert
+knowledge to identify opportunities for reducing  energy use and emissions.
+
+%The methods proposed here are based on the work done by \textcite{groves2007new, lempert2006general} and \textcite{friedman1999bump}.
+
+% Traditional approaches to scenario analyses do not adequately address the deep uncertainties involved with decision making on strategies across a broad range of possible futures \textcite{groves2007new}.
+% Generally, RDM allows for a selection of a small number of high interest cases in which alternatives to the base strategy perform much worse with regard to the measure of interest.
+% Statistical clustering methods are applied to find these interest cases (i.e.\ robust scenarios) from the high dimensional output, which is an ensemble of multiple futures (possibly ranging from thousands to millions).
+
+Historically, scenario planning has been employed to facilitate decision-making under uncertainty. Classic scenario
+planning hinges on exploring a small number of divergent or extreme futures.  The usefulness of the insights gained from
+these efforts depend on the choice of scenario narrative and the quality of the respective assumptions made in each one.
+These approaches, while still widespread, are inadequate for addressing the multi-dimensional uncertainty in complex
+systems \cite{groves2007new}.  While optimal strategies or solutions may be found in the enumerated deterministic
+scenarios and then compared in an effort to aid decision-making, critical pathways or vulnerabilities are prone to be
+missed.  Ultimately, traditional scenario planning is not well suited to robust decision making (RDM) applications
+\cite{bankes1993exploratory}.
+
+
+In the last two decades, scenario discovery (SD) \cite{lempert2006general,groves2007new,lempert2019robust} has emerged
+as an increasingly viable framework for analyzing multi-dimensional future outcomes for vulnerabilities across a set of
+given strategies and thus facilitating robust decision making.  Rather than the top-down approach of traditional
+scenario planning, SD relies on quantifying the uncertainty of key model input parameters governing the outcomes of
+interest.  From the estimated distributions, representative joint outcomes (or ``states'') are generated via
+computational experimental design approaches, such as Latin hypercube sampling (LHS) \cite{mckay1979comparison}.  These
+states are then evaluated by the model under proposed strategies, which represent potential policy decisions.  The
+resulting ensemble of futures can then be either classified by thresholding the performance of the future outcomes
+relative to the regret-minimizing strategy in each corresponding state (as exemplified by \cite{bryant2010thinking}) or
+clustered to more flexibly represent a variety of performance outcomes (as in \cite{gerst2013discovering}).  Data mining
+algorithms (e.g. Patient Rule Induction Method \cite{friedman1999bump} or Classification And Regression Trees
+\cite{breiman2017regression}) can then be used to uncover the combinations of uncertain parameter inputs leading to
+high-interest outcomes. Such an approach allows the data to speak for itself and facilitates the identification of
+robust strategies (i.e.\ thus with minimum failure under performance thresholds of interest). Thus, instead of
+pre-defined narratives as obtained in traditional scenario planning, we can discover them via a considered method for
+handling uncertainty.
+
+ 
+
+In earlier applications by \cite{groves2007new,lempert2006general}, strategies were characterized by clear policy directions.
+For instance, in the water resource management application \cite{groves2007new}, the strategies (24) are based on supply combinations.
+In \cite{lempert2006general}, 25 strategies are derived from a full-factorial realization of emission intensity milestones over a 10-year period, which then inform constraint formulations in the systems dynamics sustainability model on which RDM is applied.
+More recently, \cite{bryant2010thinking} have applied this scenario discovery approach to assessing future impacts of renewable energy policy.
+In this case, only one strategy is considered: the requirement that a quarter of electricity supply and an equal part of motor fuel supply be derived from renewable sources.
+More recently, extensions and improvements to the clustering objectives in scenario discovery have been shown by \cite{kwakkel2016improving}.
+These developments, with respect to handling heterogeneity and incorporating multiobjective optimization have pointed toward the subfield of ``adaptive policy-making'' \cite{kwakkel2016improvinga, hamarat2014exploratory, kwakkel2016comparing}.
+\cite{hadka2015open} also introduced the open-source many-objective robust decision making framework %(openMORDM)
+that builds on the scenario discovery approach by incorporating user interaction and optimization via a software platform.
+\cite{moksnes2019determinants} employ SD to analyze emissions futures in South America's electricity system.
+
+
+One challenge in applying and adapting SD remain in the computational complexity of running a large number of simulations.
+This typically necessitates the need for developing a low-resolution model or meta-model in cases where a full-scale
+model has a high computational time.
+A related problem is how to design models that are sensitive to the uncertain model input parameters.
+These challenges can be surmounted in part by integrating machine learning approaches for feature extraction and
+function approximation.
+
+\subsection{Significance}
+\citet{wei2018review} highlight the lack of connection between data-driven models and organizational decision making. This work will improve
+on the use of machine learning techniques in this field to understand the drivers of the energy consumption and to use
+the model and results to inform both operational management and the use of capital to reduce energy
+consumption. Furthermore, we will investigate not only short term energy consumption (i.e. hourly, daily) for
+operational strategies, but also long term (i.e. annual) energy consumption for guidance on retrofit strategies. By
+using a data set with a variety of types of buildings under a range of weather conditions, we have an opportunity to
+train a model that could be applied in a wide range of cases.
+
+
+
+
+\section{Research Plan}
+ 
+This project aims to answer the following research questions:
+\begin{compactenum}
+\item Which modeling approach offers the best tradeoff between inference and prediction for institutional building energy consumption?
+\item Can we simplify current physics-based models?
+\item What new relationships between energy consumption, building characteristics and occupant effects can be discovered from a machine learning-enabled model? 
+\item What are key uncertainties that impact building energy consumption?
+\item Can we identify robust strategies to support decision-making toward  sustainability goals?
+\end{compactenum}
+We proceed to describe four proposed objectives in pursuit of these questions.
+% Simple accurate model
+% Link: new
+% link that to decision-making framework
+
+
+
+\subsection{Objective 1: Model estimation and selection}
+This objective addresses research questions 1 and 2. We hypothesize that the flow of occupants between buildings
+significantly contribute to energy demand, in part due to occupancy changes, and also due to inefficiencies in energy
+use behaviors such as plug load and heating and cooling. The goal is to thus architect a variety of models using
+state-of-the-art machine learning algorithms in order to predict energy consumption at the hourly to monthly scales, as
+well as explain how building characteristics, behavioral factors and network effects impact energy consumption. The
+training data will be obtained from institutional buildings in a given university. Competing models will be assessed and
+the final selection will be made based on performance (see \autoref{fig:ml}). 
+
+% \begin{itemize}
+% \item  Evaluate the quality of the model.
+% \item  What we would do if nothing was a good fit? (Backup plan)
+% \item What you envision doing the research would look like
+% \end{itemize}
+
+
+\subsubsection{Task 1.1: Model development and estimation}
+In this task, we will design and estimate models that not only explains energy demand but also accurately forecast
+future consumption.  Given the goal of inferring the impact of occupancy and other unobserved behavioral variables, we
+will incorporate these as latent variables within the modeling framework. Candidate models will be estimated on training
+data from a network of institutional buildings at a given university. These candidates will be developed broadly within
+two categories of modeling frameworks: vector autoregression (VAR) and neural networks (NN).
+
+Popular in the macro-economic literature, Vector Autoregressive (VAR) models \cite{lutkepohl2007vector} simultaneously
+estimate coefficients for time-lagged endogenous variables with standard errors. Despite their powerful forecasting and
+inferential capabilities, VARs are yet to have been ubiquitously harnessed for energy modeling (except in
+\cite{liu2018vector}). In the VAR framework, linear interdependencies (cross-correlations) between endogenous variables,
+as well as their temporal autocorrelations, are both estimated.  Deterministic and exogenous variables can also be
+included in a VAR model for greater explanatory power.  With Global VAR (GVAR) models
+\cite{pesaran2004modeling,dees2007exploring}  a network of $N$ units can be modeled along with their spatial
+interdependencies.  This is achieved by including weakly exogenous variables within the equation for unit.
+% Global Vector AutoRegression (GVAR) is a promising approach that has yet to be applied to this use case.
+The weakly exogenous variables (or so-called ``foreign variables'' in the macroeconomic literature) for each unit are
+realized as the weighted average of a given endogenous variable, where the weights are given by the proportions of a
+selected weighting measure relative to the unit.  For example, when the units are countries, trade flows or geodesic
+distances have been used as weights.  Beyond their forecasting capabilities \cite{pesaran2009forecasting}, GVARs also
+provide mechanisms for sensitivity analyses via forecast error variance decomposition (FEVD)
+\cite{lutkepohl2010variance} and generalized impulse response functions (GIRF) \cite{pesaran1998generalized}.  We will
+advance the GVAR method by developing algorithms to estimate latent variables that capture unobservable behavioral
+impacts. % GVAR assumes linear dependencies. 
+We will also explore a nonlinear VAR framework using the Bayesian Additive Vector
+Autoregressive Tree Model (BAVART) approach \cite{huber2020inference}, which combines a Bayesian additive regression tree
+\cite{chipman2010bart} with the VAR model.
+
+\begin{figure}[ht!]
+  \centering
+
+    \begin{tikzpicture}[scale=.8]
+    \tikzstyle{label} = [font=\scriptsize\sf,text width=8ex]
+    \tikzstyle{terminal} = [draw, thick, rectangle, rounded corners, text width=12ex, text centered,font=\small\sf]
+    \tikzstyle{process} = [draw, thick, rectangle,,text width=14ex, text centered, minimum height=8ex, font=\small\sf]
+    \tikzstyle{data} = [draw, thick, trapezium,trapezium stretches body, trapezium left angle=70, trapezium right angle=110, text width=14ex,
+    text centered, minimum height=4ex, font=\small\sf]
+    \tikzstyle{decision} = [diamond, aspect=2, inner sep=-1ex,  text centered, text width=4cm,  draw=black]
+    % \tikzstyle{
+    \begin{scope}[node distance=1cm,anchor=center]
+      \node[data] (endo) {Endogenous\\{\scriptsize (energy, weather)}} ;
+      \node[data,below=.5cm of endo] (exo) {Exogenous \\{\scriptsize (interventions, etc)}} ;
+      \node[data,below=1.2cm of exo] (det) {Building \\ characteristics}; %{\scriptsize (building characteristics)}} ;
+      \node[terminal,very thick,opacity=.7,gray,inner sep=3ex, fit=(det)] (inp2) {} ;
+      \node[terminal,very thick,opacity=.7,gray,inner sep=3ex, fit=(endo) (exo)] (inp1) {} ;
+      % \node[draw, thick, process, circle, right=of inp1] (lat) {Latent Variables} ;
+      \node[draw=none, fit=(inp1) (inp2)] (inputs) {};
+      \node[process, rectangle split, rectangle split parts = 2,  right=1cm of inputs,text width=20ex]
+      (est) {\sf\bfseries Model Estimation
+        \nodepart{second} {\scriptsize graph-based \\ recurrent neural networks \\ vector autoregression}
+      } ;
+      \node[process, rectangle split, rectangle split parts = 2,  right=1cm of est, text width=17ex]
+      (sel) {\sf\bfseries Model Selection
+        \nodepart{second} {\scriptsize performance validation\\ ensemble learning}
+      } ;
+      \node[process, rectangle split, rectangle split parts = 2,  right=1cm of sel, text width=13ex]
+      (inf) {\sf\bfseries Inference
+        \nodepart{second} {\scriptsize network effects\\[1mm] behavioral factors\\ (latent variables)}
+      } ;
+      \node[data, below=of sel] (mod) {Final\\ Model};
+      \node[terminal] (df) at (mod-|inf) {Decision Framework};
+      % \node[process, below=of rnn] (var) {Vector Autoregression} ;
+      % \node[process,dashed,fit=(rnn) (var)] (est)  {} ;
+    \end{scope}
+
+    \node[above=-.6cm of inp1,gray] {\footnotesize \sf Time-dependent inputs};
+    \node[above=-.6cm of inp2,gray] {\footnotesize \sf Time-invariant inputs};
+    %\node[above=.1cm of est] {\footnotesize \sf Model estimation};
+    
+    \begin{scope}[thick,  ->, >=latex]
+      \draw (inp1) to [out=0,in=180] (est);
+      \draw (inp2) to [out=0,in=180] (est);
+      \draw (est) -- (sel);
+      \draw (sel) -- (inf);
+      \draw (sel) -- (mod);
+      \draw (mod) -- (df);
+      \draw (inf) -- +(0,2cm) -| node[above,pos=.25] {\sf\scriptsize refine for interpretability} (sel); %to [out=90,in=90] (sel);
+    \end{scope}
+    
+
+ 
+
+  \end{tikzpicture}
+
+  \caption{\small Model development and inference flowchart.  Given multivariate time-series energy consumption data,
+    along with building characteristics, we will train various machine learning algorithms and apply ensemble learning
+    to select the best model combinations, based on predictive performance and interpretability.  In the inference step,
+    we plan to investigate functional relationships between physical building characteristics and energy
+    consumption, as well as  infer behavioral factors and network effects.%  The final
+    % model will be chosen also for its interpretability. Ensemble learning approaches will also be explored in
+    % determining the final selection.
+  }
+  \label{fig:ml}
+\end{figure}
+
+
+Another candidate approach is the neural network, which has been amply demonstrated as a universal function
+approximator.  For time series data, recurrent neural network (RNN) architectures are able to capture temporal
+dependencies \cite{yu2019review,lipton2015critical,elman1990finding}.  In particular, long short-term memory networks
+(LSTMs) have demonstrated viability for learning complex temporal patterns in data.  LSTMs have been successfully used
+to model energy consumption in a variety of contexts (e.g. \cite{wang2020lstm,kumar2018energy}).  Yet key gaps remain in
+our knowledge of how to train them to predict on correlated time series (e.g.\ energy, weather and occupancy) and on
+networked system of units (e.g.\ buildings). One attempt to extend LSTMs to model correlated time series can be found in
+\cite{wan2020ctslstm}. In this case, we will innovate on LSTMs by (i) creating a framework for simultaneously modeling a
+networked system with multiple interdependent time series, and (ii) incorporating latent variables to represent
+behavior. A plausible starting point for innovation (i) lies in a graph-based architecture \cite{wu2020comprehensive},
+where the edges weights connecting units in the system may be represented by inter-unit flows. Similarly, for innovation
+(ii), a precedent has been established with the development of variational RNNs \cite{chung2016recurrent}. With such a
+framework, we can elicit spatial dependencies in the system, similar to the role of weakly exogenous variable
+coefficients in a GVAR model, as well as infer the contributions of unobserved variables such as occupancy.
+
+\subsubsection{Task 1.2: Performance assessment and selection}
+In this task, we will assess the viability and performance of competing GVAR and variational graph LSTM models.  This
+will be based on cross-validation to test predictive performance across various time horizons. Model parsimony and
+explainability will also be key objectives in selecting final models from each framework.  A key aspect of this task
+will involve drawing correspondences between model parameters across both frameworks in order to advance our knowledge
+of GVARs and LSTMs, particularly with regard to spatial effects and latent variable estimation. In addition to comparing
+the performance of single models, we will also test the performance of ensembles of various combinations of the trained
+models. Ensemble learning approaches, such as bagging, boosting and stacking, have in many cases been demonstrated to
+provide more robust predictions than their individual components (e.g.\
+\cite{guan2017ensembles}).  % Performance measures will include the mean absolute [percentage] error (MA[P]E), [root] mean
+% squared error ([R]MSE), among others.
+
+% Model occupancy as a latent variable, or come up with a proxy based on class schedules, etc.
+% Can compare both approaches to see which one works better.
+
+
+%At this stage of the research, the selected model will be available for public download as a software program.
+
+\subsection{Objective 2: Inference on building characteristics, occupancy and network effects}
+This objective addresses research Question 3 with the goal of identifying novel relationships governing energy
+consumption and building characteristics, network effects and behavioral factors.  Recent surveys and studies have
+revealed that behavior contribute significantly to building energy consumption
+\cite{gill2010lowenergy,pan2017energy}. However, the lack of direct data make it challenging to fully understand
+behavioral effects on a case-by-case basis and consequently make decisions to meet sustainability goals. For this reason, the
+subdomain of occupancy detection and occupant behavior modeling in buildings has gained traction
+\cite{yan2015occupant,chen2018building,jin2018smart,barbour2019planning}. For buildings that exist in a network and are
+tightly connected by regular flows of occupants, the patterns of these flows can also be inferred and serve as an
+indirect measurement of occupancy along with other inefficiencies they generate. Finally, given the flexible nature of the
+proposed energy consumption model, we can investigate the parameters and potentially uncover novel relationships
+relating model inputs to energy consumption, particularly those that may synergistically arise within a networked system
+that would be otherwise undetected. The proposed tasks are described below (see \autoref{fig:ml}).
+
+% Recent machine learning (ML) efforts in building energy consumption modeling have focused on increasing predictive
+% performance. This objective aims to contribute inferential insight to ML-based approaches.  The proposed steps are
+% detailed in the following tasks.
+% This will leverage on the ML-enabled
+% modeling outcome from Objective 1, using various inferential approaches to develop functional approximations governing
+% energy consumption and various model inputs.
+% \begin{itemize}
+% \item Differentiate between building characteristics and behavioral factors in terms of contributions to building energy
+% \end{itemize}
+
+\subsubsection{Task 2.1: Analyze relationships between building characteristics and energy }
+Using the best-performing model selected in Objective 1, we will map the transformation of each input variable (or
+combinations thereof) to the final energy output. By including the value of the trained parameters, we will generate the
+estimated relationships between the deterministic building characteristics and temporal energy consumption. We will
+analyze each of the generated composite functions, drawing correspondences to known physical relationships if they exist
+and documenting any novel interactions.  This task will advance ongoing efforts in interpreting machine learning models
+for greater transparency and inferential capability \cite{montavon2018methods}. Within the context of neural networks,
+as a starting point, we will  build on the Deep Learning Important Features (DeepLIFT) method
+\cite{shrikumar2019learning}, which is a backpropagation approach for identifying important features. We will then focus
+the functional mapping efforts on the most relevant features.%  Within the context of VAR models, the functional
+% relationships are more explicit and are readily mapped.
+The deliverable of this task will be explicit functional relationships between various input parameters (both endogenous
+and exogenous) and energy consumption. These relationships will augment existing knowledge from physics-based models and
+also advance machine learning by developing further tools for mapping % and analyzing
+input-output relationships,
+particularly in deep graph-based neural networks.
+
+ 
+\subsubsection{Task 2.2: Develop framework to identify occupancy and behavioral effects via latent variable analysis}
+Recent efforts to estimate building occupancy have focused on using sensors and other wireless infrastructure in
+buildings \cite{chen2018building} or cellphone location data \cite{barbour2019planning}.  However, with buildings that
+are coupled by human activity (such as those in a complex or on a campus), directly or indirectly observable network
+effects may be used to infer occupancy levels, as well as other human factors.  We can further test such a hypothesis
+via the inclusion of latent variables in an alternative model that capture these behavioral impacts.  The latent
+variable estimates can be analyzed and then validated against ground-truth occupancy data.  Behavioral proxies may also
+be possibly validated based on individual occupant characteristics if available (such as age, occupation, sleeping
+habits, etc). Once a procedure for estimating and analyzing the latent variables in the model has been established, we can generalize
+this procedure for quantifying the impact of indirectly observed human factors on building energy consumption.
+
+% We will estimate occupancy and behavior from the estimate latent variables.  First, we will test significance by
+% observing changes in model outcomes with and without latent variables.  Second, we will analyze the latent variables for
+% spatio-temporal dependencies and patterns.  This will enable us...
+
+\subsubsection{Task 2.3: Analyze network effects on building energy consumption}
+We hypothesize that for a system of buildings in a complex whose occupants have shared activities, there are significant
+interdependencies among the buildings that impact their energy consumption.  To test this research hypothesis, we will
+compare estimates and predictive performance from the proposed model obtained in Objective 1 to those from a null model
+in which network effects are not included.  The network-related parameters may be considered as weakly exogenous
+variables in each building model.  Cross-unit correlations may also be analyzed as network effects.  If these network
+parameters are found to be significant, then we can analyze their structure to understand the underlying patterns
+governing occupant flows among
+buildings. % To do this, we will randomly and sequentially remove building units from the overall
+% model and investigate the resulting impact on the model results. The outcome will provide evidence as to whether or not
+% the network effects are significant to overall energy consumption.
+We will further generalize the network formulation to account for other potential interdependencies in a generic
+networked system of buildings.
+
+\subsection{Objective 3: Scenario Discovery}
+Scenario discovery is a method for robust decision making that has emerged as a viable approach for
+decision-making under deep uncertainty in a variety of critical infrastructure systems
+\citep{lempert2019robust,popper2019robust,shortridge2016scenario}.  The goal of this objective is to advance the
+scenario discovery methodology towards the creation of a flexible and responsive decision-making framework for
+environmental sustainability and cost reduction for a system of buildings under deep uncertainty.
+%Next, we enumerate potential policies or strategies $\bm P$ for achieving sustainability in the system of buildings.
+% Each of these strategies represents a fixed effect of the system. 
+Finally, we obtain a matrix of futures which will then be clustered to find high-density clusters of failure (or
+success) in order to discover low-dimensional subspaces in which the system fails.  Such an analysis yields
+``scenarios'' which can be used in deciding on sustainable pathways for building energy management.
+%We outline the tasks required to fulfill this objective in subsections \ref{sec:uq} to \ref{sec:futures}.
+The organization of the required tasks, described below, is shown in \autoref{fig:sd}.
+\begin{figure}[h!]
+  \centering
+
+  \begin{tikzpicture}[scale=.7]
+    \tikzstyle{label} = [font=\scriptsize\sf,text width=8ex]
+    \tikzstyle{terminal} = [draw, thick, rectangle, rounded corners, text width=12ex, text centered,font=\footnotesize\sf]
+    \tikzstyle{process} = [draw, thick, rectangle,,text width=14ex, text centered, minimum height=8ex, font=\footnotesize\sf]
+    \tikzstyle{data} = [draw, thick, trapezium,trapezium stretches body, trapezium left angle=70, trapezium right angle=110, text width=8ex,
+    text centered, minimum height=8ex, font=\footnotesize\sf]
+    \tikzstyle{decision} = [diamond, aspect=2, inner sep=-1ex,  text centered, text width=4cm,  draw=black, \font=\footnotesize\sf]
+    % \tikzstyle{
+    \begin{scope}[node distance=.8cm,anchor=center]
+      \node[process, text width=15ex] (aug) at (0,0) {Model\\ augmentation\\ {\scriptsize (+emissions, costs)}} ;
+      \node[data, left=1cm of aug] (mod) {Estimated Model\\ {\scriptsize (energy)}} ;
+      \node[process, above =1cm of aug] (uq) {Uncertainty quantification} ;
+      \node[data] (up) at (uq-| mod) {Inputs}; 
+      \node[process, below =1cm of aug] (se) {Strategy enumeration} ;
+      \node[process, right =  of aug] (sim) {Simulation};
+      \node[data] (states) at (sim|- uq) {States};
+      \node[data] (strategies) at (sim|- se) {Strategies} ;
+      \node[data, right =1cm of sim] (fut) {Futures};
+      \node[process, right= of fut,text width=8ex] (clus) {Data\\ Mining};
+      \node[fill,circle,text width=1ex,inner sep=0ex] (tj) at (clus |- strategies)  {} ;
+      \node[process, right= of tj,text width=8.5ex] (scen) {Discovered\\Scenarios}; %\\ Vulnerability Analyses;
+      \node[process, left= of tj,text width=11.5ex] (risk) {Risk\\ Quantification};
+      \node[fill,circle,text width=1ex,inner sep=0ex,below =1.2cm of tj] (tj2)  {} ;
+      \node[terminal, below= of tj2, text width=19ex] (rec) {Strategy\\Recommendations};
+  \end{scope}
+
+  \begin{scope}[thick,  ->, >=latex]
+    \draw (mod) -- (aug);
+    \draw[<->] (mod) -- (up);
+    \draw (up) -- (uq);
+    \draw[<->] (aug) -- node[label,right] {sensitivity analysis} (uq);
+    \draw (uq) -- node[label,above,text centered] {sampling} (states);
+    \draw[<->] (aug) -- node[label,right] {sensitivity analysis} (se);
+    \draw (se) -- (strategies);
+    \draw (strategies) -- (sim);
+    \draw (states) -- (sim);
+    \draw (sim) -- (fut);
+    \draw (aug) -- (sim);
+    \draw (fut) -- (clus);
+    \draw (tj) -- (scen);
+    \draw (tj) -- (risk);
+    \draw (tj2) node[label, above,text width=20ex,text centered] {user-defined objectives} -- (rec);
+  \end{scope}
+
+  
+  
+  \begin{scope}[thick]
+    \draw[thick] (clus) -- (tj);
+    \draw (risk) |- (tj2);
+    \draw (scen) |- (tj2);
+    \draw[dashed,->, >=latex] (scen.north) |-   (states.east) node[above,label,text width=35ex,pos=.7] {
+      resample within high-interest scenarios}; %to [out=90, in=0]
+    \draw[dashed,->, >=latex] (risk) -- node[label, above, text centered] {refine set for} node[label, below, text centered] {further\\ exploration} (strategies);
+\end{scope}
+
+  \end{tikzpicture}
+  \caption{\small Proposed framework for data-driven discovery of scenarios, which are defined here as the lowest-dimensional
+    boxes in the uncertain input parameter space with the highest coverage or density of similar outcomes (energy,
+    emissions and costs). These scenarios can further be analyzed for vulnerabilities in each strategy. High-interest
+    scenarios and strategies may also be investigated by generating further states for simulation within their respective
+    subspaces.} %Finally, strategies can be ranked based on user-defined criteria.}
+  \label{fig:sd}
+\end{figure}
+
+\subsubsection{Task 3.1: Augment  model for costs and emissions prediction}
+We will extend the selected model (Objective 1) to obtain performance outcomes based on assumed impacts of the proposed
+strategies for evaluation. The performance dimensions we will explore are (a) energy (relative energy change within a
+given time horizon), (b) emissions, and (c) costs. Emissions impacts will depend on the respective intensities of energy
+sources in the buildings, outcomes of which can enter the model as uncertain inputs. Costs can be variable (utility
+bills, etc) or fixed (required equipment for potential strategy decisions, such as retrofit). Thus, through this task,
+we will extend the trained machine learning model by building in levers to translate strategy decisions into
+model-sensitive parameters, as well as produce temporal outcomes in emissions and costs, in addition to energy.  The
+resulting augmented model would then be capable of simulating multidimensional outcomes from a variety of initial
+starting points and under specified strategies, as discussed in the next tasks.
+
+\subsubsection{Task 3.2:  Quantify uncertainty and design computational experiment}
+\label{sec:uq}
+Energy demand in commercial and institutional buildings depends on a number of factors.  Some of these are
+deterministic, such as the age, size and orientation of the building.  Other factors, such as maintenance and utility
+costs, occupancy and behavioral patterns and weather are deeply
+uncertain.  % In this task, we will quantify the uncertain parameters and their
+% respective distributions.
+The set of uncertain parameters from which to sample will be determined in part by feature importance results obtained
+in Objective 2.  Using the knowledge gained from the machine learning model(s) developed in Objective 1, we will
+identify the uncertain parameters and quantify their uncertainty. That is, we will estimate the distributions of these
+parameters by inferring from the literature and current paradigms in the building energy domain.  Following the
+uncertainty quantification, we will then generate states %$\bm s$
+(stochastic realizations) representing uniquely sampled combinations from the various distributions of each uncertain
+parameter.  The state generation procedure will be performed via an experimental design method, such as Latin hypercube
+sampling \cite{mckay1979comparison}.  Other factorial design approaches will be tested for performance \cite{kleijnen2005overview}.  Finally, we
+will prune the generated states to eliminate impossible or infeasible outcomes.
+
+%Some examples include: (a) energy costs, (b) retrofit costs, (c) occupancy, (d) behavior.
+
+\subsubsection{Task 3.3: Enumerate strategies}
+In this task, we will enumerate potential policies or strategies %$\bm P$
+that decisionmakers might explore in reaching sustainability goals.
+Typically, these can be determined from potential competing pathways.  In our case studies, we will also seek input from
+the stakeholders of the respective systems.  Strategies may be represented as exogenous impacts on a building system.
+% Examples might include: occupany reduction, appliance restrictions, retrofitting of HVAC systems, among others.
+The enumeration of these strategies would involve explicitly specifying their impacts in terms of model outcomes and
+parameters.  For example, if it is known that retrofitting the HVAC of a building is expected to result in an increase
+in energy efficiency, with quantifiable impacts available from historical data or from the literature, then this can be
+reflected by accordingly modifying the model energy outputs under such a strategy. Cost estimates from the literature
+for a given strategy can also be similarly reflected in the model outcomes.
+%We will enumerate these strategies and quantify their dynamic impacts on a system of buildings.
+% Zana: A few thoughts here, one there's the tradeoffs between physical retrofits vs behavioral change programming - the
+% outcomes of retrofits are probably more certain than behavioral change, but they are probably more expensive on
+% average. Second is the tradeoffs of focusing on certain buildings over others - which ones are best to tackle first
+% and why, which ones offer the best returns for the money invested. As in other efforts, the first reductions are the
+% largest and additional efforts to reduce will return less and less as energy and emissions are reduced (i.e. an
+% additional 10% reduction becomes smaller and smaller as reductions occur).
+% Not sure how to incorporate this here, but those both seem like important points.
+We list here an initial set of strategy dimensions for model exploration and experimentation:
+\begin{compactenum}[(a)]
+\item Physical retrofits: HVAC system upgrades; building insulation and envelope;  efficient
+  appliances and lighting; motion sensors; automated scheduling; etc.)
+\item Behavioral interventions: enforcement of lights-off policies in offices and classrooms;
+  restrictions on energy requirements of appliances and gadgets; centralized temperature control regimes; etc)
+\item Changes in energy sources (e.g.\ solar panels)  or providers (e.g.\ to those with greater share of renewables)
+\item Various feasible combinations of individual strategies (to investigate interaction and rebound effects, such as
+  decreasing marginal returns from additional projects)
+\end{compactenum}
+
+
+
+\subsubsection{Task 3.4: Simulate energy futures and perform data mining on outcomes}
+\label{sec:futures}
+Once states have been sampled from the uncertainty space and strategies enumerated, we will simulate an ensemble of
+futures by running the augmented model under each strategy across all states.  This is a computationally-intensive task
+that would involve distributed computing approaches.  Thus, given $|\bm s|$ states and $|\bm P|$
+strategies, $|\bm s| \times |\bm P|$ futures can be evaluated.  % The resulting futures ensemble will be a matrix of
+% outcomes from running the model for each sampled state of uncertain parameters under each respective strategy.
+Each future would be a vector of three metrics, relating to energy, emissions and costs.
+
+This ensemble will then be analyzed via data-mining algorithms with the goals of (i) clustering the most similar
+outcomes and (ii) uncovering the tightest and most interpretable multi-dimensional boundaries (boxes) of the uncertain
+input parameters in each of these clusters. In pursuing these goals, we will advance existing approaches for analyzing
+the uncertainty dimensions to discover high-density and high-coverage boxes that further provide data-driven scenario
+narratives. These existing methods have either relied on a limiting binary performance thresholding coupled with peeling
+or regression tree algorithms \cite{bryant2010thinking} to more recent extensions for multidimensional performance
+outcomes \cite{gerst2013discovering} and the application of machine learning algorithms, such as random forests, for
+finding these boxes \cite{kwakkel2016improvinga}.
+
+For goal (i), we will test the performance of various clustering procedures, such as hierarchical, K-means and
+density-based spatial clustering algorithms. Thus, rather than relying on subjective or a priori assumptions on
+performance outcomes of interest, we will follow a data-driven approach that elicits the dominant patterns across the
+three dimensions of performance (energy, emissions and costs).  In goal (ii), we will test the efficacy of various
+tree-based and non-parametric machine learning methods to find the lowest-dimensional subspaces in the uncertain input
+parameters that have the highest coverage of outcomes in each of the clusters found in (i).  These subspaces represent
+the discovered scenarios that will be further explored to analyze patterns in vulnerabilities across the proposed
+strategies. They will also enable decision-makers to determine the most consequential risk factors to desired
+sustainability outcomes and to what degrees they lie in the ``state space'' or ``strategy space.'' The futures analyses
+will also yield a robustness classification of the strategies under the entire space of uncertainty.
+
+% we will test the performance of various clustering procedures to elicit the scenarios of
+% interest.  The primary candidates in this exercise are the Patient Rule Induction Method (PRIM) and regression tree
+% approaches (such as CART)
+
+% Output metrics of interest:
+% \begin{itemize}
+% \item Energy: relative energy change within a given time horizon; energy savings over given period
+% \item Costs: fixed (equipment) and variable (operation)
+% \item Emissions
+% \end{itemize}
+
+% \subsection{Objective 4: Decision Making}
+%\hl{Are the biggest risk factors things we can control or not?}
+
+
+\subsection{Objective 4: Framework Validation}
+The selected machine learning model and decision making framework will be validated using data from an entirely
+different system of networked buildings. Our goal is to demonstrate the viability of the modeling framework to any
+system of buildings that some level of interaction. The selected framework will thus be re-estimated on the validation
+system and its performance compared to the pilot system. The model and framework may then be revised based on the
+quality of the results on a different complex of buildings. The validation objective will also result in a generalizable
+platform that can be adapted to any system.
+
+
+\subsection{Preliminary Results}
+Our pilot network is a system comprising the buildings on a university campus.  The energy dataset includes two years of
+electricity use data from 34 buildings ranging in size from 5,000 to 135,000 square feet. The buildings were all built
+in the last 55 years.% , with some built in the last ten years
+Some buildings are heated with electricity and others with natural gas. In this latter case, energy consumed for heating
+is not directly captured in the dataset. This proportion could also be estimated in a future model.  In most cases, the
+energy data are collected at 15 minute intervals, but some points are collected at 30 or 60 minute intervals. The
+purposes and activities taking place in the buildings also vary among offices, classrooms, meetings and events, food
+service, and residential use. The range of building types and sizes as well as the temporal length of the data set gives
+us a substantial amount of data to work with and the ability to investigate a wide range of circumstances, potentially
+enabling broad applicability of our modeling efforts.
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.85\textwidth]{cluster_building_energy_rollmean}
+  \caption{\small Daily building energy consumption by aggregated by cluster.}
+  \label{fig:clusters}
+\end{figure}
+
+In our initial work, we have fitted a vector autoregression (VAR) model to the network using existing functionalities
+and naive assumptions about the interdependencies between the buildings. In the absence of other endogenous time-series
+variables (besides energy consumption), we constructed a time series vector for the entire system based on the
+aggregated total daily energy from clusters of buildings with the most similar energy profiles (\autoref{fig:clusters}).
+The optimal clustering was obtained using the Ward hierarchical method \cite{murtagh2014ward} and the gap statistic
+\cite{tibshirani2001estimating}. Thus, there are six endogenous variables, each representing the total energy
+consumption of each cluster. We then utilized the daily average temperature at the campus. The first 300 days were used
+to train the model, with an optimal number of 16 lags. The performance of the resulting model for a thirty-day forecast
+is indicated across the clusters in \autoref{fig:forecast}. While the results are mixed, the observations largely fall
+within the 95\% confidence interval of all the predicted points.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.9\textwidth]{forecast}
+  \caption{\small Thirty-day-ahead forecast of cluster-aggregated vector autoregression model, with 95\% confidence
+    intervals. The model appears to perform relatively well for Clusters 1, 2 and 3, with root mean squared errors (RMSE) of 0.39,
+    0.40 and 0.58 MWh, respectively; but overestimates Clusters 3 and 4 (RMSE $= 0.94, 0.88$, respectively); and
+    underestimates Cluster 6 (RMSE $= 1.4$ MWh).}
+  \label{fig:forecast}
+\end{figure}
+
+
+We note that none of the deterministic building characteristics have been directly used in this initial model. By
+including these along with other endogenous variables (directly measured or latent) and exogenous variables (such as
+building closures), we can extend this model to a full global VAR framework, for instance, to fully capture the building
+interdependencies and elicit the impact of physical and human factors on multi-scale temporal energy consumption. This
+model is merely a first step that further highlights the need for the proposed framework.
+%novel modeling, inference and decision-making framework we propose.
+
+\subsection{Research Timeline}
+We propose an organization schedule for research task completion in \autoref{fig:timeline}.  
+\begin{figure}[h!]
+\centering
+  \begin{ganttchart}[
+  y unit title=0.4cm,
+  y unit chart=0.4cm,
+  vgrid,%hgrid,
+  title/.style={draw=gray},
+  title label anchor/.style={below=-1.6ex},
+  title left shift=.05,
+  title right shift=-.05,
+  title height=.8,
+  title label font={\footnotesize\sffamily},
+  group label font={\bfseries\footnotesize\sffamily},
+  group/.append style={fill=gray},
+  bar/.style={fill=green!50!black!50!},
+  bar incomplete/.style={fill=red!40},
+  bar label font={\scriptsize\sffamily},
+  progress label text={},
+  bar height=0.5,
+  group right shift=0,
+  group top shift=.6,
+  group height=.3
+  ]{1}{12}
+  % labels
+  \gantttitle{'21}{1}
+  \gantttitle{2022}{4}
+  \gantttitle{2023}{4}
+  \gantttitle{2024}{3}\\
+  \gantttitle{Q4}{1}
+  \gantttitle{Q1}{1}
+  \gantttitle{Q2}{1}
+  \gantttitle{Q3}{1}
+  \gantttitle{Q4}{1}
+  \gantttitle{Q1}{1}
+  \gantttitle{Q2}{1}
+  \gantttitle{Q3}{1}
+  \gantttitle{Q4}{1}
+  \gantttitle{Q1}{1}
+  \gantttitle{Q2}{1}
+  \gantttitle{Q3}{1}
+  \\
+  % tasks
+  % \ganttgroup{Behavior data collection and analysis}{1}{7} \\
+  \ganttgroup{Objective 1: Model estimation and selection}{1}{7} \\
+  \ganttbar[progress=0]{Task 1.1: Train various ML algorithms}{1}{3} \\
+  \ganttbar[progress=0]{Task 1.2: Assess performance and select}{3}{7} \\
+     
+  \ganttgroup{Objective 2: Inference}{4}{8}\\
+  \ganttbar[progress=0]{Task 2.1: Investigate relationships between building characteristics and energy}{4}{6} \\
+  \ganttbar[progress=0]{Task 2.2: Identify occupancy and behavioral effects}{5}{7} \\
+  \ganttbar[progress=0]{Task 2.3: Analyze network effects on energy}{5}{8}\\
+  
+  \ganttgroup{Objective 3: Scenario discovery}{7}{11}\\
+  \ganttbar[progress=0]{Task 3.1: Augment model for costs/emissions}{7}{8} \\
+  \ganttbar[progress=0]{Task 3.2: Quantify uncertainty and design computational experiment}{8}{9} \\
+  \ganttbar[progress=0]{Task 3.3: Enumerate strategies}{9}{9} \\
+  \ganttbar[progress=0]{Task 3.4: Simulate futures and perform data mining on outcomes}{10}{11} \\
+
+  \ganttgroup{Objective 4: Framework validation}{4}{12}
+  % \ganttbar[progress=0]{Task 4.1: Model estimation and inference}{4}{12} 
+  % \ganttbar[progress=0]{Task 4.2: Scenario discovery}{4}{12} 
+
+  % \ganttgroup{Papers and final task reports}{2}{10}
+  % relations
+  % \ganttlink{elem0}{elem1}
+  % \ganttlink{elem0}{elem3}
+  % \ganttlink{elem1}{elem2}
+  % \ganttlink{elem3}{elem4}
+  % \ganttlink{elem1}{elem5}
+  % \ganttlink{elem3}{elem5}
+  % \ganttlink{elem2}{elem6}
+  % \ganttlink{elem3}{elem6}
+  % \ganttlink{elem5}{elem7}
+\end{ganttchart}
+\caption{\small Proposed timeline of tasks for each research objective}
+\label{fig:timeline}
+\end{figure}
+
+%\eject
+\section{Team}
+This team leverages the complementary domain knowledge of energy and systems engineering experts.
+PI Oke directs the Networks for Accessibility, Resilience and Sustainability Laboratory at the University of
+Massachusetts Amherst.  His research advances machine learning and network science for the purpose of understanding
+complex interactions within critical infrastructure systems and developing methods for robust decision making and
+long-term planning.  He will provide project leadership, as well as offer expertise in machine learning and scenario
+discovery.
+
+
+Co-PI Cranmer has expertise in interdisciplinary research, optimization models for energy, and teaching courses on
+energy and sustainability. As a graduate student, she received training and mentoring in interdisciplinary research as
+an IGERT fellow (NSF Grant \#1068864). Her research and teaching focuses on technical, economic, environmental, and
+social trade-offs of renewable energy and energy efficiency and barriers to their implementation. Cranmer’s research
+spans integrated assessment of renewable energy technologies and policies to the social aspects and public acceptance of
+renewable energy. The proposed project extends this work into energy efficiency. Her teaching incorporates experiential
+and problem-based learning pedagogy to engage students in developing solutions for energy and climate change.
+
+The remainder of the research team will consist of a doctoral student who would ideally have a strong background in
+statistics and the foundations of optimization, along with fundamental expertise in programming and systems analysis.
+Both PI Oke and Co-PI Cranmer will train the student in advanced machine learning and modeling techniques, as well as in
+scenario discovery.  We will also train two undergraduate engineering or natural science majors who are interested in
+energy and sustainability problems.  They would ideally possess a high level of curiosity and aptitude for data
+scientific techniques.  They will be involved in data collection, model assessment and computational experimentation
+with the estimated models.
+
+
+\section{Intellectual Merit}
+This project will advance machine learning, building energy modeling, decision making under deep uncertainty and
+sustainability science. In estimating and selecting a flexible model for a networked system of buildings, this project
+will develop an algorithmic framework that involve the testing, application and architecturing of state-of-the art
+machine learning (ML) algorithms, such as global vector autoregression, GVAR (and its Bayesian and nonlinear variants)
+and graph-based recurrent neural networks (e.g.\ long-short term memory networks and gated recurrent units), among
+others. Beyond developing a high-performing model, we propose a rigorous inferential procedure that is expected to
+generate new knowledge in our understanding of how building characteristics and network effects explicitly relate to
+energy consumption by functionally mapping correspondences between model outcomes and input parameters. We will also
+perform inference of occupancy and other behavioral effects based on inter-building flows and the inclusion of latent
+variables. These tasks will thus advance building energy modeling efforts by training a highly explainable model to
+bridge the widening gap between ``black-box'' ML models and bottoms-up or physics-based models. It will also result in
+new tools for quantifying the effects of occupant flow and other related impacts within a system of buildings in a
+complex.
+
+The proposed project will also serve to extend the scenario discovery method for building energy
+sustainability. Expected advances will be focused in the aspect of analyzing simulated outcomes to obtain data-driven
+scenario narratives and perform risk and vulnerability analyses. In particular, we will test new algorithms for
+clustering performance outcomes, as well as finding the combinations of uncertain parameter values resulting in the
+highest-coverage subspaces of similar outcomes. Through the outlined tasks, we plan to establish new paradigms in
+scenario discovery that can be applied to other use cases. We expect that this research will result in a flexible and
+readily deployable tool that will enable decision-making for the sustainable management of buildings in a complex (e.g.\
+campus, industry, etc). To ensure that this would be feasible, we will validate the entire framework on a different
+system from the one used in training.
+
+% by moving beyond black-box machine learning approaches
+% to building energy production.  In building a hybrid framework, we will generate new knowledge and insights by
+% investigating the correspondence between physics-based relationships and flexible model hyperparameters. 
+% Thus, we can leverage on computational advances in big data and learning algorithms such as long short-term memory
+% networks (LSTMs) and tree-based methods to train an explainable model to a high level of accuracy.  We will also extend
+% the theory of decision-making under uncertainty via uncertainty quantification of parameters relevant to building energy
+% consumption and scenario discovery in high-dimensional spaces in search of robust futures.
+
+  
+\section{Broader Impacts}
+
+\subsection{Improvements to building management  and promotion of learning}
+This project will develop improved methods of modeling and disentangling the drivers of energy consumption in
+buildings. The knowledge created during this project could be used to improve programming and interventions to reduce
+energy consumption in commercial buildings. It could also be used to improve building energy simulation models through
+improved understanding of interactions between building characteristics and effect of building occupants on energy use.
+We will build and train this framework using data from an existing educational institution's complex of buildings.
+After this, we will validate the framework on a different commercial building network, as a demonstration of the
+viability of this approach to various use cases.
+
+To promote teaching and learning, we will design a challenge for high school and college students that will have them
+use the proposed framework to evaluate sustainable energy strategies for their institutional buildings, as well as
+discover novel high-interest scenarios. Participating students will engage with the model at various
+levels, while also actively collecting the required data and engaging in citizen science for the benefit of their
+campuses. Our team will design the materials for the challenge and pilot it in two regions: Western Massachusetts and
+Greater Boston.%, involving interested schools and colleges.
+%Materials will be publicly available for others to utilize for their own local deployment.
+%To facilitate , the source code of the entire modeling framework will be available for
+
+\subsection{Benefits to society}
+The models and algorithms developed during the project will be made publicly available online for use by anyone,
+enabling widespread use of effective tools that result from this research. The proposed framework will result in a
+readily deployable tool that planners and managers at both institutional and community levels can immediately use to
+analyze how building characteristics and behavior impact energy consumption. Through an interactive and flexible online
+platform, users will be able to explore various energy futures by leveraging on the uncertainty in the input parameters
+specific to their use case. Thus, it will serve to not only provide decision support but also to educate
+stakeholders. The products of this research can be readily applied to other universities and commercial
+settings. Companies, utilities and municipalities could all utilize the methods developed in the buildings they own, use
+and serve.
+
+This project will train a doctoral student in advanced statistical learning and energy modeling, along with two
+undergraduate students in energy and sustainability studies. All students who work on the project as research assistants
+will learn about cutting edge machine learning techniques and energy consumption in commercial buildings. The knowledge
+and skills they gain will be applicable to their personal and professional lives, making them better equipped to tackle
+challenges of energy and sustainability. There is a growing focus on the triple bottom line (often referred to as
+``people-planet-profit''), which emphasizes value creation beyond shareholders, and sustainability among companies,
+making these skills increasingly valuable among professionals of all % academic
+backgrounds.
+
+\subsection{Participation of underrepresented groups}
+The PIs have experience mentoring graduate and undergraduate students from under-represented groups. The project will
+actively recruit women and under-represented minorities to work on the project by partnering with campus offices and
+programs designed to support students who identify as first generation, LGBTQ, and students of color. 
+
+
+\section{Results from Prior NSF Support}
+\subsection{PI Oke}
+\begin{compactenum}[\bf(a)]
+\item \textbf{Award:} OIA-2040613 (Amount: \$999,982; Duration: 09/15/2020 to 05/31/2021;  PI: U.\ Lall)
+
+\item \textbf{Project Title:} NSF Convergence Accelerator Track D: America's Water Risk: Water System Data Pooling for
+  Climate Vulnerability Assessment and Warning System
+
+\item \textbf{Summary of Results}: \textbf{Intellectual Merit:} This project advances machine learning,
+  climate science and water systems modeling by developing an artificial intelligence decision-scientific framework
+  for demand, hydrology and climate prediction. %  which will be cloud-based  to leverage
+  % on pooled data and online learning among collaborating utilities.
+  The outcome will be cloud-based, scalable and 
+  deployable %by water utilities
+  across the U.S.\ for data-driven robust decision making.  \textbf{Broader
+    Impacts:} The proposed project  will %enable small utilities in decisionmaking under climate change
+  % uncertainty by
+  democratize modeling capabilities for demand and supply risk prediction.  The framework will be piloted in low-income communities that are particularly vulnerable to natural
+  disasters.  Outreach and educational material will also be made available to  smaller utilities for vulnerability
+  analyses.
+% (d) A list of publications resulting from the NSF award (a complete bibliographic citation for each publication must be provided either in this section or in the References Cited section of the proposal). If none, state “No publications were produced under this award.” 
+
+% (e) Evidence of research products and their availability, including but not limited to data, publications, samples, physical collections, software, and models, as described in any Data Management Plan
+\end{compactenum}
+\subsection{Co-PI Cranmer}
+Co-PI Cranmer has not received any prior NSF funding.
+
+%\setcounter{page}{1}
+%\printbibliography[title={References Cited}]
+
+%\appendix
+
+% \section{GVAR}
+% The global VAR model is given by
+
+% \begin{equation}
+%   \label{eq:1}
+%   x_{i,t} = \sum_{l=1}^{p_{i}}\Phi_{il}x_{i,t-l} + \Lambda_{i0}x_{i,t}^{*} + \sum_{l=1}^{q_{i}}\Lambda_{il}x_{i,t-l}^{*} + \varepsilon_{i,t}
+% \end{equation}
+% where $x_{i,t}$ is a vector of $k_{i}\times 1$ endogenous variables and $i = 1, 2, \ldots, N$ is the number of buildings in the system.
+% $\Phi_{il}$ is a coefficient matrix of the cointegrated endogenous variables. $\Lambda_{i0}$ is a coefficient matrix for the contemporanoues weakly exogenous variable $x_{i,t}^{*}$. $\Lambda_{il}$ is the coefficient matrix of the $q_{i}$ lagged foreign variables $x_{i,t-l}^{*}$, where
+% \begin{equation}
+%   \label{eq:2}
+%   x_{i,t}^{*} = \ol{W}_{i}^{'}x_{t}.
+% \end{equation}
+% The matrix $\ol{W}_{i}^{'}$ is the $k^{*} \times N$ matrix of building-specific weights.
+% Stacking the domestic and foreign variables, we obtain
+% \begin{equation}
+%   \label{eq:3}
+%   z_{i,t} =
+%   \begin{bmatrix}
+%     x_{i,t}^{'}, x_{i,t}^{*'}
+%   \end{bmatrix}'  = W_{i}x_{t}
+% \end{equation}
+% where $W_{i} = E_{i}\ol{W}_{i}$ and $E_{i}$ is a selection matrix We
+% can then compactly write the model as
+% \begin{equation}
+%   \label{eq:4}
+%   G_{0}x_{t} = \sum_{l=1}^{p}G_{l}x_{t-l} + \varepsilon_{t}
+% \end{equation}
+% where
+% \begin{equation}
+%   \label{eq:5}
+%   G_{l} =
+%   \begin{bmatrix}
+%     A_{1,l}W_{1}\\ A_{2,l}W_{2}\\ \vdots \\A_{N,l}W_{N}
+%   \end{bmatrix}
+%   % =
+%   % \begin{bmatrix}
+%   %   \Phi_{1l} & \Lambda_{2l} \\ \vdots  & \vdots \\     \Phi_{Nl} & \Lambda_{Nl} 
+%   % \end{bmatrix}
+% \end{equation}
+% and $A_{i,l} = [\Phi_{1l}  \Lambda_{2l}]$.
+
+% The global model can then be compactly written as
+% \begin{equation}
+%   \label{eq:6}
+%   x_{t} = \sum_{l=1}^{p}G_{0}^{-1}G_{l }x_{t-l} + G_{0}^{-1}u_{t}
+% \end{equation}
+% where $x_{t}$ $x_{t-l}$ and $u_{t}$ are stacked vectors of length $kN$.
+
+
+
+%\section{References Cited}
+
+% \eject
+% \section{Budget Justification}
+
+% \subsection{Senior Personnel (Salaries and Wages)}
+
+% \subsection{Other Personnel (Salaries and Wages)}
+
+% \subsection{Fringe Benefits}
+
+% \subsection{Equipment}
+
+% \subsection{Travel}
+% \subsubsection{Domestic Travel}
+
+% \subsubsection{International Travel}
+% No international travel funds are requested for the PIor other personnel on this project.
+
+% \subsection{Participant Support Costs}
+% None.
+
+% \subsection{Other Direct Costs}
+
+% \subsubsection{Materials and Supplies}
+% None.
+
+% \subsubsection{Computers Services and Software}
+
+% \subsubsection{Other}
+
+% \subsection{Indirect Costs}
+
+% \section{Facilities, Equipment, and Other Resources}
+
+% \section{Data Management Plan}
+
+
+%\begin{flushright}\scriptsize
+%  Dr. Jimi Oke, CEE\\
+%\end{flushright}
+
+\eject
+
+
+% \eject
+% \setcounter{page}{1}
+% \thispagestyle{plain}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
