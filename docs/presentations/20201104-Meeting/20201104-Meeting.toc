@@ -1,0 +1,11 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {2}{Training overview}{8}{0}{2}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {3}{Convolutional NNs}{19}{0}{3}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {4}{AI for Tree Risk}{23}{0}{4}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {5}{Backpropagation}{26}{1}{5}

@@ -1,0 +1,22 @@
+\frametitle{Three-layer neural network (with bias neurons)}
+  \begin{figure}[h!]
+    \centering
+    \begin{neuralnetwork}[height=4]
+    \newcommand{\x}[2]{$x_#2$}
+    \newcommand{\y}[2]{$\hat{y}_#2$}
+    \newcommand{\hfirst}[2]{\small $h^{(1)}_#2$}
+    \newcommand{\hsecond}[2]{\small $h^{(2)}_#2$}
+    \inputlayer[count=3, bias=true, title=I, text=\x]
+    \hiddenlayer[count=4, bias=true, title=H1, text=\hfirst] \linklayers
+    \hiddenlayer[count=3, bias=true, title=H2, text=\hsecond] \linklayers
+    \outputlayer[count=2, title=O, text=\y] \linklayers
+  \end{neuralnetwork}
+\end{figure}
+
+\pause
+  \begin{itemize}[<+->]
+  \item \textbf{Layers}: 3; \pause  \textbf{Hidden layers:} 2
+  \item \textbf{Neurons}: 9
+  \item \textbf{Learnable parameters:} $(4\times 4) + (5\times 3) + (4\times 2) = \pause 39$ weights
+  \end{itemize}
+
