@@ -26,54 +26,98 @@ def getListOfFiles(dirName):
                 
     return allFiles
 
-def saveImageFilesBinary(image_file_list):
-    """Serially labels all images by class (probable or improbable) and saves them to data/tidy/labeled_images"""
-    probable_counter = 1
-    improbable_counter = 1
-    tidy_image_dir = '../../data/tidy/labeled_images_2_classes/'
-    if not os.path.exists(tidy_image_dir):
-        os.makedirs(tidy_image_dir)
-    for filename in image_file_list:
-        if '.JPG' in filename or '.jpg' in filename:        
-            if any(re.findall(r'improbable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
-                improbable_counter += 1
-            elif any(re.findall(r'probable|possible', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
-                probable_counter += 1   
-            imageio.imwrite(save_name, np.array(Image.open(filename)))
-    print('Number of probable images saved:', probable_counter-1)
-    print('Number of improbable images saved:', improbable_counter-1) 
+def saveImageFiles(image_file_list, classification_scenario):
+    """Serially labels all images by class:
+    Classification Scenario A: {probable, possible, improbable}
+    Classification Scenario B: {probable, improbable}
+    Classification Scenario C: {{probable, possible}, improbable}
+    Classification Scenario D: {probable, {possible, improbable}}
+    and saves them to data/tidy/labeled_images"""
+    
+    if classification_scenario=="A":
+        improbable_counter = 1
+        possible_counter = 1
+        probable_counter = 1
+        tidy_image_dir = '../../data/tidy/labeled_images_scenario_A/'
+        if not os.path.exists(tidy_image_dir):
+            os.makedirs(tidy_image_dir)
+        for filename in image_file_list:
+            if '.JPG' in filename or '.jpg' in filename:        
+                if any(re.findall(r'improbable', filename, re.IGNORECASE)):
+                    save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
+                    improbable_counter += 1
+                elif any(re.findall(r'probable', filename, re.IGNORECASE)):
+                    save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
+                    probable_counter += 1 
+                elif any(re.findall(r'possible', filename, re.IGNORECASE)):
+                    save_name = tidy_image_dir + 'possible' + '-' + str(possible_counter) + '.jpg'
+                    possible_counter += 1 
+                imageio.imwrite(save_name, np.array(Image.open(filename)))
+        print('Number of improbable images saved:', improbable_counter - 1)    
+        print('Number of possible images saved:', possible_counter - 1)
+        print('Number of probable images saved:', probable_counter - 1)
+        
+    elif classification_scenario=="B":
+        improbable_counter = 1
+        probable_counter = 1        
+        tidy_image_dir = '../../data/tidy/labeled_images_scenario_B/'
+        if not os.path.exists(tidy_image_dir):
+            os.makedirs(tidy_image_dir)
+            for filename in image_file_list:
+                if '.JPG' in filename or '.jpg' in filename:        
+                    if any(re.findall(r'improbable', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
+                        improbable_counter += 1
+                    elif any(re.findall(r'probable', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
+                        probable_counter += 1   
+                    imageio.imwrite(save_name, np.array(Image.open(filename)))
+            print('Number of improbable images saved:', improbable_counter - 1) 
+            print('Number of probable images saved:', probable_counter - 1)
 
-def saveImageFilesTernary(image_file_list):
-    """Serially labels all images by class (probable, possible or improbable) and saves them to data/tidy/labeled_images"""
-    probable_counter = 1
-    improbable_counter = 1
-    possible_counter = 1
-    tidy_image_dir = '../../data/tidy/labeled_images_3_classes/'
-    if not os.path.exists(tidy_image_dir):
-        os.makedirs(tidy_image_dir)
-    for filename in image_file_list:
-        if '.JPG' in filename or '.jpg' in filename:        
-            if any(re.findall(r'improbable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
-                improbable_counter += 1
-            elif any(re.findall(r'probable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
-                probable_counter += 1 
-            elif any(re.findall(r'possible', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'possible' + '-' + str(possible_counter) + '.jpg'
-                possible_counter += 1 
-            imageio.imwrite(save_name, np.array(Image.open(filename)))
-    print('Number of probable images saved:', probable_counter-1)
-    print('Number of possible images saved:', possible_counter-1)
-    print('Number of improbable images saved:', improbable_counter-1) 
+    elif classification_scenario=="C":
+        improbable_counter = 1
+        possible_or_probable_counter = 1
+        tidy_image_dir = '../../data/tidy/labeled_images_scenario_C/'
+        if not os.path.exists(tidy_image_dir):
+            os.makedirs(tidy_image_dir)
+            for filename in image_file_list:
+                if '.JPG' in filename or '.jpg' in filename:        
+                    if any(re.findall(r'improbable', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
+                        improbable_counter += 1
+                    elif any(re.findall(r'possible|probable', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'possible_or_probable' + '-' + str(probable_counter) + '.jpg'
+                        possible_or_probable_counter += 1   
+                    imageio.imwrite(save_name, np.array(Image.open(filename)))
+            print('Number of improbable images saved:', improbable_counter - 1) 
+            print('Number of possible+probable images saved:', possible_or_probable_counter - 1)
 
+    elif classification_scenario=="D":
+        improbable_or_possible_counter = 1
+        probable_counter = 1
+        tidy_image_dir = '../../data/tidy/labeled_images_scenario_D/'
+        if not os.path.exists(tidy_image_dir):
+            os.makedirs(tidy_image_dir)
+            for filename in image_file_list:
+                if '.JPG' in filename or '.jpg' in filename:        
+                    if any(re.findall(r'improbable|possible', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'improbable_or_possible' + '-' + str(improbable_counter) + '.jpg'
+                        improbable_or_possible_counter += 1
+                    elif any(re.findall(r'probable', filename, re.IGNORECASE)):
+                        save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
+                        probable_counter += 1   
+                    imageio.imwrite(save_name, np.array(Image.open(filename)))
+            print('Number of improbable+possible images saved:', improbable_or_possible_counter - 1) 
+            print('Number of probable images saved:', probable_counter - 1)
+        
 def main():    
     tree_image_list = getListOfFiles(raw_image_dir)
-    saveImageFilesBinary(tree_image_list)
-    saveImageFilesTernary(tree_image_list)
-
+    saveImageFiles(tree_image_list, "A")
+    saveImageFiles(tree_image_list, "B")
+    saveImageFiles(tree_image_list, "C")
+    saveImageFiles(tree_image_list, "D")
+    
 if __name__ == "__main__":
     main()
 
