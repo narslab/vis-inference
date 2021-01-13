@@ -26,31 +26,13 @@ def getListOfFiles(dirName):
                 
     return allFiles
 
-def saveImageFilesBinary(image_file_list):
-    """Serially labels all images by class (probable or improbable) and saves them to data/tidy/labeled_images"""
-    probable_counter = 1
-    improbable_counter = 1
-    tidy_image_dir = '../../data/tidy/labeled_images_2_classes/'
-    if not os.path.exists(tidy_image_dir):
-        os.makedirs(tidy_image_dir)
-    for filename in image_file_list:
-        if '.JPG' in filename or '.jpg' in filename:        
-            if any(re.findall(r'improbable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
-                improbable_counter += 1
-            elif any(re.findall(r'probable|possible', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
-                probable_counter += 1   
-            imageio.imwrite(save_name, np.array(Image.open(filename)))
-    print('Number of probable images saved:', probable_counter-1)
-    print('Number of improbable images saved:', improbable_counter-1) 
-
-def saveImageFilesTernary(image_file_list):
-    """Serially labels all images by class (probable, possible or improbable) and saves them to data/tidy/labeled_images"""
-    probable_counter = 1
+def saveImageFiles(image_file_list):
+    """Serially labels all images by class:  and saves them to data/tidy/labeled_images"""
+    
     improbable_counter = 1
     possible_counter = 1
-    tidy_image_dir = '../../data/tidy/labeled_images_3_classes/'
+    probable_counter = 1
+    tidy_image_dir = '../../data/tidy/labeled_images/'
     if not os.path.exists(tidy_image_dir):
         os.makedirs(tidy_image_dir)
     for filename in image_file_list:
@@ -65,15 +47,14 @@ def saveImageFilesTernary(image_file_list):
                 save_name = tidy_image_dir + 'possible' + '-' + str(possible_counter) + '.jpg'
                 possible_counter += 1 
             imageio.imwrite(save_name, np.array(Image.open(filename)))
-    print('Number of probable images saved:', probable_counter-1)
-    print('Number of possible images saved:', possible_counter-1)
-    print('Number of improbable images saved:', improbable_counter-1) 
+    print('Number of improbable images saved:', improbable_counter - 1)    
+    print('Number of possible images saved:', possible_counter - 1)
+    print('Number of probable images saved:', probable_counter - 1)
 
 def main():    
     tree_image_list = getListOfFiles(raw_image_dir)
-    saveImageFilesBinary(tree_image_list)
-    saveImageFilesTernary(tree_image_list)
-
+    saveImageFiles(tree_image_list)
+    
 if __name__ == "__main__":
     main()
 
