@@ -1,0 +1,5 @@
+Date,Model,Classes,Num Classes,Image Size,Channels,Split Seed,Training Samples,Test Samples,Epochs,Batch Size,Optimizer,Val Accuracy,Val Precision,Val Recall,Val F1,Time (s)
+12/01/20,model1,"[Probable, Improbable]",2,108,1,111,302,76,4,32,adam,86.8,87.9,100,93.5,19
+12/01/20,model1,"[Probable, Improbable]",2,224,1,111,302,76,4,32,adam,86.8,87.9,100,93.5,78
+12/01/20,model1,"[Probable, Possible, Improbable]",3,108,1,,302,76,4,32,adam,72.8,,,,
+12/01/20,model1,"[{Probable, Possible}, Improbable]",2,108,1,,302,76,4,32,adam,65.2,,,,
