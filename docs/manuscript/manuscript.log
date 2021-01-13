@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.1.11)  13 JAN 2021 13:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.1.11)  13 JAN 2021 13:49
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -1663,7 +1663,7 @@ LaTeX Warning: No \author given.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (6.64838pt too wide) in paragraph at lines 293--293
+Overfull \hbox (6.64838pt too wide) in paragraph at lines 301--301
 \T1/lmr/m/n/10.95 Op-er-a-tions Ev-i-dences from Con-necti-cut, USA''. In: \T1/
 lmr/m/it/10.95 En-ergy Pol-icy \T1/lmr/m/n/10.95 138 (Mar. 1, 2020), p. 111293.
  
@@ -1671,15 +1671,15 @@ lmr/m/it/10.95 En-ergy Pol-icy \T1/lmr/m/n/10.95 138 (Mar. 1, 2020), p. 111293.
 
 [2]
 
-Package xcolor Warning: Incompatible color definition on input line 292.
+Package xcolor Warning: Incompatible color definition on input line 300.
 
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
-92.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
+00.
 (/usr/share/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 292.
+(Font)              <10.95> on input line 300.
 Package minitoc Info: I0009
 (minitoc)             Listing minitoc auxiliary files. 
 (minitoc)             Creating the manuscript.maf file.
@@ -1691,15 +1691,15 @@ Package minitoc(hints) Warning: W0024
 
 [3] (./manuscript.aux)
 Package rerunfilecheck Info: File `manuscript.out' has not changed.
-(rerunfilecheck)             Checksum: F7F33053DF9772C7BE09A5CFF260C229;275.
+(rerunfilecheck)             Checksum: D452369D58FAA05A343A2DBAAD655375;461.
 Package logreq Info: Writing requests to 'manuscript.run.xml'.
  ) 
 Here is how much of TeX's memory you used:
- 45675 strings out of 479383
- 1033855 string characters out of 5875830
+ 45674 strings out of 479383
+ 1033879 string characters out of 5875830
  1907259 words of memory out of 5000000
  61752 multiletter control sequences out of 15000+600000
- 465011 words of font info for 74 fonts, out of 8000000 for 9000
+ 468009 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  80i,11n,85p,7091b,1433s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/share/texmf-dist/fo
@@ -1707,10 +1707,10 @@ nts/type1/public/lm/lmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/lm/lmc
 sc10.pfb></usr/share/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/share/tex
 mf-dist/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf-dist/fonts/type1/publ
 ic/lm/lmri10.pfb></usr/share/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on manuscript.pdf (3 pages, 163586 bytes).
+Output written on manuscript.pdf (3 pages, 164508 bytes).
 PDF statistics:
- 138 PDF objects out of 1000 (max. 8388607)
- 109 compressed objects within 2 object streams
- 26 named destinations out of 1000 (max. 500000)
- 157 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 146 PDF objects out of 1000 (max. 8388607)
+ 117 compressed objects within 2 object streams
+ 28 named destinations out of 1000 (max. 500000)
+ 173 words of extra memory for PDF output out of 10000 (max. 10000000)
 
