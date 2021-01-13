@@ -1,4 +1,40 @@
 
+@article{branson2018google,
+  title = {From {{Google Maps}} to a {{Fine}}-{{Grained Catalog}} of {{Street}} Trees},
+  author = {Branson, Steve and Wegner, Jan Dirk and Hall, David and Lang, Nico and Schindler, Konrad and Perona, Pietro},
+  date = {2018-01},
+  journaltitle = {ISPRS Journal of Photogrammetry and Remote Sensing},
+  shortjournal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+  volume = {135},
+  pages = {13--30},
+  issn = {09242716},
+  doi = {10.1016/j.isprsjprs.2017.11.008},
+  url = {http://arxiv.org/abs/1910.02675},
+  urldate = {2021-01-13},
+  abstract = {Up-to-date catalogs of the urban tree population are of importance for municipalities to monitor and improve quality of life in cities. Despite much research on automation of tree mapping, mainly relying on on dedicated airborne LiDAR or hyperspectral campaigns, tree detection and species recognition is still mostly done manually in practice. We present a fully automated tree detection and species recognition pipeline that can process thousands of trees within a few hours using publicly available aerial and street view images of Google MapsTM. These data provide rich information from different viewpoints and at different scales from global tree shapes to bark textures. Our work-flow is built around a supervised classification that automatically learns the most discriminative features from thousands of trees and corresponding, publicly available tree inventory data. In addition, we introduce a change tracker that recognizes changes of individual trees at city-scale, which is essential to keep an urban tree inventory up-to-date. The system takes street-level images of the same tree location at two different times and classifies the type of change (e.g., tree has been removed). Drawing on recent advances in computer vision and machine learning, we apply convolutional neural networks (CNN) for all classification tasks. We propose the following pipeline: download all available panoramas and overhead images of an area of interest, detect trees per image and combine multi-view detections in a probabilistic framework, adding prior knowledge; recognize fine-grained species of detected trees. In a later, separate module, track trees over time, detect significant changes and classify the type of change. We believe this is the first work to exploit publicly available image data for city-scale street tree detection, species recognition and change tracking, exhaustively over several square kilometers, respectively many thousands of trees. Experiments in the city of Pasadena, California, USA show that we can detect {$>$} 70\% of the street trees, assign correct species to {$>$} 80\% for 40 different species, and correctly detect and classify changes in {$>$} 90\% of the cases.},
+  archivePrefix = {arXiv},
+  eprint = {1910.02675},
+  eprinttype = {arxiv},
+  file = {/home/jbo/Zotero/storage/55QJA734/Branson et al. - 2018 - From Google Maps to a Fine-Grained Catalog of Stre.pdf},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  langid = {english}
+}
+
+@online{carpentier2018tree,
+  title = {Tree {{Species Identification}} from {{Bark Images Using Convolutional Neural Networks}}},
+  author = {Carpentier, Mathieu and Giguère, Philippe and Gaudreault, Jonathan},
+  date = {2018-07-31},
+  url = {http://arxiv.org/abs/1803.00949},
+  urldate = {2021-01-13},
+  abstract = {Tree species identification using bark images is a challenging problem that could prove useful for many forestry related tasks. However, while the recent progress in deep learning showed impressive results on standard vision problems, a lack of datasets prevented its use on tree bark species classification. In this work, we present, and make publicly available, a novel dataset called BarkNet 1.0 containing more than 23,000 high-resolution bark images from 23 different tree species over a wide range of tree diameters. With it, we demonstrate the feasibility of species recognition through bark images, using deep learning. More specifically, we obtain an accuracy of 93.88\% on single crop, and an accuracy of 97.81\% using a majority voting approach on all of the images of a tree. We also empirically demonstrate that, for a fixed number of images, it is better to maximize the number of tree individuals in the training database, thus directing future data collection efforts.},
+  archivePrefix = {arXiv},
+  eprint = {1803.00949},
+  eprinttype = {arxiv},
+  file = {/home/jbo/Zotero/storage/IYC3SGJR/Carpentier et al. - 2018 - Tree Species Identification from Bark Images Using.pdf;/home/jbo/Zotero/storage/EZUR3XQH/1803.html},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  primaryClass = {cs}
+}
+
 @article{csillik2018identification,
   title = {Identification of {{Citrus Trees}} from {{Unmanned Aerial Vehicle Imagery Using Convolutional Neural Networks}}},
   author = {Csillik, Ovidiu and Cherbini, John and Johnson, Robert and Lyons, Andy and Kelly, Maggi},
@@ -11,11 +47,43 @@
   url = {https://www.mdpi.com/2504-446X/2/4/39},
   urldate = {2020-12-03},
   abstract = {Remote sensing is important to precision agriculture and the spatial resolution provided by Unmanned Aerial Vehicles (UAVs) is revolutionizing precision agriculture workflows for measurement crop condition and yields over the growing season, for identifying and monitoring weeds and other applications. Monitoring of individual trees for growth, fruit production and pest and disease occurrence remains a high research priority and the delineation of each tree using automated means as an alternative to manual delineation would be useful for long-term farm management. In this paper, we detected citrus and other crop trees from UAV images using a simple convolutional neural network (CNN) algorithm, followed by a classification refinement using superpixels derived from a Simple Linear Iterative Clustering (SLIC) algorithm. The workflow performed well in a relatively complex agricultural environment (multiple targets, multiple size trees and ages, etc.) achieving high accuracy (overall accuracy = 96.24\%, Precision (positive predictive value) = 94.59\%, Recall (sensitivity) = 97.94\%). To our knowledge, this is the first time a CNN has been used with UAV multi-spectral imagery to focus on citrus trees. More of these individual cases are needed to develop standard automated workflows to help agricultural managers better incorporate large volumes of high resolution UAV imagery into agricultural management operations.},
-  file = {/home/jbo/Zotero/storage/T7ZKVXX6/Csillik et al. - 2018 - Identification of Citrus Trees from Unmanned Aeria.pdf},
+  file = {/home/jbo/Zotero/storage/T7ZKVXX6/Csillik et al. - 2018 - Identification of Citrus Trees from Unmanned Aeria.pdf;/home/jbo/Zotero/storage/BC5YNIAJ/htm.html},
   issue = {4},
   keywords = {citrus,CNN,deep learning,feature extraction,precision agriculture,superpixels,tree identification,UAS},
   langid = {english},
   number = {4}
+}
+
+@article{dossantos2019assessment,
+  title = {Assessment of {{CNN}}-{{Based Methods}} for {{Individual Tree Detection}} on {{Images Captured}} by {{RGB Cameras Attached}} to {{UAVs}}},
+  author = {dos Santos, Anderson Aparecido and Marcato Junior, José and Araújo, Márcio Santos and Di Martini, David Robledo and Tetila, Everton Castelão and Siqueira, Henrique Lopes and Aoki, Camila and Eltner, Anette and Matsubara, Edson Takashi and Pistori, Hemerson and Feitosa, Raul Queiroz and Liesenberg, Veraldo and Gonçalves, Wesley Nunes},
+  date = {2019-08-18},
+  journaltitle = {Sensors (Basel, Switzerland)},
+  shortjournal = {Sensors (Basel)},
+  volume = {19},
+  issn = {1424-8220},
+  doi = {10.3390/s19163595},
+  url = {https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6719170/},
+  urldate = {2021-01-13},
+  abstract = {Detection and classification of tree species from remote sensing data were performed using mainly multispectral and hyperspectral images and Light Detection And Ranging (LiDAR) data. Despite the comparatively lower cost and higher spatial resolution, few studies focused on images captured by Red-Green-Blue (RGB) sensors. Besides, the recent years have witnessed an impressive progress of deep learning methods for object detection. Motivated by this scenario, we proposed and evaluated the usage of Convolutional Neural Network (CNN)-based methods combined with Unmanned Aerial Vehicle (UAV) high spatial resolution RGB imagery for the detection of law protected tree species. Three state-of-the-art object detection methods were evaluated: Faster Region-based Convolutional Neural Network (Faster R-CNN), YOLOv3 and RetinaNet. A dataset was built to assess the selected methods, comprising 392 RBG images captured from August 2018 to February 2019, over a forested urban area in midwest Brazil. The target object is an important tree species threatened by extinction known as Dipteryx alata Vogel (Fabaceae). The experimental analysis delivered average precision around 92\% with an associated processing times below 30 miliseconds.},
+  eprint = {31426597},
+  eprinttype = {pmid},
+  file = {/home/jbo/Zotero/storage/W4GLW8ID/dos Santos et al. - 2019 - Assessment of CNN-Based Methods for Individual Tre.pdf},
+  number = {16},
+  options = {useprefix=true},
+  pmcid = {PMC6719170}
+}
+
+@report{e.thomassmiley2017best,
+  title = {Best {{Management Practices}} - {{Tree Risk Assessment}}, {{Second Edition}}},
+  author = {{E. Thomas Smiley} and {Nelda Matheny} and {Sharon Lilly}},
+  date = {2017},
+  pages = {86},
+  institution = {{International Society of Arboriculture}},
+  url = {https://wwv.isa-arbor.com/store/product/324},
+  urldate = {2021-01-13},
+  file = {/home/jbo/Zotero/storage/T364UTGB/324.html},
+  number = {P1542}
 }
 
 @article{fabijanska2018deepdendro,
@@ -34,6 +102,25 @@
   file = {/home/jbo/Zotero/storage/HMP2MW5V/S0168169918300413.html},
   keywords = {Convolutional neural network,Deep learning,Dendrochronology,Tree rings detection,U-Net},
   langid = {english}
+}
+
+@article{fricker2019convolutional,
+  title = {A {{Convolutional Neural Network Classifier Identifies Tree Species}} in {{Mixed}}-{{Conifer Forest}} from {{Hyperspectral Imagery}}},
+  author = {Fricker, Geoffrey A. and Ventura, Jonathan D. and Wolf, Jeffrey A. and North, Malcolm P. and Davis, Frank W. and Franklin, Janet},
+  date = {2019-01},
+  journaltitle = {Remote Sensing},
+  volume = {11},
+  pages = {2326},
+  publisher = {{Multidisciplinary Digital Publishing Institute}},
+  doi = {10.3390/rs11192326},
+  url = {https://www.mdpi.com/2072-4292/11/19/2326},
+  urldate = {2021-01-13},
+  abstract = {In this study, we automate tree species classification and mapping using field-based training data, high spatial resolution airborne hyperspectral imagery, and a convolutional neural network classifier (CNN). We tested our methods by identifying seven dominant trees species as well as dead standing trees in a mixed-conifer forest in the Southern Sierra Nevada Mountains, CA (USA) using training, validation, and testing datasets composed of spatially-explicit transects and plots sampled across a single strip of imaging spectroscopy. We also used a three-band \&lsquo;Red-Green-Blue\&rsquo; pseudo true-color subset of the hyperspectral imagery strip to test the classification accuracy of a CNN model without the additional non-visible spectral data provided in the hyperspectral imagery. Our classifier is pixel-based rather than object based, although we use three-dimensional structural information from airborne Light Detection and Ranging (LiDAR) to identify trees (points \&gt; 5 m above the ground) and the classifier was applied to image pixels that were thus identified as tree crowns. By training a CNN classifier using field data and hyperspectral imagery, we were able to accurately identify tree species and predict their distribution, as well as the distribution of tree mortality, across the landscape. Using a window size of 15 pixels and eight hidden convolutional layers, a CNN model classified the correct species of 713 individual trees from hyperspectral imagery with an average F-score of 0.87 and F-scores ranging from 0.67\&ndash;0.95 depending on species. The CNN classification model performance increased from a combined F-score of 0.64 for the Red-Green-Blue model to a combined F-score of 0.87 for the hyperspectral model. The hyperspectral CNN model captures the species composition changes across \textasciitilde 700 meters (1935 to 2630 m) of elevation from a lower-elevation mixed oak conifer forest to a higher-elevation fir-dominated coniferous forest. High resolution tree species maps can support forest ecosystem monitoring and management, and identifying dead trees aids landscape assessment of forest mortality resulting from drought, insects and pathogens. We publicly provide our code to apply deep learning classifiers to tree species identification from geospatial imagery and field training data.},
+  file = {/home/jbo/Zotero/storage/JXRVSF8D/Fricker et al. - 2019 - A Convolutional Neural Network Classifier Identifi.pdf;/home/jbo/Zotero/storage/WN9CTA72/2326.html},
+  issue = {19},
+  keywords = {convolutional neural networks,deep learning,hyperspectral imagery,species distribution modeling},
+  langid = {english},
+  number = {19}
 }
 
 @article{g.braga2020tree,
@@ -71,6 +158,184 @@
   primaryClass = {cs, stat}
 }
 
+@article{graziano2020wider,
+  title = {The Wider Regional Benefits of Power Grids Improved Resilience through Tree-Trimming Operations Evidences from {{Connecticut}}, {{USA}}},
+  author = {Graziano, Marcello and Gunther, Peter and Gallaher, Adam and Carstensen, Fred V. and Becker, Brian},
+  date = {2020-03-01},
+  journaltitle = {Energy Policy},
+  shortjournal = {Energy Policy},
+  volume = {138},
+  pages = {111293},
+  issn = {0301-4215},
+  doi = {10.1016/j.enpol.2020.111293},
+  url = {http://www.sciencedirect.com/science/article/pii/S0301421520300513},
+  urldate = {2021-01-13},
+  abstract = {Tree-trimming operations (TTOs) are expensive, yet popular management practices for increasing power-grid reliability. In this work, we investigate and identify the relationship between TTOs and power outages and quantify the regional economic benefits TTOs provide in the three years following these operations. Our data focus on a portion of Connecticut, for 2009–2015. We find that even a limited application of TTOs reduce outages substantially. We combine this result with an advanced economic model to estimate the benefits to the state. We find that this reduction in outages translates in to considerable savings for the state's economy, justifying expansion of TTOs.},
+  file = {/home/jbo/Zotero/storage/JMVKTB7S/S0301421520300513.html},
+  keywords = {Economic modelling,Electricity,Outages,REMI,Trimming,Vegetation management},
+  langid = {english}
+}
+
+@article{guggenmoos2003effects,
+  title = {{{EFFECTS OF TREE MORTALITY ON POWER LINE SECURITY}}},
+  author = {Guggenmoos, Siegfried},
+  date = {2003},
+  journaltitle = {Journal of Arboriculture},
+  volume = {29},
+  pages = {181--196},
+  abstract = {Others have reported that instances where trees grow into lines rarely result in power outages. The vast majority of tree-related outages stem from tree failure, particularly if outages during severe weather events are included. Generally, tree–conductor conflicts resulting from tree failure are classified as unpreventable because the trees are located outside the right-of-way. In the emerging competitive environment, utilities will require a means of decreasing so-called unpreventable outages. The primary locations for unpreventable outages are areas where lines run adjacent to or through natural forest tree stands. Tree mortality exposes a power line to a high risk of tree incidents over time. The risk to the line is directly related to the number of trees within striking distance of the line. Conventional clear widths leave a substantial residual tree risk. Hazard tree removal programs do not provide enduring reliability gains. A new mathematical model, the optimal clear width calculator, is used to assess the tree risk over variable clear widths and line heights. The risk ratings in the output line strike probability charts permit quantitative comparisons of construction and maintenance options. The line strike probability chart indicates that there is a point of diminishing return in line security for dollars invested in additional clear width.},
+  file = {/home/jbo/Zotero/storage/PV6ADAP5/Guggenmoos - 2003 - EFFECTS OF TREE MORTALITY ON POWER LINE SECURITY.pdf},
+  langid = {english},
+  number = {4}
+}
+
+@article{guggenmoos2011treerelated,
+  title = {Tree-Related {{Electric Outages Due To Wind Loading}}},
+  author = {Guggenmoos, Siegfried},
+  date = {2011},
+  journaltitle = {Arboriculture and Urban Forestry},
+  volume = {37},
+  pages = {147--151},
+  abstract = {In the aftermath of a wind storm that interrupted service on more than 40\% of Puget Sound Energy’s transmission system, the regulator ordered an investigation to evaluate options for hardening the electric system. The initial phase of the study quantified the extent of tree exposure along the transmission system and examined the correlation between various field measurable variables and tree-caused outage frequency. This phase of the work correlated 10 years of wind data with 10 years of outage data. Tree failure rates were calculated and used to model tree-caused outage expectations based on wind speed. Models were developed to assess the outage impact of interventions that reduce the transmission system exposure to trees.},
+  file = {/home/jbo/Zotero/storage/TXCS9BAE/Guggenmoos - 2011 - Tree-related Electric Outages Due To Wind Loading.pdf},
+  langid = {english},
+  number = {4}
+}
+
+@article{guikema2006statistical,
+  title = {Statistical Models of the Effects of Tree Trimming on Power System Outages},
+  author = {Guikema, S. D. and Davidson, R. A. and {Haibin Liu}},
+  date = {2006-07},
+  journaltitle = {IEEE Transactions on Power Delivery},
+  volume = {21},
+  pages = {1549--1557},
+  issn = {1937-4208},
+  doi = {10.1109/TPWRD.2005.860238},
+  abstract = {This paper develops statistical models for estimating the impacts of tree trimming on electric power system outages under normal (nonstorm) operating conditions. The models are based on an extensive data set from Duke Power, a company in the southeastern U.S., and the models used are a negative binomial generalized linear model and a Poisson generalized linear mixed model (GLMM). The results show that: 1) increasing tree trimming frequency does lead to a decrease in the number of outages on the electric power distribution system; 2) the effects of tree trimming on different circuits can be differentiated and measured; and 3) the Poisson GLMM provides a good fit to the data in this situation. In particular, the results of the model show that for the Duke Power system, one would have expected, on average, 0.9 fewer outages per circuit over the 43-month data recording period if the time between tree trimming cycles was decreased by 1 yr across the whole system. These models could be applied to other power systems, and the results should be useful for power managers in setting tree trimming frequencies and in focusing on the most frequent trimming efforts on those circuits for which trimming will have the greatest benefit.},
+  eventtitle = {{{IEEE Transactions}} on {{Power Delivery}}},
+  file = {/home/jbo/Zotero/storage/MPFQ34S5/1645199.html},
+  keywords = {binomial generalized linear model,Circuits,data recording,Duke Power data set,electric power distribution systems,electric power system outages,Electric variables measurement,Frequency measurement,Maintenance,Poisson equation,Poisson generalized linear mixed model,Power distribution maintenance,power distribution reliability,Power measurement,Power system management,Power system measurements,Power system modeling,Power system reliability,Reliability engineering,statistical analysis,statistical models,statistics,tree trimming effects,vegetation},
+  number = {3}
+}
+
+@online{he2015deep,
+  title = {Deep {{Residual Learning}} for {{Image Recognition}}},
+  author = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  date = {2015-12-10},
+  url = {http://arxiv.org/abs/1512.03385},
+  urldate = {2021-01-13},
+  abstract = {Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers---8x deeper than VGG nets but still having lower complexity. An ensemble of these residual nets achieves 3.57\% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28\% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC \& COCO 2015 competitions, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.},
+  archivePrefix = {arXiv},
+  eprint = {1512.03385},
+  eprinttype = {arxiv},
+  file = {/home/jbo/Zotero/storage/3X5LLNZQ/He et al. - 2015 - Deep Residual Learning for Image Recognition.pdf;/home/jbo/Zotero/storage/VRV9XQ89/1512.html},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  primaryClass = {cs}
+}
+
+@article{jiao2020artificial,
+  title = {Artificial Intelligence in Seismology: {{Advent}}, Performance and Future Trends},
+  shorttitle = {Artificial Intelligence in Seismology},
+  author = {Jiao, Pengcheng and Alavi, Amir H.},
+  date = {2020-05-01},
+  journaltitle = {Geoscience Frontiers},
+  shortjournal = {Geoscience Frontiers},
+  volume = {11},
+  pages = {739--744},
+  issn = {1674-9871},
+  doi = {10.1016/j.gsf.2019.10.004},
+  url = {http://www.sciencedirect.com/science/article/pii/S1674987119301987},
+  urldate = {2021-01-13},
+  abstract = {Realistically predicting earthquake is critical for seismic risk assessment, prevention and safe design of major structures. Due to the complex nature of seismic events, it is challengeable to efficiently identify the earthquake response and extract indicative features from the continuously detected seismic data. These challenges severely impact the performance of traditional seismic prediction models and obstacle the development of seismology in general. Taking their advantages in data analysis, artificial intelligence (AI) techniques have been utilized as powerful statistical tools to tackle these issues. This typically involves processing massive detected data with severe noise to enhance the seismic performance of structures. From extracting meaningful sensing data to unveiling seismic events that are below the detection level, AI assists in identifying unknown features to more accurately predicting the earthquake activities. In this focus paper, we provide an overview of the recent AI studies in seismology and evaluate the performance of the major AI techniques including machine learning and deep learning in seismic data analysis. Furthermore, we envision the future direction of the AI methods in earthquake engineering which will involve deep learning-enhanced seismology in an internet-of-things (IoT) platform.},
+  file = {/home/jbo/Zotero/storage/9SXGA2SK/Jiao and Alavi - 2020 - Artificial intelligence in seismology Advent, per.pdf;/home/jbo/Zotero/storage/HNE9ZQZM/S1674987119301987.html},
+  keywords = {Artificial intelligence,Deep learning,Internet-of-Things,Machine learning,Seismology},
+  langid = {english},
+  number = {3}
+}
+
+@report{johnw.goodfellow2020best,
+  title = {Best {{Management Practices}} - {{Utility Tree Risk Assessment}}},
+  author = {{John W. Goodfellow}},
+  date = {2020},
+  pages = {95},
+  institution = {{International Society of Arboriculture}},
+  url = {https://wwv.isa-arbor.com/store/product/4430/},
+  urldate = {2021-01-13},
+  file = {/home/jbo/Zotero/storage/PKTU5QMP/4430.html},
+  number = {P1321}
+}
+
+@article{jr2019analysis,
+  title = {An Analysis of Enhanced Tree Trimming Effectiveness on Reducing Power Outages.},
+  author = {Jr, Parent and Th, Meyer and Jc, Volin and Rt, Fahey and C, Witharana},
+  date = {2019-04-24},
+  journaltitle = {Journal of Environmental Management},
+  shortjournal = {J Environ Manage},
+  volume = {241},
+  pages = {397--406},
+  issn = {0301-4797, 1095-8630},
+  doi = {10.1016/j.jenvman.2019.04.027},
+  url = {https://europepmc.org/article/med/31028970},
+  urldate = {2021-01-13},
+  abstract = {Europe PMC is an archive of life sciences journal literature., An analysis of enhanced tree trimming effectiveness on reducing power outages.},
+  eprint = {31028970},
+  eprinttype = {pmid},
+  file = {/home/jbo/Zotero/storage/AENXCFC9/31028970.html},
+  langid = {english}
+}
+
+@article{nateghi2014power,
+  title = {Power {{Outage Estimation}} for {{Tropical Cyclones}}: {{Improved Accuracy}} with {{Simpler Models}}},
+  shorttitle = {Power {{Outage Estimation}} for {{Tropical Cyclones}}},
+  author = {Nateghi, Roshanak and Guikema, Seth and Quiring, Steven M.},
+  date = {2014},
+  journaltitle = {Risk Analysis},
+  volume = {34},
+  pages = {1069--1078},
+  issn = {1539-6924},
+  doi = {10.1111/risa.12131},
+  url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/risa.12131},
+  urldate = {2021-01-13},
+  abstract = {In this article, we discuss an outage-forecasting model that we have developed. This model uses very few input variables to estimate hurricane-induced outages prior to landfall with great predictive accuracy. We also show the results for a series of simpler models that use only publicly available data and can still estimate outages with reasonable accuracy. The intended users of these models are emergency response planners within power utilities and related government agencies. We developed our models based on the method of random forest, using data from a power distribution system serving two states in the Gulf Coast region of the United States. We also show that estimates of system reliability based on wind speed alone are not sufficient for adequately capturing the reliability of system components. We demonstrate that a multivariate approach can produce more accurate power outage predictions.},
+  annotation = {\_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1111/risa.12131},
+  file = {/home/jbo/Zotero/storage/W7SKCUSK/risa.html},
+  keywords = {Data mining,hurricanes,power outage predictions,reliability},
+  langid = {english},
+  number = {6}
+}
+
+@article{rooney2005reliability,
+  title = {{{THE RELIABILITY OF A WINDSHIELD SURVEY TO LOCATE HAZARDS IN ROADSIDE TREES}}},
+  author = {Rooney, C. J. and Ryan, H. D. and Bloniarz, David V. and Kane, B.},
+  date = {2005},
+  journaltitle = {Journal of Arboriculture},
+  volume = {31},
+  url = {/paper/THE-RELIABILITY-OF-A-WINDSHIELD-SURVEY-TO-LOCATE-IN-Rooney-Ryan/bc0e4bfb8b6c135475afc6cf968b77630d0e4f63},
+  urldate = {2021-01-13},
+  abstract = {Hazardous conditions in roadside trees are a constant concern for municipal arborists. Due to fiscal constraints, many municipalities desire an accurate and efficient method to inspect their tree populations. This case study shows that a windshield survey can be used to find hazardous conditions in roadside trees, using a simple system and an experienced Certified Arborist. In addition, the case study showed that the percentage of detected hazardous conditions increased as the conditions became more severe. The percentage of hazardous tree conditions found using a windshield survey in developed sample areas far exceeded those found in undeveloped sample areas.},
+  file = {/home/jbo/Zotero/storage/9R32VMM4/bc0e4bfb8b6c135475afc6cf968b77630d0e4f63.html},
+  langid = {english},
+  number = {2}
+}
+
+@article{salehi2018emerging,
+  title = {Emerging Artificial Intelligence Methods in Structural Engineering},
+  author = {Salehi, Hadi and Burgueño, Rigoberto},
+  date = {2018-09-15},
+  journaltitle = {Engineering Structures},
+  shortjournal = {Engineering Structures},
+  volume = {171},
+  pages = {170--189},
+  issn = {0141-0296},
+  doi = {10.1016/j.engstruct.2018.05.084},
+  url = {http://www.sciencedirect.com/science/article/pii/S0141029617335526},
+  urldate = {2021-01-13},
+  abstract = {Artificial intelligence (AI) is proving to be an efficient alternative approach to classical modeling techniques. AI refers to the branch of computer science that develops machines and software with human-like intelligence. Compared to traditional methods, AI offers advantages to deal with problems associated with uncertainties and is an effective aid to solve such complex problems. In addition, AI-based solutions are good alternatives to determine engineering design parameters when testing is not possible, thus resulting in significant savings in terms of human time and effort spent in experiments. AI is also able to make the process of decision making faster, decrease error rates, and increase computational efficiency. Among the different AI techniques, machine learning (ML), pattern recognition (PR), and deep learning (DL) have recently acquired considerable attention and are establishing themselves as a new class of intelligent methods for use in structural engineering. The objective of this review paper is to summarize techniques concerning applications of the noted AI methods in structural engineering developed over the last decade. First, a general introduction to AI is presented and the importance of AI in structural engineering is described. Thereafter, a review of recent applications of ML, PR, and DL in the field is provided, and the capability of such methods to address the restrictions of conventional models are discussed. Further, the advantages of employing such algorithmic methods are discussed in detail. Finally, potential research avenues and emerging trends for employing ML, PR, and DL are presented, and their limitations are discussed.},
+  file = {/home/jbo/Zotero/storage/PFEPLZ98/S0141029617335526.html},
+  keywords = {Artificial intelligence,Deep learning,Machine learning,Pattern recognition,Soft computing,Structural engineering},
+  langid = {english}
+}
+
 @article{sharma2019performance,
   title = {Performance Analysis of Deep Learning {{CNN}} Models for Disease Detection in Plants Using Image Segmentation},
   author = {Sharma, Parul and Berwal, Yash Paul Singh and Ghai, Wiqas},
@@ -85,6 +350,40 @@
   file = {/home/jbo/Zotero/storage/DYQ3WXCA/S2214317319301957.html},
   keywords = {Image segmentation,Machine learning,Plant disease detection},
   langid = {english}
+}
+
+@article{spencer2019advances,
+  title = {Advances in {{Computer Vision}}-{{Based Civil Infrastructure Inspection}} and {{Monitoring}}},
+  author = {Spencer, Billie F. and Hoskere, Vedhus and Narazaki, Yasutaka},
+  date = {2019-04-01},
+  journaltitle = {Engineering},
+  shortjournal = {Engineering},
+  volume = {5},
+  pages = {199--222},
+  issn = {2095-8099},
+  doi = {10.1016/j.eng.2018.11.030},
+  url = {http://www.sciencedirect.com/science/article/pii/S2095809918308130},
+  urldate = {2021-01-13},
+  abstract = {Computer vision techniques, in conjunction with acquisition through remote cameras and unmanned aerial vehicles (UAVs), offer promising non-contact solutions to civil infrastructure condition assessment. The ultimate goal of such a system is to automatically and robustly convert the image or video data into actionable information. This paper provides an overview of recent advances in computer vision techniques as they apply to the problem of civil infrastructure condition assessment. In particular, relevant research in the fields of computer vision, machine learning, and structural engineering is presented. The work reviewed is classified into two types: inspection applications and monitoring applications. The inspection applications reviewed include identifying context such as structural components, characterizing local and global visible damage, and detecting changes from a reference image. The monitoring applications discussed include static measurement of strain and displacement, as well as dynamic measurement of displacement for modal analysis. Subsequently, some of the key challenges that persist toward the goal of automated vision-based civil infrastructure and monitoring are presented. The paper concludes with ongoing work aimed at addressing some of these stated challenges.},
+  file = {/home/jbo/Zotero/storage/XBWA6DJA/Spencer et al. - 2019 - Advances in Computer Vision-Based Civil Infrastruc.pdf;/home/jbo/Zotero/storage/VALXK664/S2095809918308130.html},
+  keywords = {Artificial intelligence,Computer vision,Machine learning,Optical flow,Structural inspection and monitoring},
+  langid = {english},
+  number = {2}
+}
+
+@online{szegedy2015rethinking,
+  title = {Rethinking the {{Inception Architecture}} for {{Computer Vision}}},
+  author = {Szegedy, Christian and Vanhoucke, Vincent and Ioffe, Sergey and Shlens, Jonathon and Wojna, Zbigniew},
+  date = {2015-12-11},
+  url = {http://arxiv.org/abs/1512.00567},
+  urldate = {2021-01-13},
+  abstract = {Convolutional networks are at the core of most state-of-the-art computer vision solutions for a wide variety of tasks. Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks. Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efficiency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios. Here we explore ways to scale up networks in ways that aim at utilizing the added computation as efficiently as possible by suitably factorized convolutions and aggressive regularization. We benchmark our methods on the ILSVRC 2012 classification challenge validation set demonstrate substantial gains over the state of the art: 21.2\% top-1 and 5.6\% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters. With an ensemble of 4 models and multi-crop evaluation, we report 3.5\% top-5 error on the validation set (3.6\% error on the test set) and 17.3\% top-1 error on the validation set.},
+  archivePrefix = {arXiv},
+  eprint = {1512.00567},
+  eprinttype = {arxiv},
+  file = {/home/jbo/Zotero/storage/DX4MUTIZ/Szegedy et al. - 2015 - Rethinking the Inception Architecture for Computer.pdf;/home/jbo/Zotero/storage/QB32ED7K/1512.html},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  primaryClass = {cs}
 }
 
 
