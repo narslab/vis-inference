@@ -338,6 +338,20 @@ Based on the  ISA’s Tree Risk Assessment Qualification (TRAQ) protocol, four c
 
 \section{Results and Discussion}
 
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l l l l l l l }\toprule
+    \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
+    & Error & Precision & Recall     & Error & Precision & Recall \\
+    SafeTree & & & & & & \\
+    GoogleNet (InceptionV3) & & & & & & \\
+    ResNet50 & & & & & & \\
+        VGGNet & & & & & & \\
+    AlexNet & & & & & & \\\bottomrule
+  \end{tabular}
+  \caption{Comparing our model SafeTree with state-of-the-art CNN architectures trained on our data}
+  \label{tab:comp}
+\end{table}
 
 \section{Conclusion}
 
