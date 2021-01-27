@@ -4,6 +4,7 @@ data
 images
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+my_dir/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
