@@ -5,6 +5,7 @@ images
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 my_dir/
+*.pyc
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
