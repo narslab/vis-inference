@@ -281,13 +281,30 @@ The training dataset consists of 505 images, each having an original size of $40
 \item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect people from harm
 \end{itemize}
 	In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of the \textit{imminent} category trees.    
-\subsection{Pre-processing}
+
+\subsection{Pre-processing and data augmentation}
+In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
+
+\begin{table}[h!]\small
+    \centering
+    \begin{tabular}{l l}\toprule
+    \bf Class Label     & \bf Number of images  \\ \midrule
+    Improbable & 322\\
+    Possible & 80 \\
+    Probable & 56 \\\midrule
+    Total & 505 \\\bottomrule
+    \end{tabular}
+    \caption{Class distribution of images in training set}
+    \label{tab:classdist}
+\end{table}
+
+To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions: $64 \times 64$, $128 \times 128$, $224 \times 224$ and $384\times 384$, creating a training set for each case. 
 
 \subsection{Convolutional neural network}
 
 We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvronfixing}.
 
-\begin{table}[h!]
+\begin{table}[h!]\small
   \centering
   \begin{tabular}{l l l l l l l }\toprule
     \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
@@ -302,8 +319,37 @@ We can apply cut-out (occluding portions of the image) for improved performance 
   \label{tab:comp}
 \end{table}
 
+\subsection{Hyperparameter optimization}
+We used the Hyperband approach \cite{li2018hyperband} to perform a grid search to find the optimal values of the following hyperparameters:
+\begin{compactitem}
+    \item kernel size in first convolutional layer
+    \item number of units in first densely connected layer
+    \item dropout rate applied to outputs of first dense layer
+    \item activation function for first dense layer
+    \item number of units in second densely connected layer
+    \item dropout rate applied to outputs of second dense layer
+    \item activation function for second dense layer    
+    \item learning rate (of Adam optimizer)
+\end{compactitem}
 
 \section{Results}
+
+\subsection{Classification experiments}
+
+We define four classification scenarios in \autoref{tab:scenarios}. 
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l l}\toprule
+    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
+    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
+    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
+    \texttt{PrPo\_Im}        & \{Probable|Possible, Improbable\}  & 2 \\
+    \texttt{Pr\_PoIm}        & \{Probable, Possible|Impossible\}  & 2 \\\bottomrule
+    \end{tabular}
+    \caption{Classification scenarios}
+    \label{tab:scenarios}
+\end{table}
 
 \subsection{Sensitivity to training resolution}
 
