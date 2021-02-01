@@ -110,19 +110,19 @@
 %\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
 \renewcommand{\sectionmark}[1]{ \markright{#1}{} }
 
-\usepackage{fancyhdr}
-\pagestyle{fancy}
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
 %\addtolength{\headwidth}{\marginparsep} %these change header-rule width
 %\addtolength{\headwidth}{\marginparwidth}
 %\fancyheadoffset{30pt}
 %\fancyfootoffset{30pt}
-\fancyhead[LO,RE]{\small  \it \nouppercase{\leftmark}}
-\fancyhead[RO,LE]{\small Page \thepage}
-\fancyfoot[RO,LE]{\small }% PR \num S-2015}
-\fancyfoot[LO,RE]{\small }%\scshape MODL}
-\cfoot{}
-\renewcommand{\headrulewidth}{0.1pt}
-\renewcommand{\footrulewidth}{0pt}
+% \fancyhead[LO,RE]{\small  \it \nouppercase{\leftmark}}
+% \fancyhead[RO,LE]{\small Page \thepage}
+% \fancyfoot[RO,LE]{\small }% PR \num S-2015}
+% \fancyfoot[LO,RE]{\small }%\scshape MODL}
+% \cfoot{}
+% \renewcommand{\headrulewidth}{0.1pt}
+% \renewcommand{\footrulewidth}{0pt}
 %\setlength\voffset{-0.25in}
 %\setlength\textheight{648pt}
 
@@ -227,14 +227,14 @@ Power outages due to contact between tree parts and power lines annually cause t
 
 Contact between tree parts and power lines can take several forms: tree branches can grow into lines; branches can fail and fall onto lines; whole-tree failure can occur due to uprooting or trunk failure.  A study in the state of Connecticut provides some context for the amount of economic, documenting annual disruptions of \$8.3 billion between 2005 and 2015 \cite{graziano2020wider}.  That extremely high cost occurs despite extensive efforts on the part of utilities to mitigate such disruptions through active and aggressive pruning programs that, on their own cost billions of dollars annually \cite{guggenmoos2003effects}.  
 
-Pruning, despite its high cost, has been found to be effective in reducing disruptions due to so-called 'preventable' contact incidents between trees and power lines.  For example, in Massachusetts, where tree failure was responsible for 40\% of preventable tree-caused outages, pruning was able to improve reliability by 20\% to 30\% \cite{simpson1996treecaused}, and those results were replicated in a study in Connecticut \cite{parent2019analysis}. The efficacy of pruning has also been shown in a study of two US Gulf Coast states that showed wind-induced power outage prediction models becoming less uncertain when pruning was included in the model \citet{nateghi2014power}.
+Pruning, despite its high cost, has been found to be effective in reducing disruptions due to so-called ``preventable'' contact incidents between trees and power lines.  For example, in Massachusetts, where tree failure was responsible for 40\% of preventable tree-caused outages, pruning was able to improve reliability by 20\% to 30\% \cite{simpson1996treecaused}, and those results were replicated in a study in Connecticut \cite{parent2019analysis}. The efficacy of pruning has also been shown in a study of two US Gulf Coast states that showed wind-induced power outage prediction models becoming less uncertain when pruning was included in the model \citet{nateghi2014power}.
 
 Even effective pruning cannot, however, completely eliminate tree-related outages. Failure of trees away from the right-of-way can still impact the lines and cause outages \cite{guggenmoos2003effects}. The proportion of tree failures away from the wires that cause outages varies and has not been rigorously quantified. \citet{guggenmoos2011treerelated} estimated that 95\% of tree-caused outages in the Pacific Northwest region of the US, were due to tree failure, and \citet{wismer2018targeted} reported approximately 25\% of interruptions in Illinois, USA, were caused by trees that uprooted or broke in the stem. 
 
 
 Predicting the likelihood of failure is an inexact science, but tree risk assessment best management practices have been developed \cite{e.thomassmiley2017best,johnw.goodfellow2020best}. Risk includes assessing the likelihood of failure, the likelihood of impact, and the severity of consequences. The likelihood of failure depends on the anticipated loads on the tree and its load-bearing capacity. The likelihood of impact depends on proximity to the target (the lines, poles, and other hardware---``infrastructure''---in the case of utility tree risk assessment), the target’s occupancy rate (which is constant for utility lines) and whether the target is sheltered, for example by neighboring trees. Severity of consequences depends on the damage done to the infrastructure and, more importantly in some cases, the economic costs and disruption associated with outages---this, in turn, is partially related to the size of the tree or tree part that fails, and how much momentum it has when it impacts the infrastructure.
 
-Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{e.thomassmiley2017best}. Studies have shown that trees with greater risk ratings were more likely to be detected from Level 1 risk assessments conducted in a moving vehicle in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency} . The utility of Level 1 assessments in these areas suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment.
+Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{e.thomassmiley2017best}. Studies have shown that trees with greater risk ratings were more likely to be detected from Level 1 risk assessments conducted in a moving vehicle in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency}. The utility of Level 1 assessments in these areas suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment.
 
 The method described in the paper uses convolutional neural networks (CNN) to classify images of trees among three categories of failure likelihood: probable, possible and improbably.  The data used for training, testing and illustration of the method consists of 505 tree images that have been classified by the authors according to prevailing standards employed by professional utility arborists. 
 
@@ -255,7 +255,7 @@ A relevant application for tree species identification using a convolutional neu
 The groundbreaking study of \citet{hubel1959receptive} showed that visual perception in cats was a result of the
 activation or inhibition of groups of cells in the visual cortex known as ``receptive fields.''  Further, they attempted
 to map the cortical architecture in cats and monkeys \cite{hubel1962receptive,hubel1965receptive,hubel1968receptive}.
-Subsequent attempts were then made to model neural networks that could be trained to automatically recognize visual patterns with modest performance \cite{rosenblatt1962principles,kabrisky1966proposed,giebel1971feature,fukushima1975cognitron}. However, the breakthrough came with ``neocognitron'' \cite{fukushima1980neocognitron}, which
+Subsequent attempts were then made to model neural networks that could be trained to automatically recognize visual patterns with modest performance \cite{rosenblatt1962principles,kabrisky1966proposed,giebel1971feature,fukushima1975cognitron}. However, the breakthrough came with the ``neocognitron'' \cite{fukushima1980neocognitron}, which
 was a self-learning neural network for pattern recognition that was robust to changes in position and shape distortion, a problem that plagued earlier efforts, including ``cognitron'' \cite{fukushima1975cognitron} proposed a few years earlier.
 
 A few notable efforts demonstrated the neural networks for handwritten digit recognition
@@ -304,20 +304,6 @@ To achieve robustness in training, and given the relatively small number of trai
 
 We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvronfixing}.
 
-\begin{table}[h!]\small
-  \centering
-  \begin{tabular}{l l l l l l l }\toprule
-    \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
-    & Error & Precision & Recall     & Error & Precision & Recall \\
-    SafeTree & & & & & & \\
-    GoogleNet (InceptionV3) & & & & & & \\
-    ResNet50 & & & & & & \\
-        VGGNet & & & & & & \\
-    AlexNet & & & & & & \\\bottomrule
-  \end{tabular}
-  \caption{Comparing our model SafeTree with state-of-the-art CNN architectures trained on our data}
-  \label{tab:comp}
-\end{table}
 
 \subsection{Hyperparameter optimization}
 We used the Hyperband approach \cite{li2018hyperband} to perform a grid search to find the optimal values of the following hyperparameters:
@@ -353,6 +339,25 @@ We define four classification scenarios in \autoref{tab:scenarios}.
 
 \subsection{Sensitivity to training resolution}
 
+\subsection{Model visualization and inference}
+
+\subsection{Comparison with state-of-the-art architectures}
+We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
+
+\begin{table}[h!]\small
+  \centering
+  \begin{tabular}{l l l l l l l }\toprule
+    \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
+    & Error & Precision & Recall     & Error & Precision & Recall \\
+    SafeTree & & & & & & \\
+    GoogleNet (InceptionV3) & & & & & & \\
+    ResNet50 & & & & & & \\
+        VGGNet & & & & & & \\
+    AlexNet & & & & & & \\\bottomrule
+  \end{tabular}
+  \caption{Comparing our model SafeTree with state-of-the-art CNN architectures trained on our data}
+  \label{tab:comp}
+\end{table}
 \section{Conclusion}
 
 \printbibliography
