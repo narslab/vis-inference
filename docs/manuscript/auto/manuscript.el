@@ -2,71 +2,54 @@
  "manuscript"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
-                     '(("article" "11pt" "twoside")))
+                     '(("ascelike-new" "Journal" "letterpaper")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
-                     '(("fontenc" "T1") ("biblatex" "style=numeric" "backend=biber" "natbib" "sorting=none" "maxcitenames=2" "maxbibnames=99" "doi=false" "isbn=false" "url=false" "eprint=false") ("eucal" "mathscr")))
+                     '(("inputenc" "utf8") ("fontenc" "T1") ("caption" "figurename=Fig." "labelfont=bf" "labelsep=period") ("hyperref" "colorlinks=true" "citecolor=red" "linkcolor=black")))
    (add-to-list 'LaTeX-verbatim-environments-local "lstlisting")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "lstinline")
-   (add-to-list 'LaTeX-verbatim-macros-with-delims-local "path")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
    (add-to-list 'LaTeX-verbatim-macros-with-delims-local "lstinline")
+   (add-to-list 'LaTeX-verbatim-macros-with-delims-local "path")
    (TeX-run-style-hooks
     "latex2e"
-    "article"
-    "art11"
-    "etex"
-    "soul"
-    "geometry"
+    "ascelike-new"
+    "ascelike-new10"
     "graphicx"
     "booktabs"
     "calc"
+    "inputenc"
     "lmodern"
     "fontenc"
-    "rotating"
-    "biblatex"
-    "chngcntr"
-    "mathtools"
     "caption"
-    "amssymb"
+    "subcaption"
     "amsmath"
-    "amsthm"
-    "bm"
-    "eucal"
-    "colortbl"
-    "color"
+    "rotating"
     "epstopdf"
-    "subfigure"
-    "hyperref"
     "enumerate"
-    "polynom"
-    "polynomial"
     "multirow"
     "minitoc"
     "fancybox"
     "array"
     "multicol"
+    "newtxtext"
+    "newtxmath"
+    "hyperref"
     "tikz"
     "pgfplots"
     "pgfplotstable"
-    "pgfgantt"
-    "fancyhdr"
-    "paralist"
-    "listings")
+    "pgfgantt")
    (TeX-add-symbols
     '("pdd" 2)
     '("dpd" 2)
     '("pd" 2)
     '("circled" 1)
     '("relph" 1)
-    '("hlcyan" 1)
-    '("pts" 1)
-    "num"
     "osn"
     "dg"
     "lt"
@@ -92,15 +75,10 @@
     "ec"
     "p")
    (LaTeX-add-labels
+    "tab:classdist"
+    "tab:scenarios"
     "tab:comp")
-   (LaTeX-add-environments
-    "question")
    (LaTeX-add-bibliographies
-    "../ai-trees-references")
-   (LaTeX-add-color-definecolors
-    "slblue"
-    "deepblue"
-    "deepred"
-    "deepgreen"))
+    "../ai-trees-references"))
  :latex)
 

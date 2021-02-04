@@ -1,8 +1,8 @@
-\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Background}{}% 2
-\BOOKMARK [1][-]{section.3}{Data and Methods}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Image data description}{section.3}% 4
-\BOOKMARK [2][-]{subsection.3.2}{Pre-processing}{section.3}% 5
-\BOOKMARK [2][-]{subsection.3.3}{Convolutional neural network}{section.3}% 6
-\BOOKMARK [1][-]{section.4}{Results and Discussion}{}% 7
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 8
+\BOOKMARK [2][-]{section*.1}{Image data description}{}% 1
+\BOOKMARK [2][-]{section*.2}{Pre-processing and data augmentation}{}% 2
+\BOOKMARK [2][-]{section*.3}{Convolutional neural network}{}% 3
+\BOOKMARK [2][-]{section*.4}{Hyperparameter optimization}{}% 4
+\BOOKMARK [2][-]{section*.5}{Classification experiments}{}% 5
+\BOOKMARK [2][-]{section*.6}{Sensitivity to training resolution}{}% 6
+\BOOKMARK [2][-]{section*.7}{Model visualization and inference}{}% 7
+\BOOKMARK [2][-]{section*.8}{Comparison with state-of-the-art architectures}{}% 8
