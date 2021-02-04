@@ -8,6 +8,7 @@ my_dir/
 *.pyc
 
 ## Core latex/pdflatex auxiliary files:
+auto
 *.aux
 *.lof
 *.log

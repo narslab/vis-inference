@@ -1,5 +1,5 @@
-\documentclass[Journal, letterpaper]{ascelike-new}
-%\usepackage{etex, soul}
+\documentclass[Journal,letterpaper]{ascelike-new}
+%\usepackage{etex}
 %\newcommand{\num}{6{} }
 
 %\raggedbottom
@@ -7,10 +7,7 @@
 %geometry (sets margin) and other useful packages
 % \usepackage{geometry}
 % \geometry{top=1.2in, left=1in,right=1in,bottom=1in,headsep=6pt}
- \usepackage{graphicx,booktabs,calc}
 
-%=== GRAPHICS PATH ===========
-\graphicspath{{./images/}}
 % Marginpar width
 %Marginpar width
 % \newcommand{\pts}[1]{\marginpar{ \small\hspace{0pt} \textit{[#1]} } }
@@ -21,15 +18,19 @@
 %% Fonts
 % \usepackage{fourier}
 % \usepackage[T1]{pbsi}
-\usepackage[utf8]{inputenc}
-
-\usepackage{lmodern}
+%\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 %\usepackage{minted}
 \usepackage[figurename=Fig.,labelfont=bf,labelsep=period]{caption}
 \usepackage{subcaption}
 \usepackage{amsmath}
-\usepackage{rotating}
+%\usepackage{rotating}
+
+\usepackage{graphicx,booktabs}
+
+%=== GRAPHICS PATH ===========
+\graphicspath{{./images/}}
 %% Cite Title
 %\usepackage[style=numeric,backend=biber,natbib,sorting=none,maxcitenames=2,maxbibnames=99,doi=false,isbn=false,url=false,eprint=false]{biblatex}
 %\addbibresource{../ai-trees-references.bib}
@@ -58,11 +59,13 @@
 
 %\DeclareRobustCommand{\hlcyan}[1]{{\sethlcolor{cyan}\hl{#1}}}
 
-\usepackage{epstopdf,enumerate}
-\usepackage{multirow,minitoc,fancybox,array,multicol}
+\usepackage{enumerate}
 
 \usepackage{newtxtext,newtxmath}
 \usepackage[colorlinks=true,citecolor=red,linkcolor=black]{hyperref}
+
+\usepackage{multirow,array,multicol}
+
 %
 %\definecolor{slblue}{rgb}{0,.3,.62}
 % \hypersetup{
@@ -74,60 +77,58 @@
 % }
 
 %%%TIKZ
-\usepackage{tikz}
-\usepackage{pgfplots}
-\usepackage{pgfplotstable}
-\usepackage{pgfgantt}
-\pgfplotsset{compat=newest}
+% \usepackage{tikz}
+% \usepackage{pgfplots}
+% \usepackage{pgfplotstable}
+% \usepackage{pgfgantt}
+% \pgfplotsset{compat=newest}
 
-\usetikzlibrary{arrows,shapes,positioning}
-\usetikzlibrary{decorations.markings}
-\usetikzlibrary{shadows,automata}
-\usetikzlibrary{patterns,fit}
-%\usetikzlibrary{circuits.ee.IEC}
-\usetikzlibrary{decorations.text}
-% For Sagnac Picture
-\usetikzlibrary{%
-    decorations.pathreplacing,%
-    decorations.pathmorphing%
-}
+% \usetikzlibrary{arrows,shapes,positioning}
+% \usetikzlibrary{decorations.markings}
+% \usetikzlibrary{shadows,automata}
+% \usetikzlibrary{patterns,fit}
+% %\usetikzlibrary{circuits.ee.IEC}
+% \usetikzlibrary{decorations.text}
+% % For Sagnac Picture
+% \usetikzlibrary{%
+%     decorations.pathreplacing,%
+%     decorations.pathmorphing%
+% }
 
 
-\newcommand{\osn}{\oldstylenums}
-\newcommand{\dg}{^{\circ}}
-\newcommand{\lt}{\left}
-\newcommand{\rt}{\right}
-\newcommand{\pt}{\phantom}
-\newcommand{\tf}{\therefore}
-\newcommand{\?}{\stackrel{?}{=}}
-\newcommand{\fr}{\frac}
-\newcommand{\dfr}{\dfrac}
-%\newcommand{\ul}{\underline}
-\newcommand{\tn}{\tabularnewline}
-\newcommand{\nl}{\newline}
-\newcommand\relph[1]{\mathrel{\phantom{#1}}}
-\newcommand{\cm}{\checkmark}
-\newcommand{\ol}{\overline}
-\newcommand{\rd}{\color{red}}
-\newcommand{\bl}{\color{blue}}
-\newcommand{\pl}{\color{purple}}
-\newcommand{\og}{\color{orange!90!black}}
-\newcommand{\gr}{\color{green!40!black}}
-\newcommand{\nin}{\noindent}
-\newcommand{\la}{\lambda}
-\renewcommand{\th}{\theta}
-\newcommand{\al}{\alpha}
-\newcommand{\G}{\Gamma}
-\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
-            \node[shape=circle,draw,thick,inner sep=1pt] (char) {\small #1};}}
+% \newcommand{\osn}{\oldstylenums}
+% \newcommand{\dg}{^{\circ}}
+% \newcommand{\lt}{\left}
+% \newcommand{\rt}{\right}
+% \newcommand{\pt}{\phantom}
+% \newcommand{\tf}{\therefore}
+% \newcommand{\?}{\stackrel{?}{=}}
+% \newcommand{\fr}{\frac}
+% \newcommand{\dfr}{\dfrac}
+% %\newcommand{\ul}{\underline}
+% \newcommand{\tn}{\tabularnewline}
+% \newcommand{\nl}{\newline}
+% \newcommand\relph[1]{\mathrel{\phantom{#1}}}
+% \newcommand{\cm}{\checkmark}
+% \newcommand{\ol}{\overline}
+% \newcommand{\rd}{\color{red}}
+% \newcommand{\bl}{\color{blue}}
+% \newcommand{\pl}{\color{purple}}
+% \newcommand{\og}{\color{orange!90!black}}
+% \newcommand{\gr}{\color{green!40!black}}
+% \newcommand{\nin}{\noindent}
+% \newcommand{\la}{\lambda}
+% \renewcommand{\th}{\theta}
+% \newcommand{\al}{\alpha}
+% \newcommand{\G}{\Gamma}
+% \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+%             \node[shape=circle,draw,thick,inner sep=1pt] (char) {\small #1};}}
 
-\newcommand{\bc}{\begin{compactenum}[\quad--]}
-\newcommand{\ec}{\end{compactenum}}
 
-\newcommand{\p}{\partial}
-\newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
-\newcommand{\dpd}[2]{\dfrac{\partial{#1}}{\partial{#2}}}
-\newcommand{\pdd}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+% \newcommand{\p}{\partial}
+% \newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+% \newcommand{\dpd}[2]{\dfrac{\partial{#1}}{\partial{#2}}}
+% \newcommand{\pdd}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,10 +147,11 @@
 \maketitle
 
 \begin{abstract}
-    
+    Abstract here.
 \end{abstract}
+
 \section{Introduction}
-Power outages due to contact between tree parts and power lines annually cause tens of billions of dollars in economic and other disruptions throughout the United States, despite extensive efforts by utilities to mitigate and prevent those contacts.  Presently, the identification of potential contact between trees and power lines is labor intensive and time-consuming.  This paper describes an artificial intelligence and machine learning approach that automatically classifies trees, using only a single photograph and with a high degree of accuracy, into categories corresponding to probable failure, possible failure and improbable failure--categories corresponding to those used by utility arborists to assess risk of contact between trees and power lines.  This preliminary study demonstrates the possible efficacy of AI approaches to tree risk assessment and, following further development of the approach has the potential to reduce power outages and utility costs by allowing utilities to more effectively target their pruning and mitigation efforts.  
+Power outages due to contact between tree parts and power lines annually cause tens of billions of dollars in economic and other disruptions throughout the United States, despite extensive efforts by utilities to mitigate and prevent those contacts.  Presently, the identification of potential contact between trees and power lines is labor intensive and time-consuming.  This paper describes an artificial intelligence and machine learning approach that automatically classifies trees, using only a single photograph and with a high degree of accuracy, into categories corresponding to probable failure, possible failure and improbable failure-categories corresponding to those used by utility arborists to assess risk of contact between trees and power lines.  This preliminary study demonstrates the possible efficacy of AI approaches to tree risk assessment and, following further development of the approach has the potential to reduce power outages and utility costs by allowing utilities to more effectively target their pruning and mitigation efforts.  
 
 Contact between tree parts and power lines can take several forms: tree branches can grow into lines; branches can fail and fall onto lines; whole-tree failure can occur due to uprooting or trunk failure.  A study in the state of Connecticut, USA provides some context for the amount of economic disruption, documenting annual disruptions of \$8.3 billion between 2005 and 2015 \cite{graziano2020wider}.  That extremely high cost occurred despite extensive efforts on the part of utilities to mitigate conflicts between trees and power lines through active and aggressive pruning programs that, on their own cost billions of dollars annually \cite{guggenmoos2003effects}.  
 
@@ -209,7 +211,7 @@ The training dataset consisted of 505 images, each having an original size of $4
 	In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category.    
 
 \subsection{Pre-processing and data augmentation}
-In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
+In the original set of training images, the class distribution is given in \ref{tab:classdist}.
 
 \begin{table}[h!]\small
     \centering
@@ -233,7 +235,7 @@ We can apply cut-out (occluding portions of the image) for improved performance 
 
 \subsection{Hyperparameter optimization}
 We used the Hyperband approach \cite{li2018hyperband} to perform a grid search to find the optimal values of the following hyperparameters:
-\begin{compactitem}
+\begin{itemize}
     \item kernel size in first convolutional layer
     \item number of units in first densely connected layer
     \item dropout rate applied to outputs of first dense layer
@@ -242,13 +244,13 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
     \item dropout rate applied to outputs of second dense layer
     \item activation function for second dense layer    
     \item learning rate (of Adam optimizer)
-\end{compactitem}
+\end{itemize}
 
 \section{Results}
 
 \subsection{Classification experiments}
 
-We define four classification scenarios in \autoref{tab:scenarios}. 
+We define four classification scenarios in \ref{tab:scenarios}. 
 
 \begin{table}[h!]
     \centering
@@ -268,7 +270,7 @@ We define four classification scenarios in \autoref{tab:scenarios}.
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
-We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
+We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \ref{tab:comp}.
 
 \begin{table}[h!]\small
   \centering
@@ -286,14 +288,30 @@ We compare the performance of our selected model with existing high-performance 
 \end{table}
 \section{Conclusion}
 
-\bibliography{../ai-trees-references}
+\section{Data Availability Statement}
+
+When submitting a new and revised manuscript, authors are asked to include a data availability statement containing one or more of the following statements, with specific items listed as appropriate. Please include one or more of the statements below, deleting those which do not apply. This section should appear directly before the Acknowledgments section. 
+
+\begin{itemize}
+\item Some or all data, models, or code generated or used during the study are available in a repository online in accordance with funder data retention policies (provide full citations that include URLS or DOIs)
+\item Some or all data, models, or code used during the study were provided by a third party (list items).  Direct requests for these materials may be made to the provider as indicated in the Acknowledgements.
+\item Some or all data, models, or code that support the findings of this study are available from the corresponding author upon reasonable request (list items).
+\item Some or all data, models, or code generated or used during the study are proprietary or confidential in nature and may only be provided with restrictions (e.g.~anonymized data) (List items and restrictions).
+\item All data, models, and code generated or used during the study appear in the submitted article.
+\item No data, models, or code were generated or used during the study (e.g., opinion or data-less paper).
+\end{itemize}
+
+Please also see the guidelines at: \url{https://ascelibrary.org/page/dataavailability}.
+
+\section{Acknowledgments}
 
 \appendix
+
+%\bibliographystyle{ascelike-new}
+\bibliography{../ai-trees-references}
+
 
 
 \end{document}
 
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:
+ 
