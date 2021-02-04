@@ -744,10 +744,13 @@
   primaryClass = {cs}
 }
 
-@article{touvronfixing,
+@inproceedings{touvron2019fixing,
   title = {Fixing the Train-Test Resolution Discrepancy},
+  booktitle = {33rd {{Conference}} on {{Neural Information Processing System}}},
   author = {Touvron, Hugo and Vedaldi, Andrea and Douze, Matthijs and Jegou, Herve},
+  year = {2019},
   pages = {11},
+  address = {{Vancouver, Canada}},
   abstract = {Data-augmentation is key to the training of neural networks for image classification. This paper first shows that existing augmentations induce a significant discrepancy between the size of the objects seen by the classifier at train and test time: in fact, a lower train resolution improves the classification at test time! We then propose a simple strategy to optimize the classifier performance, that employs different train and test resolutions. It relies on a computationally cheap fine-tuning of the network at the test resolution. This enables training strong classifiers using small training images, and therefore significantly reduce the training time. For instance, we obtain 77.1\% top-1 accuracy on ImageNet with a ResNet50 trained on 128{$\RightArrowBar$}128 images, and 79.8\% with one trained at 224{$\RightArrowBar$}224.},
   file = {/home/jbo/Zotero/storage/HYCFSQPU/Touvron et al. - Fixing the train-test resolution discrepancy.pdf},
   language = {en}
