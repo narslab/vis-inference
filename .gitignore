@@ -9,6 +9,7 @@ my_dir/
 
 ## Core latex/pdflatex auxiliary files:
 auto
+*.ttt
 *.aux
 *.lof
 *.log
