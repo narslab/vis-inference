@@ -1,6 +1,0 @@
-
-The hyperparameter search for classification scenario A is complete. The optimal number of units in the first densely-connected
-layer is 352. The optimal learning rate for the optimizer
-is 0.0001. The optimal kernel size of the first convolution layer is 7.
-The optimal dropout rate for the optimizer is 0.1. The optimal activation layer for the optimizer is tanh.
-
