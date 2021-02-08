@@ -6,6 +6,8 @@ images
 */.ipynb_checkpoints/*
 my_dir/
 *.pyc
+opt/
+variables/
 
 ## Core latex/pdflatex auxiliary files:
 auto
