@@ -1,0 +1,1 @@
+{"kernel_size": 5, "units": 480, "dropout": 0.4, "activation": "relu", "learning_rate": 0.01, "tuner/epochs": 10, "tuner/initial_epoch": 0, "tuner/bracket": 0, "tuner/round": 0}
