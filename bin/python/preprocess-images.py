@@ -14,7 +14,6 @@ import os # used for navigating to image path
 import imageio # used for writing images
 import random
 import matplotlib.pyplot as plt
-#from timeit import default_timer as timer
 
 ## GLOBAL VARIABLES
 IMG_SIZE = 108
@@ -26,7 +25,7 @@ EXPANSION_FACTOR = 5 # of augmented images
 LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
 SEED = 10 # seed for repeatability
-
+NUM_PLOT_IMAGES_PER_CLASS = 4
 
 def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
     """Returns one-hot vector encoding for each image based on specified classification scenario:
@@ -67,7 +66,7 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
         else :
             return np.array([0, 0]) # if label is not present for current image        
 
-def processImageData(img_size, expansion_factor, class_scenario, seed_value, channels=1): # original size 4032 × 3024 px
+def processImageData(img_size, expansion_factor, class_scenario, seed_value, channels=1, images_per_class=4): # original size 4032 × 3024 px
     data = []
     image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
@@ -100,36 +99,50 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
             #img = img.crop((left=400, top=0, r=3424, b=3024)) 
             #img = img.resize((img_size, img_size), Image.BICUBIC)
             #TODO: random cropping, flipping and resizing
+
+    random_image_selection_class_0 = random.choices([i[0] for i in data if i[1][0] == 1], k = images_per_class)
+    random_image_selection_class_1 = random.choices([i[0] for i in data if i[1][1] == 1], k = images_per_class)
+    image_selection_array = [random_image_selection_class_0, random_image_selection_class_1]
+    if class_scenario == "Pr_Im":
+        class_list = ["Probable", "Improbable"]
+    elif class_scenario == "PrPo_Im":
+        class_list = ["Probable/Possible", "Improbable"]
+    elif class_scenario == "Pr_PoIm":
+        class_list = ["Probable", "Possible/Improbable"]
+    elif class_scenario == "Pr_Po_Im":
+        random_image_selection_class_2 = random.choices([i[0] for i in data if i[1][2] == 1], k = images_per_class)
+        class_list = ["Probable", "Possible", "Improbable"]
+        image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
     data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
     np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
     print("Saved " + data_filename + " to data/tidy/" + PROCESSED_IMAGES_DIR)
-    return (data)
+    return (image_selection_array, class_list)
 
-#plt.imshow(test[0][0],cmap = 'gist_gray') #TODO: plot images
-# TODO (plot random sample of the augmented images in a grid)
-# w=10
-# h=10
-# fig=plt.figure(figsize=(8, 8))
-# columns = 4
-# rows = 5
-# for i in range(1, columns*rows +1):
-#     img = np.random.randint(10, size=(h,w))
-#     fig.add_subplot(rows, columns, i)
-#     plt.imshow(img)
-# plt.show()
+def plotProcessedImages(class_scenario, image_array, class_list, images_per_class, resolution):
+    num_rows = len(class_list)
+    num_cols = images_per_class
+    fig, axarr = plt.subplots(num_rows, num_cols, sharex=True, sharey=True)
+    #print(image_file_list)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            axarr[i, j].imshow(image_array[i][j], cmap = 'gist_gray', extent = [0, resolution, 0, resolution])
+    for ax, row in zip(axarr[:, 0], [i for i in class_list]):
+        ax.set_ylabel(row, size=15)
+    image_filename = '../../figures/processed_input_images_' + str(class_scenario) + '_' + str(resolution) + '_px.png'
+    #plt.xticks([0,3024])
+    #plt.yticks([0,4032])
+    fig.savefig(image_filename, dpi=120)
+    return
 
 def main():
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for image_size in IMG_SIZE_LIST:
-            processImageData(image_size, EXPANSION_FACTOR, scenario, seed_value=SEED, channels=NUM_CHANNELS)
+            array_random_images, classes = processImageData(image_size, EXPANSION_FACTOR, scenario, 
+                seed_value=SEED, channels=NUM_CHANNELS, images_per_class=NUM_PLOT_IMAGES_PER_CLASS)
+            plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return
 
 if __name__ == "__main__":
     main()
-
-# TEST
-# imtest = np.load('../../data/tidy/preprocessed_images/size64_exp5_Pr_Im.npy', allow_pickle=True)
-# plt.imshow(imtest[0][0])
-

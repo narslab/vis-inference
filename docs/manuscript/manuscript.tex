@@ -165,7 +165,7 @@ Even effective pruning cannot, however, completely eliminate tree-caused outages
 
 Predicting the likelihood of failure is an inexact science, but tree risk assessment best management practices have been developed \cite{smiley2017best,goodfellow2020best}. Risk includes assessing the likelihood of failure, the likelihood of impact, and the severity of consequences. The likelihood of failure depends on the anticipated loads on the tree and its load-bearing capacity. The likelihood of impact depends on proximity to the target (the lines, poles, and other hardware---``infrastructure''---in the case of utility tree risk assessment), the target’s occupancy rate (which is constant for utility lines) and whether the target is sheltered, for example by neighboring trees. Severity of consequences depends on the damage done to the infrastructure---which, in turn, is partially related to the size of the tree or tree part that fails, and how much momentum it has when it impacts the infrastructure---and, more importantly in some cases, the economic costs and disruption associated with outages.
 
-Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{e.thomassmiley2017best}. Studies have shown that trees with greater risk ratings were more likely to be detected from Level 1 risk assessments conducted in a moving vehicle in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency}. The utility of Level 1 assessments in these states suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment.
+Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{smiley2017best}. Studies have shown that trees with greater risk ratings were more likely to be detected from Level 1 risk assessments conducted in a moving vehicle in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency}. The utility of Level 1 assessments in these states suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment.
 
 The method described in the paper uses convolutional neural networks (CNN) to classify images of trees among three categories of failure likelihood: probable, possible, and improbable.  The data used for training, testing and illustration of the method consists of 505 tree images that have been classified by the authors according to prevailing standards employed by professional utility arborists. 
 
@@ -204,14 +204,21 @@ fields \cite{gu2018recent}. %\hl{Paragraph on applications to be completed---wit
 
 \section{Data and Methods}
 \subsection{Image data description}
-The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Likelihood of failure assessments followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{e.thomassmiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{johnw.goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{e.thomassmiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility rights-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{johnw.goodfellow2020best}; (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{e.thomassmiley2017best}:
+The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Likelihood of failure assessments followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{smiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{smiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility rights-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{goodfellow2020best}; (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{smiley2017best}:
 \begin{itemize}
 \item \textbf{Improbable}: failure unlikely either during normal or extreme weather conditions 
 \item \textbf{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions
 \item \textbf{Probable}: failure expected under normal weather conditions within a given time frame
 \item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect people from harm
 \end{itemize}
-	In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category.    
+In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Two randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.7\textwidth]{raw_input_images_2}
+  \caption{Random examples of the raw training images (2 are shown per class). Images are antialiased in this figure for greater clarity.}
+  \label{fig:raw_images}
+\end{figure}
 
 \subsection{Pre-processing and data augmentation}
 In the original set of training images, the class distribution is given in \ref{tab:classdist}.
@@ -230,6 +237,38 @@ In the original set of training images, the class distribution is given in \ref{
 \end{table}
 
 To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions: $64 \times 64$, $128 \times 128$, $224 \times 224$ and $384\times 384$, creating a training set for each case. 
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_Po_Im_64_px}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_po_im_64}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_Im_64_px}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_im_64}
+  \end{subfigure}%
+  
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{processed_input_images_PrPo_Im_64_px}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{prpo_im_64}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_PoIm_64_px}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_poim_64}
+  \end{subfigure}%
+
+  \caption{Random examples of the processed training images under each classification scenario; 64 pixels.}
+  \label{fig:processed_images}
+\end{figure}
 
 \subsection{Convolutional neural network}
 

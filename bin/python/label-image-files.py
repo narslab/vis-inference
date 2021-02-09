@@ -61,7 +61,6 @@ def plotRawImages(image_file_list, images_per_class = 2):
     #print(image_file_list)
     for image_class in class_list:
         class_images = [i for i in image_file_list if ntpath.basename(i).startswith(image_class)]
-        print(len(class_images))
         random.seed(111)
         random_class_selection = random.choices(class_images, k = images_per_class)
         for i in range(images_per_class):
