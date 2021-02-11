@@ -211,7 +211,8 @@ The training dataset consisted of 505 images, each having an original size of $4
 \item \textbf{Probable}: failure expected under normal weather conditions within a given time frame
 \item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect people from harm
 \end{itemize}
-In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Two randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   
+In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Two randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
+
 
 \begin{figure}[h!]
   \centering
@@ -219,9 +220,6 @@ In this study, only images of trees assigned to the lowest 3 likelihood of failu
   \caption{Random examples of the raw training images (2 are shown per class). Images are antialiased in this figure for greater clarity.}
   \label{fig:raw_images}
 \end{figure}
-
-\subsection{Pre-processing and data augmentation}
-In the original set of training images, the class distribution is given in \ref{tab:classdist}.
 
 \begin{table}[h!]\small
     \centering
@@ -236,7 +234,26 @@ In the original set of training images, the class distribution is given in \ref{
     \label{tab:classdist}
 \end{table}
 
+\subsection{Classification scenarios}
+We define four classification scenarios in \autoref{tab:scenarios}. 
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l l}\toprule
+    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
+    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
+    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
+    \texttt{PrPo\_Im}        & \{Probable|Possible, Improbable\}  & 2 \\
+    \texttt{Pr\_PoIm}        & \{Probable, Possible|Impossible\}  & 2 \\\bottomrule
+    \end{tabular}
+    \caption{Classification scenarios}
+    \label{tab:scenarios}
+\end{table}
+
+
+\subsection{Pre-processing and data augmentation}
 To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions: $64 \times 64$, $128 \times 128$, $224 \times 224$ and $384\times 384$, creating a training set for each case. 
+Random sets of images from each class across each of the four classification scenarios are shown in \autoref{fig:processed_images}.
 
 \begin{figure}[h!]
   \centering
@@ -290,29 +307,13 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
 
 \section{Results}
 
-\subsection{Classification experiments}
-
-We define four classification scenarios in \ref{tab:scenarios}. 
-
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{l l l}\toprule
-    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
-    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
-    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
-    \texttt{PrPo\_Im}        & \{Probable|Possible, Improbable\}  & 2 \\
-    \texttt{Pr\_PoIm}        & \{Probable, Possible|Impossible\}  & 2 \\\bottomrule
-    \end{tabular}
-    \caption{Classification scenarios}
-    \label{tab:scenarios}
-\end{table}
 
 \subsection{Sensitivity to training resolution}
 
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
-We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \ref{tab:comp}.
+We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
 
 \begin{table}[h!]\small
   \centering
