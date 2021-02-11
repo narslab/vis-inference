@@ -140,10 +140,12 @@ def optimizeCNNHyperparameters(scenario, image_size, seed_val = 1, save_results=
         scenario_path = os.path.join(OPTIMAL_HYPERPARAMETERS_PATH, str(image_size), s)
         if not os.path.exists(scenario_path):
             os.makedirs(scenario_path)
+        with open(os.path.join(scenario_path, 'console.txt'), 'w') as f:
+            f.write(json.dumps(console_printout))
+        with open(os.path.join(scenario_path, 'results-summary.txt'), 'w') as f:
+            f.write(json.dumps(results))               
         with open(os.path.join(scenario_path, 'hyperparameters.txt'), 'w') as f:
-            f.write(json.dumps(best_hps_dict))
-        with open(os.path.join(scenario_path, 'performance-summary.txt'), 'w') as f:
-            f.write(json.dumps(summary))            
+            f.write(json.dumps(best_hps_dict))         
     return #(console_printout, summary, best_hps_dict)
 
 
