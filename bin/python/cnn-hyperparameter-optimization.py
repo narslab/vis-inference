@@ -28,30 +28,19 @@ from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
 
-
-# In[ ]:
-
-
 NUM_CHANNELS = 1
 RESOLUTION_LIST = [64, 128, 224, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 10 #10
-EXECUTIONS_PER_TRIAL = 3 #5
-HYPERBAND_ITER = 5 #80
-
-
-# In[ ]:
-
+EXECUTIONS_PER_TRIAL = 2 #5
+HYPERBAND_ITER = 3 #80
 
 image_dict = dict.fromkeys(RESOLUTION_LIST)
 for p in RESOLUTION_LIST:
     image_dict[p] = dict.fromkeys(SCENARIO_LIST)
     for s in SCENARIO_LIST:
         image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
-
-
-# In[ ]:
 
 
 class CNNHyperModel(HyperModel):
@@ -107,16 +96,9 @@ class CNNHyperModel(HyperModel):
         return model
 
 
-# In[ ]:
-
-
 class ClearTrainingOutput(tf.keras.callbacks.Callback):
     def on_train_end(*args, **kwargs):
         IPython.display.clear_output(wait = True)
-
-
-# In[ ]:
-
 
 def optimizeCNNHyperparameters(scenario, image_size, seed_val = 1, save_results=True):
     if scenario=="Pr_Po_Im":
@@ -132,30 +114,18 @@ def optimizeCNNHyperparameters(scenario, image_size, seed_val = 1, save_results=
     training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
     validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     
-    console_printout = tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
-    results = tuner.results_summary()
+    tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
-        scenario_path = os.path.join(OPTIMAL_HYPERPARAMETERS_PATH, str(image_size), s)
+        scenario_path = os.path.join(OPTIMAL_HYPERPARAMETERS_PATH, str(image_size), scenario)
         if not os.path.exists(scenario_path):
             os.makedirs(scenario_path)
-        with open(os.path.join(scenario_path, 'console.txt'), 'w') as f:
-            f.write(json.dumps(console_printout))
-        with open(os.path.join(scenario_path, 'results-summary.txt'), 'w') as f:
-            f.write(json.dumps(results))               
+        # with open(os.path.join(scenario_path, 'results-summary.txt'), 'w') as f:
+        #     f.write(json.dumps(tuner.results_summary()))               
         with open(os.path.join(scenario_path, 'hyperparameters.txt'), 'w') as f:
             f.write(json.dumps(best_hps_dict))         
     return #(console_printout, summary, best_hps_dict)
-
-
-# In[ ]:
-
-
-#s,b,h = optimizeCNNHyperparameters("Pr_Im", 64, save_results=True)
-
-
-# In[ ]:
 
 
 def main():
@@ -165,10 +135,6 @@ def main():
             optimizeCNNHyperparameters(s, i, seed_val = 1, save_results = True)
             print("Search for scenario: " + s + " is complete.")
     return
-
-
-# In[ ]:
-
 
 if __name__ == "__main__":
     main()
