@@ -8,6 +8,7 @@ my_dir/
 *.pyc
 opt/
 variables/
+optimization-log*
 
 ## Core latex/pdflatex auxiliary files:
 auto
