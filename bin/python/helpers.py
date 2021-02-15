@@ -43,6 +43,21 @@ def getImageAndLabelArrays(image_label_tuple_array, num_channels = 1):
 	label_array = np.array([x[1] for x in image_label_tuple_array])
 	return(image_array, label_array)
 
+
+def createResolutionScenarioImageDict(resolution_list, scenario_list):
+    image_dict = dict.fromkeys(resolution_list)
+    for p in resolution_list:
+        image_dict[p] = dict.fromkeys(scenario_list)
+        for s in scenario_list:
+            image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
+    return(image_dict)
+
+def getOptCNNHyperparams(image_size, scenario):
+    with open('../../results/optimal-hyperparameters/' + str(image_size) + '/' + scenario + '/hyperparameters.txt') as f: 
+        data = f.read() 
+    opt_params_dict = json.loads(data)   
+    return(opt_params_dict)
+
 #https://github.com/keras-team/keras/issues/5400#issuecomment-408743570
 def check_units(y_true, y_pred):
 	if y_pred.shape[1] != 1:
