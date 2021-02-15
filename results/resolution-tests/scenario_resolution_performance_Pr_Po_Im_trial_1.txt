@@ -1,0 +1,1 @@
+{"scenario": "Pr_Po_Im", "image_size": 64, "metrics": {"loss": [0.7442220449447632], "accuracy": [0.9574257135391235], "val_loss": [5.209726810455322], "val_accuracy": [0.005940594244748354]}, "best_val_accuracy": 0.005940594244748354}
