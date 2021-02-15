@@ -29,7 +29,7 @@ RESOLUTION_LIST = [64, 128] #, 224, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_MODEL_RUNS = 10
 NUM_EPOCHS = 10
-RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/resolution-tests'
+RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests'
 
 
 def constructBaseCNN(image_size, scenario):
@@ -94,7 +94,7 @@ def main(num_trials = NUM_MODEL_RUNS):
     for s in SCENARIO_LIST:
         for p in RESOLUTION_LIST:
             for i in range(num_trials):
-                print("Conducting performance test: Scenario- " + s + "; Resolution - " + p + "; Trial: " + str(i+1))
+                print("Conducting performance test: Scenario - " + s + "; Resolution - " + str(p) + "px; Trial - " + str(i+1))
                 scenario_performance_dict = testResolutionScenarioPerformance(p, s, num_epochs = NUM_EPOCHS, trial_seed = 1 + i) #ultimately should be averaged across trials       
                 scenario_filename = "scenario_resolution_performance_" + s + "_trial_" + str(i+1) + ".txt"
                 hist_filename = "scenario_resolution_hist_" + s + "_trial_" + str(i+1) + ".txt"
