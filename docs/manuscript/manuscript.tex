@@ -1,4 +1,4 @@
-\documentclass[Journal,letterpaper, SingleSpace]{ascelike-new}
+\documentclass[Journal,letterpaper, SingleSpace, InsideFigs]{ascelike-new}
 %\usepackage{etex}
 %\newcommand{\num}{6{} }
 
@@ -176,7 +176,7 @@ The remainder of the paper provides a brief history and background of AI and its
 \section{Background}
 
 %\subsection{AI and risk assessment}
-AI-based image analysis is relatively widely used, even in engineering applications, such as earthquake risk assessment \cite{jiao2020artificial,salehi2018emerging} and structural health monitoring \cite{spencer2019advances}. Neural networks have been widely applied in the field of earthquake risk assessment (an excellent review is provided by \citeN{xie2020promise}), but the authors are not aware of attempts to operate directly on, for example, building images in the absence of technical structural data to predict seismic risk.  Neural networks have also been used to interrogate remote sensing data of the landscape to assess landslide risk \cite{su2020deep}.
+AI-based image analysis is relatively widely used, even in engineering applications, such as earthquake risk assessment \cite{jiao2020artificial,salehi2018emerging} and structural health monitoring \cite{spencer2019advances, wang2019novel}. Neural networks have been widely applied in the field of earthquake risk assessment (an excellent review is provided by \citeN{xie2020promise}), but the authors are not aware of attempts to operate directly on, for example, building images in the absence of technical structural data to predict seismic risk.  Neural networks have also been used to interrogate remote sensing data of the landscape to assess landslide risk \cite{su2020deep}.
 
 
 A relevant application for tree species identification using a convolutional neural network (CNN) was recently demonstrated \cite{fricker2019convolutional}. Yet, AI has not been applied to the problem of tree-utility line risk assessment---one that is complicated by the very large number of tree species to be considered, seasonal variation in tree appearance and associated risk and local meteorological conditions. 
@@ -295,16 +295,43 @@ We can apply cut-out (occluding portions of the image) for improved performance 
 \subsection{Hyperparameter optimization}
 We used the Hyperband approach \cite{li2018hyperband} to perform a grid search to find the optimal values of the following hyperparameters:
 \begin{itemize}
-    \item kernel size in first convolutional layer
-    \item number of units in first densely connected layer
-    \item dropout rate applied to outputs of first dense layer
-    \item activation function for first dense layer
-    \item number of units in second densely connected layer
-    \item dropout rate applied to outputs of second dense layer
-    \item activation function for second dense layer    
-    \item learning rate (of Adam optimizer)
+    \item kernel size in first convolutional layer $ks$
+    \item number of units in first densely connected layer $u_1$
+    \item dropout rate applied to outputs of first dense layer $d_1$
+    \item activation function for first dense layer $a_1$
+    \item number of units in second densely connected layer $u_2$
+    \item dropout rate applied to outputs of second dense layer $d_2$
+    \item activation function for second dense layer $a_2$
+    \item learning rate (of Adam optimizer) $\lambda$
 \end{itemize}
 
+\begin{table}[h!]\small
+    \centering
+    \begin{tabular}{|l | l l l l| l l l l| l l l l | l l l l|}\hline
+    %\bf Scenario 
+        &  \multicolumn{4}{c|}{\texttt{Pr\_Po\_Im}} 
+            & \multicolumn{4}{c|}{\texttt{Pr\_Im}} 
+                &  \multicolumn{4}{c|}{\texttt{PrPo\_Im}} 
+                    &  \multicolumn{4}{c|}{\texttt{Pr\_PoIm}}  \\\hline
+    %\bf Resolution
+        & 64 & 128 & 224 & 384 
+            & 64 & 128 & 224 & 384 
+                & 64 & 128 & 224 & 384
+                    & 64 & 128 & 224 & 384  \\\hline
+    %\bf Hyperparameter 
+    $ks$    &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $u_1$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $d_1$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $a_1$   & ReLu  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $u_2$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\ 
+    $d_2$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $a_2$   & ReLu &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
+    $\lambda$  
+            &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\\hline
+    \end{tabular}
+    \caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
+    \label{tab:opt-hyp}
+\end{table}
 \section{Results}
 
 
