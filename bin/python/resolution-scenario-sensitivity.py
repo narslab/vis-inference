@@ -96,8 +96,7 @@ def main(num_trials = NUM_MODEL_RUNS):
             for i in range(num_trials):
                 print("Conducting performance test: Scenario - " + s + "; Resolution - " + str(p) + "px; Trial - " + str(i+1))
                 scenario_performance_dict = testResolutionScenarioPerformance(p, s, num_epochs = NUM_EPOCHS, trial_seed = 1 + i) #ultimately should be averaged across trials       
-                scenario_filename = "scenario_resolution_performance_" + s + "_trial_" + str(i+1) + ".txt"
-                hist_filename = "scenario_resolution_hist_" + s + "_trial_" + str(i+1) + ".txt"
+                scenario_filename = "scenario_resolution_performance_" + s + str(p) + "px_trial_" + str(i+1) + ".txt"
                 with open(os.path.join(RESOLUTION_PERFORMANCE_METRICS_DIR, scenario_filename), 'w') as f:
                    f.write(json.dumps(scenario_performance_dict )) # use `json.loads` to do the reverse)
     return

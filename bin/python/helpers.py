@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from timeit import default_timer as timer
 import matplotlib.pyplot as plt
@@ -15,6 +16,24 @@ from sklearn.metrics import recall_score, classification_report
 from sklearn.datasets import make_classification
 
 import json
+
+# Handling files
+def getListOfFiles(dirName):
+    """Returns single list of the filepath of each of the training image files"""
+    # source: https://thispointer.com/python-how-to-get-list-of-files-in-directory-and-sub-directories/
+    listOfFile = os.listdir(dirName)
+    allFiles = list()
+    # Iterate over all the entries
+    for entry in listOfFile:
+        # Create full path
+        fullPath = os.path.join(dirName, entry)
+        # If entry is a directory then get the list of files in this directory 
+        if os.path.isdir(fullPath):
+            allFiles = allFiles + getListOfFiles(fullPath)
+        else:
+            allFiles.append(fullPath)
+                
+    return allFiles
 
 def splitData(image_array, prop = 0.80, seed_num = 111):
 	"""Returns training and test arrays of images with specified proportion - prop:1-prop"""
