@@ -1,0 +1,1 @@
+{"kernel_size": 7, "units_1": 416, "units_2": 416, "dropout_1": 0.2, "dropout_2": 0.15000000000000002, "activation_1": "relu", "activation_2": "tanh", "learning_rate": 0.00011465640987948183, "tuner/epochs": 10, "tuner/initial_epoch": 0, "tuner/bracket": 0, "tuner/round": 0}
