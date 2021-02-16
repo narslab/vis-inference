@@ -308,43 +308,43 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
 \begin{table}[h!]\small
     \centering
     \begin{tabular}{l  c  p{1.75cm} p{1.75cm}  p{1.75cm} p{1.75cm}}\toprule
-    \bf Scenario & \bf Hyperparameter & \multicolumn{4}{c}{\bf Resolution ($n\times n$ pixels)} \\
-    &         & 64 & 128 & 224 & 384 \\\midrule
-    \multirow{8}{*}{\texttt{Pr\_Po\_Im}} 
-        & $ks$    & 7 &  &  &   \\
-        & $u_1$   & 128 &  &  &   \\
-        & $d_1$   & 0.25 &  &  &   \\
-        & $a_1$   & ReLu  &  &  &   \\
-        & $u_2$   & 320 &  &  &   \\
-        & $d_2$   & 0.30 &  &  &   \\
-        & $a_2$   & ReLu &  &  &   \\
-        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &  &   \\ \midrule
-    \multirow{8}{*}{\texttt{Pr\_Im}} 
-        & $ks$    & 7 &  &  &   \\
-        & $u_1$   & 128 &  &  &   \\
-        & $d_1$   & 0.25 &  &  &   \\
-        & $a_1$   & ReLu  &  &  &   \\
-        & $u_2$   & 320 &  &  &   \\
-        & $d_2$   & 0.30 &  &  &   \\
-        & $a_2$   & ReLu &  &  &   \\
-        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &  &   \\ \midrule
-    \multirow{8}{*}{\texttt{PrPo\_Im}} 
-        & $ks$    & 7 &  &  &   \\
-        & $u_1$   & 128 &  &  &   \\
-        & $d_1$   & 0.25 &  &  &   \\
-        & $a_1$   & ReLu  &  &  &   \\
-        & $u_2$   & 320 &  &  &   \\
-        & $d_2$   & 0.30 &  &  &   \\
-        & $a_2$   & ReLu &  &  &   \\
-        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &  &   \\ \midrule
-    \multirow{8}{*}{\texttt{Pr\_PoIm}}  
-        & $ks$    & 7 &  &  &   \\
-        & $u_1$   & 128 &  &  &   \\
-        & $d_1$   & 0.25 &  &  &   \\
-        & $a_1$   & ReLu  &  &  &   \\
-        & $u_2$   & 320 &  &  &   \\
-        & $d_2$   & 0.30 &  &  &   \\
-        & $a_2$   & ReLu &  &  &   \\
+    \bf Scenario & \bf Hyperparameter & \multicolumn{3}{c}{\bf Resolution ($n\times n$ pixels)} \\
+    &         & 64 & 128 & 224   \\\midrule
+    \multirow{7}{*}{\texttt{Pr\_Po\_Im}} 
+        & $ks$    & 7 &  &     \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &     \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &    \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &     \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &      \\ \midrule
+    \multirow{7}{*}{\texttt{Pr\_Im}} 
+        & $ks$    & 7 &  &      \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &      \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &      \\ \midrule
+    \multirow{7}{*}{\texttt{PrPo\_Im}} 
+        & $ks$    & 7 &  &    \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &     \\
+        & $u_2$   & 320 &  &     \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &     \\ \midrule
+    \multirow{7}{*}{\texttt{Pr\_PoIm}}  
+        & $ks$    & 7 &  &      \\
+        & $u_1$   & 128 &  &      \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &      \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
         & $\lambda$  & $1.76\cdot 10^{-4}$ &  &  &   \\ \bottomrule
     \end{tabular}
     \caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
@@ -355,6 +355,30 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
 
 \subsection{Sensitivity to training resolution}
 
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{table}[h!]\small
+    \centering
+    \begin{tabular}{ l c r r}\toprule
+\bf Scenario & \bf Resolution & \multicolumn{2}{c}{\bf Validation Accuracy}\\
+& & Mean & SD \\\midrule
+    \texttt{PrPo\_Im} & 64  & 0.96 & 0.04 \\
+                      & 128 & 0.96 & 0.05 \\
+    \texttt{Pr\_Im}   & 64  & 0.98 & 0.03 \\
+                      & 128 & 0.97 & 0.03 \\
+    \texttt{Pr\_PoIm} & 64  & 0.96 & 0.04 \\
+                      & 128 & 0.97 & 0.04 \\
+    \texttt{Pr\_Po\_Im}& 64  & 0.94 & 0.07 \\
+                      & 128 & 0.95 & 0.07 \\ \bottomrule
+    \end{tabular}
+    \caption{Summary validation accuracy (mean and standard deviation) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
+    \label{tab:meanvalacc}
+\end{table}
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
