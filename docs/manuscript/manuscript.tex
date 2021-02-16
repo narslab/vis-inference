@@ -239,7 +239,7 @@ We define four classification scenarios in \autoref{tab:scenarios}.
 
 \begin{table}[h!]
     \centering
-    \begin{tabular}{l l l}\toprule
+    \begin{tabular}{l l c}\toprule
     \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
     \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
     \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
@@ -252,7 +252,7 @@ We define four classification scenarios in \autoref{tab:scenarios}.
 
 
 \subsection{Pre-processing and data augmentation}
-To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions: $64 \times 64$, $128 \times 128$, $224 \times 224$ and $384\times 384$, creating a training set for each case. 
+To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions (pixels): $64 \times 64$, $128 \times 128$, $224 \times 224$ and $384\times 384$, creating a training set for each case. 
 Random sets of images from each class across each of the four classification scenarios are shown in \autoref{fig:processed_images}.
 
 \begin{figure}[h!]
@@ -307,27 +307,45 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
 
 \begin{table}[h!]\small
     \centering
-    \begin{tabular}{|l | l l l l| l l l l| l l l l | l l l l|}\hline
-    %\bf Scenario 
-        &  \multicolumn{4}{c|}{\texttt{Pr\_Po\_Im}} 
-            & \multicolumn{4}{c|}{\texttt{Pr\_Im}} 
-                &  \multicolumn{4}{c|}{\texttt{PrPo\_Im}} 
-                    &  \multicolumn{4}{c|}{\texttt{Pr\_PoIm}}  \\\hline
-    %\bf Resolution
-        & 64 & 128 & 224 & 384 
-            & 64 & 128 & 224 & 384 
-                & 64 & 128 & 224 & 384
-                    & 64 & 128 & 224 & 384  \\\hline
-    %\bf Hyperparameter 
-    $ks$    &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $u_1$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $d_1$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $a_1$   & ReLu  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $u_2$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\ 
-    $d_2$   &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $a_2$   & ReLu &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\
-    $\lambda$  
-            &  &  &  &  &   &  &  &  &   &  &  &  &   &  &  &   \\\hline
+    \begin{tabular}{l  c  p{1.75cm} p{1.75cm}  p{1.75cm} p{1.75cm}}\toprule
+    \bf Scenario & \bf Hyperparameter & \multicolumn{3}{c}{\bf Resolution ($n\times n$ pixels)} \\
+    &         & 64 & 128 & 224   \\\midrule
+    \multirow{7}{*}{\texttt{Pr\_Po\_Im}} 
+        & $ks$    & 7 &  &     \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &     \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &    \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &     \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &      \\ \midrule
+    \multirow{7}{*}{\texttt{Pr\_Im}} 
+        & $ks$    & 7 &  &      \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &      \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &      \\ \midrule
+    \multirow{7}{*}{\texttt{PrPo\_Im}} 
+        & $ks$    & 7 &  &    \\
+        & $u_1$   & 128 &  &     \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &     \\
+        & $u_2$   & 320 &  &     \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &     \\ \midrule
+    \multirow{7}{*}{\texttt{Pr\_PoIm}}  
+        & $ks$    & 7 &  &      \\
+        & $u_1$   & 128 &  &      \\
+        & $d_1$   & 0.25 &  &      \\
+        & $a_1$   & ReLu  &  &      \\
+        & $u_2$   & 320 &  &      \\
+        & $d_2$   & 0.30 &  &     \\
+        & $a_2$   & ReLu &  &      \\
+        & $\lambda$  & $1.76\cdot 10^{-4}$ &  &  &   \\ \bottomrule
     \end{tabular}
     \caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
     \label{tab:opt-hyp}
@@ -337,6 +355,30 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a grid search t
 
 \subsection{Sensitivity to training resolution}
 
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{table}[h!]\small
+    \centering
+    \begin{tabular}{ l c r r}\toprule
+\bf Scenario & \bf Resolution & \multicolumn{2}{c}{\bf Validation Accuracy}\\
+& & Mean & SD \\\midrule
+    \texttt{PrPo\_Im} & 64  & 0.96 & 0.04 \\
+                      & 128 & 0.96 & 0.05 \\
+    \texttt{Pr\_Im}   & 64  & 0.98 & 0.03 \\
+                      & 128 & 0.97 & 0.03 \\
+    \texttt{Pr\_PoIm} & 64  & 0.96 & 0.04 \\
+                      & 128 & 0.97 & 0.04 \\
+    \texttt{Pr\_Po\_Im}& 64  & 0.94 & 0.07 \\
+                      & 128 & 0.95 & 0.07 \\ \bottomrule
+    \end{tabular}
+    \caption{Summary validation accuracy (mean and standard deviation) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
+    \label{tab:meanvalacc}
+\end{table}
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
