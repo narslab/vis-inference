@@ -32,34 +32,34 @@ NUM_EPOCHS = 10
 RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests'
 
 
-def constructBaseCNN(image_size, scenario):
-    image_shape = (image_size, image_size, NUM_CHANNELS)
-    p_dict = getOptCNNHyperparams(image_size, scenario)
-    if scenario=="Pr_Po_Im":
-        num_classes = 3
-    else:
-        num_classes = 2
-    base_model = models.Sequential([
-        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", input_shape = image_shape),
-        layers.MaxPooling2D(2),
-        layers.Conv2D(128, 3, activation="relu", padding="same"),
-        layers.Conv2D(128, 3, activation="relu", padding="same"),
-        layers.MaxPooling2D(2),
-        layers.Conv2D(256, 3, activation="relu", padding="same"),
-        layers.Conv2D(256, 3, activation="relu", padding="same"),
-        layers.MaxPooling2D(2),
-        layers.Flatten(),
+# def constructBaseCNN(image_size, scenario):
+#     image_shape = (image_size, image_size, NUM_CHANNELS)
+#     p_dict = getOptCNNHyperparams(image_size, scenario)
+#     if scenario=="Pr_Po_Im":
+#         num_classes = 3
+#     else:
+#         num_classes = 2
+#     base_model = models.Sequential([
+#         layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", input_shape = image_shape),
+#         layers.MaxPooling2D(2),
+#         layers.Conv2D(128, 3, activation="relu", padding="same"),
+#         layers.Conv2D(128, 3, activation="relu", padding="same"),
+#         layers.MaxPooling2D(2),
+#         layers.Conv2D(256, 3, activation="relu", padding="same"),
+#         layers.Conv2D(256, 3, activation="relu", padding="same"),
+#         layers.MaxPooling2D(2),
+#         layers.Flatten(),
         
-        layers.Dense(p_dict['units_1'], activation = p_dict['activation_1']),
-        layers.BatchNormalization(),
-        layers.Dropout(p_dict['dropout_1']), 
+#         layers.Dense(p_dict['units_1'], activation = p_dict['activation_1']),
+#         layers.BatchNormalization(),
+#         layers.Dropout(p_dict['dropout_1']), 
         
-        layers.Dense(p_dict['units_2'], activation = p_dict['activation_2']), 
-        layers.Dropout(p_dict['dropout_2']),
+#         layers.Dense(p_dict['units_2'], activation = p_dict['activation_2']), 
+#         layers.Dropout(p_dict['dropout_2']),
         
-        layers.Dense(num_classes, activation="softmax")
-    ])
-    return(base_model)
+#         layers.Dense(num_classes, activation="softmax")
+#     ])
+#     return(base_model)
 
 
 image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
@@ -74,7 +74,7 @@ def testResolutionScenarioPerformance(image_size, scenario, num_epochs = 10, tri
     # metrics_multiclass = Metrics(validation_images,validation_labels)  TODO
     K.clear_session()
     input_shape = (image_size, image_size, NUM_CHANNELS)
-    model = constructBaseCNN(image_size, scenario)
+    model = constructBaseCNN(image_size, scenario, num_channels = NUM_CHANNELS)
     opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']
     reset_weights(model) # re-initialize model weights
     opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)

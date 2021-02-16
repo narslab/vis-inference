@@ -77,6 +77,36 @@ def getOptCNNHyperparams(image_size, scenario):
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
+def constructBaseCNN(image_size, scenario, num_channels = 1):
+    image_shape = (image_size, image_size, num_channels)
+    p_dict = getOptCNNHyperparams(image_size, scenario)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2
+    base_model = models.Sequential([
+        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", input_shape = image_shape),
+        layers.MaxPooling2D(2),
+        layers.Conv2D(128, 3, activation="relu", padding="same"),
+        layers.Conv2D(128, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        layers.Conv2D(256, 3, activation="relu", padding="same"),
+        layers.Conv2D(256, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        layers.Flatten(),
+        
+        layers.Dense(p_dict['units_1'], activation = p_dict['activation_1']),
+        layers.BatchNormalization(),
+        layers.Dropout(p_dict['dropout_1']), 
+        
+        layers.Dense(p_dict['units_2'], activation = p_dict['activation_2']), 
+        layers.Dropout(p_dict['dropout_2']),
+
+        layers.Dense(num_classes, activation="softmax")   
+        ])
+    return(base_model)
+
+
 #https://github.com/keras-team/keras/issues/5400#issuecomment-408743570
 def check_units(y_true, y_pred):
 	if y_pred.shape[1] != 1:
