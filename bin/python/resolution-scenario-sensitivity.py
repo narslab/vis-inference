@@ -25,7 +25,7 @@ from helpers import *
 
 # Globals
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128] #, 224, 384]
+RESOLUTION_LIST = [224] # 64, 128] #, 224, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_MODEL_RUNS = 10
 NUM_EPOCHS = 10
@@ -105,3 +105,8 @@ def main(num_trials = NUM_MODEL_RUNS):
 if __name__ == "__main__":
     main()
 
+
+# predictions = model.predict_classes(x_val)
+# predictions = predictions.reshape(1,-1)[0]
+
+# print(classification_report(y_val, predictions, target_names = ['Rugby (Class 0)','Soccer (Class 1)']))
