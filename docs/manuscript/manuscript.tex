@@ -289,7 +289,7 @@ Random sets of images from each class across each of the four classification sce
 
 \subsection{Convolutional neural network}
 
-We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
+% We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
 
 
 \subsection{Hyperparameter optimization}
@@ -319,42 +319,45 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 % \usepackage{booktabs}
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
- \begin{tabular}{@{}llr r@{}}
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+\begin{tabular}{@{}lllll@{}}
 \toprule
-& & \multicolumn{2}{c}{\bf Resolution}\\
-\textbf{Scenario}   & \textbf{Hyperparameters} & 64                & 128               \\ \midrule
-PrPo\_Im   & activation\_1   & relu              & tanh              \\
-   & activation\_2   & relu              & relu              \\
-   & dropout\_1      & 0.1               & 0.25              \\
-   & dropout\_2      & 0.3               & 0.35              \\
-   & kernel\_size    & 7                 & 5                 \\
-   & learning\_rate  & \num{0.000102956216062} & \num{0.000109137476524} \\
-   & units\_1        & 480               & 384               \\
-   & units\_2        & 448               & 256               \\
-Pr\_Im     & activation\_1   & relu              & relu              \\
-      & activation\_2   & relu              & relu              \\
-      & dropout\_1      & 0.1               & 0.1               \\
-     & dropout\_2      & 0.3               & 0.3               \\
-      & kernel\_size    & 7                 & 7                 \\
-      & learning\_rate  & \num{0.000102956216062} & \num{0.000102956216062} \\
-      & units\_1        & 480               & 480               \\
-      & units\_2        & 448               & 448               \\
-Pr\_PoIm   & activation\_1   & relu              & relu              \\
-   & activation\_2   & tanh              & relu              \\
-   & dropout\_1      & 0.25              & 0.1               \\
-   & dropout\_2      & 0.3               & 0.3               \\
-   & kernel\_size    & 7                 & 7                 \\
-   & learning\_rate  & \num{0.000175822328104} & \num{0.000102956216062} \\
-   & units\_1        & 128               & 480               \\
-   & units\_2        & 320               & 448               \\
-Pr\_Po\_Im & activation\_1   & relu              & tanh              \\
-  & activation\_2   & tanh              & relu              \\
-  & dropout\_1      & 0.25              & 0.25              \\
-  & dropout\_2      & 0.3               & 0.35              \\
-  & kernel\_size    & 7                 & 5                 \\
-  & learning\_rate  & \num{0.000175822328104} & \num{0.000109137476524} \\
-  & units\_1        & 128               & 384               \\
-  & units\_2        & 320               & 256              \\\bottomrule
+\multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
+                            &                & 64                & 128               & 224               \\ \midrule
+\multirow{8}{*}{PrPo\_Im}   & activation\_1  & relu              & tanh              & relu              \\
+                            & activation\_2  & relu              & relu              & relu              \\
+                            & dropout\_1     & 0.1               & 0.25              & 0.1               \\
+                            & dropout\_2     & 0.3               & 0.35              & 0.3               \\
+                            & kernel\_size   & 7                 & 5                 & 7                 \\
+                            & learning\_rate & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\
+                            & units\_1       & 480               & 384               & 480               \\
+                            & units\_2       & 448               & 256               & 448               \\\midrule
+\multirow{8}{*}{Pr\_Im}     & activation\_1  & relu              & relu              & relu              \\
+                            & activation\_2  & relu              & relu              & relu              \\
+                            & dropout\_1     & 0.1               & 0.1               & 0.1               \\
+                            & dropout\_2     & 0.3               & 0.3               & 0.3               \\
+                            & kernel\_size   & 7                 & 7                 & 7                 \\
+                            & learning\_rate & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\
+                            & units\_1       & 480               & 480               & 480               \\
+                            & units\_2       & 448               & 448               & 448               \\\midrule
+\multirow{8}{*}{Pr\_PoIm}   & activation\_1  & relu              & relu              & relu              \\
+                            & activation\_2  & tanh              & relu              & tanh              \\
+                            & dropout\_1     & 0.25              & 0.1               & 0.2               \\
+                            & dropout\_2     & 0.3               & 0.3               & 0.15              \\
+                            & kernel\_size   & 7                 & 7                 & 7                 \\
+                            & learning\_rate & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\
+                            & units\_1       & 128               & 480               & 416               \\
+                            & units\_2       & 320               & 448               & 416               \\
+\multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & relu              & tanh              & relu              \\\midrule
+                            & activation\_2  & tanh              & relu              & relu              \\
+                            & dropout\_1     & 0.25              & 0.25              & 0.1               \\
+                            & dropout\_2     & 0.3               & 0.35              & 0.3               \\
+                            & kernel\_size   & 7                 & 5                 & 7                 \\
+                            & learning\_rate & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\
+                            & units\_1       & 128               & 384               & 480               \\
+                            & units\_2       & 320               & 256               & 448               \\ \bottomrule
 \end{tabular}
      % \begin{tabular}{l  c  p{1.75cm} p{1.75cm}  p{1.75cm} p{1.75cm}}\toprule
     % \bf Scenario & \bf Hyperparameter & \multicolumn{3}{c}{\bf Resolution ($n\times n$ pixels)} \\
