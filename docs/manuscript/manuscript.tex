@@ -291,6 +291,15 @@ Random sets of images from each class across each of the four classification sce
 
 % We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=.9\textwidth]{net2vis/graph.pdf}
+    \medskip
+    
+    \includegraphics[width=.7\textwidth]{figures/net2vis-name-labels/legend}
+    \caption{Diagram of convolutional neural network structure. (Generated using automated framework)}
+    \label{fig:my_label}
+\end{figure}
 
 \subsection{Hyperparameter optimization}
 We used the Hyperband approach \cite{li2018hyperband} to perform a guided grid search to find the optimal hyperparameter values across each scenario and input resolution instance. Thus, we performed 12 searches on the following hyperparameters in our CNN:
