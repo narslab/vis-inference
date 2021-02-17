@@ -9,7 +9,7 @@ from helpers import *
 import numpy as np
 import pandas as pd
 
-RESOLUTION_LIST = [64, 128]# 224] #, 384]
+RESOLUTION_LIST = [64, 128, 224] #, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 
 def getOptHyperparamsSummary(scenario_list, resolution_list, orientation="landscape"):

@@ -3,7 +3,7 @@
 
 from PIL import Image # used for loading images
 import numpy as np
-import os # used for navigating to image path
+import os 
 import imageio # used for writing images
 import random
 import tensorflow as tf
@@ -29,7 +29,7 @@ from sklearn import metrics
 from sklearn import model_selection
 
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128, 224, 384]
+RESOLUTION_LIST = [64, 128, 224] #, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 10 #10
@@ -131,9 +131,9 @@ def optimizeCNNHyperparameters(scenario, image_size, seed_val = 1, save_results=
 def main():
     for i in RESOLUTION_LIST:
         for s in SCENARIO_LIST:     
-            print("Beginning search for scenario: " + s)
+            print("Beginning search for scenario: " + s + ", resolution: " + i)
             optimizeCNNHyperparameters(s, i, seed_val = 1, save_results = True)
-            print("Search for scenario: " + s + " is complete.")
+            print("Search for scenario: " + s + ", resolution: " + i + " is complete.")
     return
 
 if __name__ == "__main__":
