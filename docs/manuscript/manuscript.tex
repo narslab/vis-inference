@@ -291,14 +291,17 @@ Random sets of images from each class across each of the four classification sce
 
 % We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
 
+The structure of the CNN is shown in \autoref{fig:cnn}.
+
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{net2vis/graph.pdf}
+    
     \medskip
     
     \includegraphics[width=.7\textwidth]{figures/net2vis-name-labels/legend}
-    \caption{Diagram of convolutional neural network structure. (Generated using automated framework)}
-    \label{fig:my_label}
+    \caption{Diagram of convolutional neural network structure. Hyperparameters that are optimized include the number of units in the penultimate dense layers. (Generated using automated framework \cite{bauerle2021net2vis})}
+    \label{fig:cnn}
 \end{figure}
 
 \subsection{Hyperparameter optimization}
