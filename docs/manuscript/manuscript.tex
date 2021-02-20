@@ -291,14 +291,17 @@ Random sets of images from each class across each of the four classification sce
 
 % We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
 
+The structure of the CNN is shown in \autoref{fig:cnn}.
+
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{net2vis/graph.pdf}
+    
     \medskip
     
     \includegraphics[width=.7\textwidth]{figures/net2vis-name-labels/legend}
-    \caption{Diagram of convolutional neural network structure. (Generated using automated framework)}
-    \label{fig:my_label}
+    \caption{Diagram of convolutional neural network structure. Hyperparameters that are optimized include the number of units in the penultimate dense layers. (Generated using automated framework \cite{bauerle2021net2vis})}
+    \label{fig:cnn}
 \end{figure}
 
 \subsection{Hyperparameter optimization}
@@ -315,7 +318,13 @@ We used the Hyperband approach \cite{li2018hyperband} to perform a guided grid s
 \end{itemize}
 Each search was conducted using 90 trials of unique hyperparameter combinations.
 
-\begin{table}[h!]\small
+
+
+\section{Results}
+
+\subsection{Optimal hyperparameters}
+The results of the 8 hyperparameters optimized in each of the 12 training instances is shown in \autoref{tab:opt-hyp}.
+\begin{table}[ht!]\small
     \centering
     \sisetup{round-mode=places,
         round-precision=2,
@@ -324,13 +333,6 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
         table-omit-exponent,
         fixed-exponent=-4
         }
- % Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-% \usepackage{multirow}
 \begin{tabular}{@{}lllll@{}}
 \toprule
 \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
@@ -372,26 +374,25 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 \caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
     \label{tab:opt-hyp}
 \end{table}
-\section{Results}
-
-
 \subsection{Sensitivity to training resolution}
+We trained the CNN for each of the 4 classification scenarios. In each scenarios, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, twelve learning instances were generated, using a training-validation ratio of 80:20. In each instance, we performed 10 trials, each consisting of 10 epochs. Validation sets were randomly selected in each trial, but consistent across each of the 12 training instances. The trajectories of the training/validation loss and accuracy are shown in \autoref{fig:sens-overall}. Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/scenario_resolution_performance.png}
+    \includegraphics[width=1.05\textwidth]{scenario_resolution_performance.png}
     \caption{Performance metrics for each scenario and input resolution instance. Average metrics and confidence intervals (trials, $n=10$) are shown for 10 epochs in each case.}
     \label{fig:sens-overall}
 \end{figure}
 
+\autoref{fig:sens-val-acc} shows the boxplots of the validation accuracy in all twelve instances ($n=10$).
+We further summarize the statistics (mean and standard deviation) of the validation accuracies in \autoref{tab:meanvalacc}.
+Using the Welch test for pairwise comparisons of resolution performance within each scenario, we find no statistically significant difference between the validation accuracy for each resolution ($p\ge 0.57$).
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/scenario_resolution_validation_accuracy.png}
-    \caption{Mean validation accuracy values with error bars for each scenario and resolution combination.}
+    \includegraphics[width=\textwidth]{figures/scenario_resolution_validation_accuracy_boxplot.png}
+    \caption{Boxplots of validation accuracy values with error bars for each scenario and resolution combination. Mean values are depicted as white squares in each box.}
     \label{fig:sens-val-acc}
 \end{figure}
-
-
 \begin{table}[h!]\small
     \centering
     \begin{tabular}{ l c r r}\toprule
@@ -399,16 +400,23 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 & & Mean & SD \\\midrule
     \texttt{PrPo\_Im} & 64  & 0.96 & 0.04 \\
                       & 128 & 0.96 & 0.05 \\
+                      &224  &      0.96&  0.05  \\ \midrule        
     \texttt{Pr\_Im}   & 64  & 0.98 & 0.03 \\
                       & 128 & 0.97 & 0.03 \\
+                      & 224 & 0.97 & 0.03\\\midrule       
     \texttt{Pr\_PoIm} & 64  & 0.96 & 0.04 \\
                       & 128 & 0.97 & 0.04 \\
+                      & 224 & 0.97 & 0.04 \\\midrule       
     \texttt{Pr\_Po\_Im}& 64  & 0.94 & 0.07 \\
-                      & 128 & 0.95 & 0.07 \\ \bottomrule
+                      & 128 & 0.95 & 0.07 \\
+                      & 224 & 0.95 & 0.06 \\\bottomrule
     \end{tabular}
-    \caption{Summary validation accuracy (mean and standard deviation) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
+    \caption{Summary validation accuracy (mean and standard deviation to 2 decimal places) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
     \label{tab:meanvalacc}
 \end{table}
+
+Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 64-px case, in the interest of efficiency. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
+
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
@@ -436,6 +444,7 @@ All data, models, or code generated or used during the study are available in a 
 Please also see the guidelines at: \url{https://ascelibrary.org/page/dataavailability}.
 
 \section{Acknowledgments}
+The authors would like to thank...
 
 \appendix
 
