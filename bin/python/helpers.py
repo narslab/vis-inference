@@ -12,7 +12,7 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.callbacks import Callback
 
         
-from sklearn.metrics import recall_score, classification_report
+from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, recall_score, confusion_matrix
 from sklearn.datasets import make_classification
 
 import json
@@ -62,6 +62,16 @@ def getImageAndLabelArrays(image_label_tuple_array, num_channels = 1):
 	label_array = np.array([x[1] for x in image_label_tuple_array])
 	return(image_array, label_array)
 
+def getClassLabels(scenario):
+    if scenario=="Pr_Po_Im":
+        labels = ["Probable", "Possible", "Improbable"]
+    elif scenario=="Pr_Im":
+        labels = ["Probable", "Improbable"]
+    elif scenario=="PrPo_Im":
+        labels = ["Probable/Possible", "Improbable"]
+    elif scenario=="Pr_PoIm":
+        labels = ["Probable", "Possible/Improbable"]
+    return(labels)	
 
 def createResolutionScenarioImageDict(resolution_list, scenario_list):
     image_dict = dict.fromkeys(resolution_list)
