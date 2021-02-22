@@ -477,14 +477,31 @@ We also plot the confusion matrix for each scenario in \autoref{fig:confusion-ma
     \label{fig:confusion-matrix}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[ht]\small
     \centering
-    \begin{tabular}{c|c}
-         &  \\
-         & 
-    \end{tabular}
-    \caption{Performance metric summaries across the four scenarios}
-    \label{tab:my_label}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+\textbf{Scenario} & \textbf{Averaging method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{Support} \\ \midrule
+Pr\_Im    & Probable            & 0.9  & 0.75 & 0.81 & 103 \\
+         & Improbable          & 0.92 & 0.97 & 0.95 & 322 \\
+         & accuracy            &      &      & 0.92 & 425 \\
+         & weighted avg        & 0.92 & 0.92 & 0.92 & 425 \\ \midrule
+Pr\_Po\_Im & Probable            & 0.82 & 0.56 & 0.67 & 103 \\
+         & Possible            & 0.43 & 0.74 & 0.54 & 80  \\
+         & Improbable          & 0.93 & 0.86 & 0.89 & 322 \\
+         & accuracy            &      &      & 0.78 & 505 \\
+         & weighted avg        & 0.83 & 0.78 & 0.79 & 505 \\ \midrule
+Pr\_PoIm  & Probable            & 0.77 & 0.75 & 0.76 & 103 \\
+         & Possible/Improbable & 0.94 & 0.94 & 0.94 & 402 \\
+         & accuracy            &      &      & 0.9  & 505 \\
+         & weighted avg        & 0.9  & 0.9  & 0.9  & 505 \\ \midrule
+PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
+         & Improbable          & 0.97 & 0.9  & 0.94 & 322 \\
+         & accuracy            &      &      & 0.92 & 505 \\
+         & weighted avg        & 0.93 & 0.92 & 0.92 & 505 \\ \bottomrule
+\end{tabular}
+    \caption{Performance metrics across the four scenarios}
+    \label{tab:performance}
 \end{table}
 
 
@@ -553,6 +570,7 @@ The authors would like to thank...
 
 \appendix
 
+\eject
 \bibliography{ai-trees-references}   
 
 
