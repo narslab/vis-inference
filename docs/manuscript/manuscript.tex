@@ -417,6 +417,22 @@ Using the Welch test for pairwise comparisons of resolution performance within e
 
 Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 64-px case, in the interest of efficiency. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
 
+\subsection{Analysis of classification strategies}
+We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 64px resolution images.
+The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the weighted averages of the precision, recall and $F_1$ score metrics.
+
+\begin{align}
+\text{Weighted average precision: }    Pr^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c TP_{c} }{TP_{c} + FP_c}\right) \\
+\text{Weighted average recall: }    Re^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c TP_{c} }{TP_{c} + FN_c}\right) \\
+\text{Weighted average $F_1$ score: }    F_1^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{2 n_c Pr_{c} Re_{c}}{Pr_c + Re_c}\right)
+\end{align}
+where the class-based metrics are given by:
+\begin{align}
+    TP_c &= \sum_{i \in c} I(\hat{y}_i = y_i ) \\
+    FP_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
+    FN_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
+\end{align}
 \subsection{Model visualization and inference}
 
 \subsection{Comparison with state-of-the-art architectures}
@@ -439,7 +455,7 @@ We compare the performance of our selected model with existing high-performance 
 \section{Conclusion}
 
 \section{Data Availability Statement}
-All data, models, or code generated or used during the study are available in a repository online in accordance with funder data retention policies (provide full citations that include URLS or DOIs)
+All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
 
 Please also see the guidelines at: \url{https://ascelibrary.org/page/dataavailability}.
 
