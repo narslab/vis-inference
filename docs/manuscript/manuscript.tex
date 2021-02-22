@@ -266,20 +266,20 @@ Random sets of images from each class across each of the four classification sce
   \begin{subfigure}[t]{.5\linewidth}
     \centering
     \includegraphics[width=\linewidth]{processed_input_images_Pr_Im_64_px}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_64}
   \end{subfigure}%
   
   \begin{subfigure}[t]{.5\linewidth}
     \centering
     \includegraphics[width=\linewidth]{processed_input_images_PrPo_Im_64_px}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_64}
   \end{subfigure}%
   \begin{subfigure}[t]{.5\linewidth}
     \centering
     \includegraphics[width=\linewidth]{processed_input_images_Pr_PoIm_64_px}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_64}
   \end{subfigure}%
 
@@ -415,25 +415,114 @@ Using the Welch test for pairwise comparisons of resolution performance within e
     \label{tab:meanvalacc}
 \end{table}
 
-Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 64-px case, in the interest of efficiency. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
+Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
 
 \subsection{Analysis of classification strategies}
 We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 64px resolution images.
 The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
-In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the weighted averages of the precision, recall and $F_1$ score metrics.
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the weighted averages of the precision, recall and $F_1$ score metrics. The precision score $\mathrm{Pr}$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $\mathrm{Re}$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics can also be weighted by the number of observations in each class in order to better indicate class-specific performance. We formally define these metrics in the following equations:
 
 \begin{align}
-\text{Weighted average precision: }    Pr^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c TP_{c} }{TP_{c} + FP_c}\right) \\
-\text{Weighted average recall: }    Re^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c TP_{c} }{TP_{c} + FN_c}\right) \\
-\text{Weighted average $F_1$ score: }    F_1^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{2 n_c Pr_{c} Re_{c}}{Pr_c + Re_c}\right)
+\text{Weighted average precision: }    \mathrm{Pr}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
+\text{Weighted average recall: }    \mathrm{Re}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
+\text{Weighted average $F_1$ score: }    F_1^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{2 n_c \mathrm{Pr}_{c} \mathrm{Re}_{c}}{\mathrm{Pr}_{c} + \mathrm{Re}_c}\right)
 \end{align}
 where the class-based metrics are given by:
 \begin{align}
-    TP_c &= \sum_{i \in c} I(\hat{y}_i = y_i ) \\
-    FP_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
-    FN_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
+    \mathrm{TP}_c &= \sum_{i \in c} I(\hat{y}_i = y_i ) \\
+    \mathrm{FP}_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
+    \mathrm{FN}_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
 \end{align}
+
+Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
+In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significant worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.05\textwidth]{cnn-performance-metrics-128px-plot}
+    \caption{Model performance across four classification scenarios for a single training instance in each case. Training resolution was 128px. All weighted average metrics were computed on the validation set.}
+    \label{fig:cnn-perf}
+\end{figure}
+
+We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_po_im_cm}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Im}}
+    \label{pr_im_cm}
+  \end{subfigure}%
+  
+   \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
+    \caption{Scenario \texttt{PrPo\_Im}}
+    \label{prpo_im_cm}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.5\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
+    \caption{Scenario \texttt{Pr\_PoIm}}
+    \label{pr_poim_cm}
+  \end{subfigure}%
+    \caption{Confusion matrix for final model performance using the 128px images across all scenarios.}
+    \label{fig:confusion-matrix}
+\end{figure}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c}
+         &  \\
+         & 
+    \end{tabular}
+    \caption{Performance metric summaries across the four scenarios}
+    \label{tab:my_label}
+\end{table}
+
+
 \subsection{Model visualization and inference}
+Model explainability is increasingly critical in the application of CNNs to an ever-expanding set of problems.
+
+\begin{figure}[ht]
+    \centering
+
+    \begin{subfigure}[t]{.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-gradcam-Pr_Im-128-px-4-images.png}
+    \caption{Scenario \texttt{Pr\_Im}}
+    \label{prpo_im_cm}
+    \end{subfigure}%   
+    \begin{subfigure}[t]{.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-gradcam-PrPo_Im-128-px-4-images.png}
+    \caption{Scenario \texttt{PrPo\_Im}}
+    \label{prpo_im_cm}
+    \end{subfigure}%
+    
+    \begin{subfigure}[t]{.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-gradcam-Pr_PoIm-128-px-4-images.png}
+    \caption{Scenario \texttt{Pr\_PoIm}}
+    \label{prpo_im_cm}
+    \end{subfigure}%
+    \begin{subfigure}[t]{.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-gradcam-Pr_Po_Im-128-px-4-images.png}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{prpo_im_cm}
+    \end{subfigure}%
+    
+    \caption{Gradient-weighted class activation maps (Grad-CAMs) for randomly selected validation images in each class. (Resolution: 128px)}
+    \label{fig:my_label}
+\end{figure}
 
 \subsection{Comparison with state-of-the-art architectures}
 We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
