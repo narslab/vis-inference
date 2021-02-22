@@ -17,11 +17,11 @@ import matplotlib.pyplot as plt
 
 ## GLOBAL VARIABLES
 IMG_SIZE = 108
-IMG_SIZE_LIST = [64, 128, 224, 384]
+IMG_SIZE_LIST = [64]#, 128, 224]#, 384]
 NUM_CHANNELS = 1
 CLASSIFICATION_SCENARIO = "Pr_Im"
-CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
-EXPANSION_FACTOR = 5 # of augmented images
+CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
+EXPANSION_FACTOR = 5 #5 of augmented images
 LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
 SEED = 10 # seed for repeatability
@@ -70,6 +70,7 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
     data = []
     image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
+    print("Preprocessing images for scenario " + class_scenario + "and resolution " + str(img_size))
     for img in image_list:
         label = getImageOneHotVector(img, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
@@ -99,7 +100,7 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
             #img = img.crop((left=400, top=0, r=3424, b=3024)) 
             #img = img.resize((img_size, img_size), Image.BICUBIC)
             #TODO: random cropping, flipping and resizing
-
+    print("Images:", class_scenario, (np.array([x[1] for x in data])).sum(axis=0) )
     random_image_selection_class_0 = random.choices([i[0] for i in data if i[1][0] == 1], k = images_per_class)
     random_image_selection_class_1 = random.choices([i[0] for i in data if i[1][1] == 1], k = images_per_class)
     image_selection_array = [random_image_selection_class_0, random_image_selection_class_1]
@@ -113,10 +114,11 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
         random_image_selection_class_2 = random.choices([i[0] for i in data if i[1][2] == 1], k = images_per_class)
         class_list = ["Probable", "Possible", "Improbable"]
         image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
+    
     data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
-    np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
+    #np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
     print("Saved " + data_filename + " to data/tidy/" + PROCESSED_IMAGES_DIR)
     return (image_selection_array, class_list)
 

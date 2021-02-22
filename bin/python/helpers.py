@@ -167,24 +167,6 @@ class Histories(Callback):
 		self.losses.append(logs.get('loss'))
 		self.accuracies.append(logs.get('accuracy'))
 
-# Callback to find metrics at epoch end (not perfectly implemented; TODO) # Source: https://stackoverflow.com/a/56485026/3023033
-class Metrics(Callback):
-	def __init__(self, x, y):
-		self.x = x
-		self.y = y if (y.ndim == 1 or y.shape[1] == 1) else np.argmax(y, axis=1)
-		self.reports = []
-
-	def on_epoch_end(self, epoch, logs={}):
-		y_hat = np.asarray(self.model.predict(self.x))
-		y_hat = np.where(y_hat > 0.5, 1, 0) if (y_hat.ndim == 1 or y_hat.shape[1] == 1)  else np.argmax(y_hat, axis=1)
-		report = classification_report(self.y,y_hat,output_dict=True)
-		self.reports.append(report)
-		return
-   
-	# Utility method
-	def get(self, metrics, of_class):
-		return [report[str(of_class)][metrics] for report in self.reports]
-
 
 def plot_model_accuracy(hist):
 	plt.plot(hist.history["accuracy"])
