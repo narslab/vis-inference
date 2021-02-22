@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
 
 import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
@@ -41,35 +39,16 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64] # 64, 128] #, 224, 384]
+RESOLUTION_LIST = [64, 128] # 64, 128] #, 224, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 
-# In[3]:
-
-
 image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
 
 
-# In[4]:
-
-
-
-# class ReturnBestEarlyStopping(EarlyStopping):
-#     def __init__(self, **kwargs):
-#         super(ReturnBestEarlyStopping, self).__init__(**kwargs)
-
-#     def on_train_end(self, logs=None):
-#         if self.stopped_epoch > 0:
-#             if self.verbose > 0:
-#                 print(f'\nEpoch {self.stopped_epoch + 1}: early stopping')
-#         elif self.restore_best_weights:
-#             if self.verbose > 0:
-#                 print('Restoring model weights from the end of the best epoch.')
-#             self.model.set_weights(self.best_weights
                                    
 # https://github.com/keisen/tf-keras-vis/blob/master/examples/attentions.ipynb
 # Metrics2 modified from https://stackoverflow.com/a/61856587/3023033
@@ -101,39 +80,25 @@ class Metrics(Callback):
         return
 
 
-# In[55]:
-
-
-## TEST
-# imd = np.load('../../data/tidy/preprocessed_images/size64_exp5_Pr_Po_Im.npy',allow_pickle = True)
-# trimg,vaimg,trlab,valab =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in imd]), 
-#                  np.array([x[1] for x in imd]), stratify= np.array([x[1] for x in imd]), test_size=.2, random_state = 1  )
-# print(trlab.sum(axis=0))
-# print(valab.sum(axis=0))
-
-
-# In[5]:
-
-
 def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_seed = 1): 
     
     # IMAGES (former approach)
-    #     training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
-    #     training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
-    #     validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
+    training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
+    training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
+    validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-    training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
-                                                                                               np.array([x[1] for x in image_sets[image_size][scenario]]), 
-                                                                                               stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), 
-                                                                                               test_size = .2, random_state = 1)
+    # training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
+    #                                                                                            np.array([x[1] for x in image_sets[image_size][scenario]]), 
+    #                                                                                            stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), 
+    #                                                                                            test_size = .2, random_state = 1)
 
     print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
     print("Number of class validation images:", validation_labels.sum(axis=0), "total: ", validation_labels.sum())
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5)
+    early_stopping = EarlyStopping(monitor='loss', patience=3, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -149,7 +114,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy']) 
     hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(validation_images, validation_labels),
-                     callbacks = [model_metrics, early_stopping])     
+                     callbacks = [model_metrics]) #, early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     model_name = "opt-cnn-" + scenario + "-" +str(image_size) + "-px"
@@ -194,20 +159,10 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     ax.set_yticklabels(class_labels, ha='center')
     ax.set_xticklabels(class_labels, ha='center')
     plt.xlabel('Predicted')
-    plt.show()
+    #plt.show()
     con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
     figure.savefig(con_mat_heatmap_file, dpi=180)
     return(model, hist) #performance_dict)
-
-
-# In[54]:
-
-
-#m, h = trainModelWithDetailedMetrics(64, "Pr_Im", num_epochs = 15)
-m,h = trainModelWithDetailedMetrics(64, "Pr_Im", num_epochs = 2)
-
-
-# In[8]:
 
 
 def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1, saliency=False):
@@ -287,7 +242,7 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1
             ax[i, j].imshow(heatmap, cmap='jet', alpha=0.5) # overlay
             image_counter += 1
     plt.tight_layout()
-    plt.show()
+    #plt.show()
     f.savefig("../../figures/opt-gradcam-" + scenario + "-" + str(image_size) + "-px-" + str(images_per_class) + "-images.png")
     
     if saliency==True:
@@ -309,12 +264,9 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1
                 ax[i, j].imshow(saliency_map[image_counter], cmap='jet', alpha=0.5) # overlay
                 image_counter += 1
         plt.tight_layout()
-        plt.show()
+        #plt.show()
         f.savefig("../../figures/opt-saliency-" + scenario + "-" + str(image_size) + "-px-" + str(images_per_class) + "-images.png")
     return
-
-
-# In[6]:
 
 
 def getScenarioModelPerformance(res = 64, num_epochs = 15):
@@ -330,15 +282,5 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15):
     df.to_csv(df_filename)
     return df
 
-
-# In[13]:
-
-
-dfm
-
-
-# In[9]:
-
-
-dfm = getScenarioModelPerformance(res = 64, num_epochs = 2)
-
+if __name__ == "__main__":
+    getScenarioModelPerformance(res=64, num_epochs=20)
