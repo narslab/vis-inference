@@ -98,7 +98,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='loss', patience=3, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -148,20 +148,20 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     ## Confusion matrix
     con_mat = tf.math.confusion_matrix(labels=np.argmax(validation_labels, axis=-1), predictions=y_pred).numpy()
     con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
-    con_mat_df = pd.DataFrame(con_mat, index = class_labels, columns = class_labels)
+    con_mat_df = pd.DataFrame(con_mat_norm, index = class_labels, columns = class_labels)
     #print("Confusion matrix for scenario " + scenario + ", resolution: " + str(image_size) + ":")
     #print(con_mat_df)
     ## Confusion matrix heatmap
-    figure = plt.figure()#figsize=(4, 4))
-    ax = sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues, fmt='g', cbar = False)
-    plt.tight_layout()
-    plt.ylabel('True')
-    ax.set_yticklabels(class_labels, ha='center')
-    ax.set_xticklabels(class_labels, ha='center')
-    plt.xlabel('Predicted')
+    figure = plt.figure(figsize=(4, 4))
+    ax = sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues, fmt='g', cbar = False, annot_kws={"size": 16})
+    figure.tight_layout()
+    plt.ylabel('True',fontsize=16)
+    ax.set_yticklabels(class_labels,va='center',fontsize=14)
+    ax.set_xticklabels(class_labels, ha='center',fontsize=14)
+    plt.xlabel('Predicted',fontsize=16)
     #plt.show()
     con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
-    figure.savefig(con_mat_heatmap_file, dpi=180)
+    figure.savefig(con_mat_heatmap_file, dpi=180, bbox_inches='tight')
     return(model, hist) #performance_dict)
 
 
