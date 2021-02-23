@@ -66,9 +66,9 @@ class Metrics(Callback):
         xVal, yVal = self.validation_data
         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
         val_true = np.argmax(yVal, axis=1)        
-        _val_f1 = f1_score(val_true, val_pred, average='weighted', zero_division = 0)
-        _val_precision = precision_score(val_true, val_pred, average='weighted', zero_division = 0)
-        _val_recall = recall_score(val_true, val_pred, average='weighted', zero_division = 0)
+        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
@@ -98,7 +98,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='loss', patience=5, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -114,7 +114,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy']) 
     hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(validation_images, validation_labels),
-                     callbacks = [model_metrics]) #, early_stopping])     
+                     callbacks = [model_metrics, early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     model_name = "opt-cnn-" + scenario + "-" +str(image_size) + "-px"
@@ -165,12 +165,12 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     return(model, hist) #performance_dict)
 
 
-def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1, saliency=False):
+def visualizeCNN(model, scenario, image_size, images_per_class = 4, trial_seed = 1, saliency=False):
     #ALT: use train_test_split
 #    trimg,vaimg,trlab,valab =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[64]["Pr_Im"]]), 
 #                 np.array([x[1] for x in image_sets[64]["Pr_Im"]]), stratify= np.array([x[1] for x in image_sets[64]["Pr_Im"]]), test_size=.2, random_state = 1  )
 
-    training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = 1)
+    training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
     validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     class_labels = getClassLabels(scenario)
@@ -179,16 +179,16 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1
     print(validation_labels.sum(axis=0))    
     
     # GRAD CAM
-    random.seed(seed_num)
+    random.seed(trial_seed)
     # Randomly sample images from each class
     random_image_selection_class_0 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 0], k = images_per_class)    
-    random.seed(seed_num+1)
+    random.seed(trial_seed+1)
     random_image_selection_class_1 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 1], k = images_per_class)
     assert validation_labels[random_image_selection_class_0].mean(axis=0)[0] == 1 #assert that indices of class 0 labels are correct
     assert validation_labels[random_image_selection_class_1].mean(axis=0)[1] == 1 #assert that indices of class 1 labels are correct
     cam_list = random_image_selection_class_0 + random_image_selection_class_1 # join lists of indices in both classes
     if scenario=="Pr_Po_Im": # in 3-class case
-        random.seed(seed_num+2)
+        random.seed(trial_seed+2)
         random_image_selection_class_2 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 2], k = images_per_class)    
         cam_list = cam_list + random_image_selection_class_2 # join to prior list of class 0 and class 1
         assert validation_labels[random_image_selection_class_2].mean(axis=0)[2] == 1 #assert that indices of class 2 labels are correct
@@ -269,11 +269,11 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, seed_num = 1
     return
 
 
-def getScenarioModelPerformance(res = 64, num_epochs = 15):
+def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1):
     df = pd.DataFrame()
     for s in SCENARIO_LIST:
-        m, h = trainModelWithDetailedMetrics(res, s, num_epochs)
-        visualizeCNN(m, s, res, images_per_class = 4, seed_num = 1)       
+        m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val)
+        visualizeCNN(m, s, res, images_per_class = 4, trial_seed = seed_val)       
         perf = pd.DataFrame.from_dict(h.history)
         perf[['Scenario']] = s
         perf['epoch'] = perf.index + 1
@@ -283,4 +283,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15):
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=64, num_epochs=20)
+    getScenarioModelPerformance(res=128, num_epochs=15, seed_val = 2)

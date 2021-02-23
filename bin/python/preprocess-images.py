@@ -17,15 +17,15 @@ import matplotlib.pyplot as plt
 
 ## GLOBAL VARIABLES
 IMG_SIZE = 108
-IMG_SIZE_LIST = [64]#, 128, 224]#, 384]
+IMG_SIZE_LIST = [64, 128]#, 224]#, 384]
 NUM_CHANNELS = 1
 CLASSIFICATION_SCENARIO = "Pr_Im"
-CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
+CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
 EXPANSION_FACTOR = 5 #5 of augmented images
 LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
-SEED = 10 # seed for repeatability
-NUM_PLOT_IMAGES_PER_CLASS = 4
+SEED = 100  # 10 seed for repeatability
+NUM_PLOT_IMAGES_PER_CLASS = 1 #4
 
 def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
     """Returns one-hot vector encoding for each image based on specified classification scenario:
@@ -66,7 +66,7 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
         else :
             return np.array([0, 0]) # if label is not present for current image        
 
-def processImageData(img_size, expansion_factor, class_scenario, seed_value, channels=1, images_per_class=4): # original size 4032 × 3024 px
+def processImageData(img_size, expansion_factor, class_scenario, seed_value, channels=1, images_per_class=4, save_image_binary_files=True): # original size 4032 × 3024 px
     data = []
     image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
@@ -101,8 +101,8 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
             #img = img.resize((img_size, img_size), Image.BICUBIC)
             #TODO: random cropping, flipping and resizing
     print("Images:", class_scenario, (np.array([x[1] for x in data])).sum(axis=0) )
-    random_image_selection_class_0 = random.choices([i[0] for i in data if i[1][0] == 1], k = images_per_class)
-    random_image_selection_class_1 = random.choices([i[0] for i in data if i[1][1] == 1], k = images_per_class)
+    random_image_selection_class_0 = random.sample([i[0] for i in data if i[1][0] == 1], k = images_per_class)
+    random_image_selection_class_1 = random.sample([i[0] for i in data if i[1][1] == 1], k = images_per_class)
     image_selection_array = [random_image_selection_class_0, random_image_selection_class_1]
     if class_scenario == "Pr_Im":
         class_list = ["Probable", "Improbable"]
@@ -111,38 +111,50 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
     elif class_scenario == "Pr_PoIm":
         class_list = ["Probable", "Possible/Improbable"]
     elif class_scenario == "Pr_Po_Im":
-        random_image_selection_class_2 = random.choices([i[0] for i in data if i[1][2] == 1], k = images_per_class)
+        random_image_selection_class_2 = random.sample([i[0] for i in data if i[1][2] == 1], k = images_per_class)
         class_list = ["Probable", "Possible", "Improbable"]
         image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
     
     data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
-    #np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
-    print("Saved " + data_filename + " to data/tidy/" + PROCESSED_IMAGES_DIR)
+    if save_image_binary_files == True:
+        np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
+        print("Saved " + data_filename + " to data/tidy/" + PROCESSED_IMAGES_DIR)
     return (image_selection_array, class_list)
 
 def plotProcessedImages(class_scenario, image_array, class_list, images_per_class, resolution):
-    num_rows = len(class_list)
-    num_cols = images_per_class
+    num_rows = images_per_class
+    num_cols = len(class_list)
     fig, axarr = plt.subplots(num_rows, num_cols, sharex=True, sharey=True)
     #print(image_file_list)
     for i in range(num_rows):
         for j in range(num_cols):
-            axarr[i, j].imshow(image_array[i][j], cmap = 'gist_gray', extent = [0, resolution, 0, resolution])
-    for ax, row in zip(axarr[:, 0], [i for i in class_list]):
-        ax.set_ylabel(row, size=15)
+            if num_rows==1:
+                axarr[j].imshow(image_array[j][i], cmap = 'gist_gray', extent = [0, resolution, 0, resolution])
+            else:
+                axarr[i, j].imshow(image_array[j][i], cmap = 'gist_gray', extent = [0, resolution, 0, resolution])
+    if num_rows==1:
+        for ax, row in zip(axarr[:], [i for i in class_list]):
+            ax.set_title(row, size=15)
+    else:
+        for ax, row in zip(axarr[0, :], [i for i in class_list]):
+            ax.set_title(row, size=15)
     image_filename = '../../figures/processed_input_images_' + str(class_scenario) + '_' + str(resolution) + '_px.png'
     #plt.xticks([0,3024])
     #plt.yticks([0,4032])
-    fig.savefig(image_filename, dpi=120)
+    fig.savefig(image_filename, dpi=180)
     return
 
-def main():
+def main(plot_images_only=True):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for image_size in IMG_SIZE_LIST:
-            array_random_images, classes = processImageData(image_size, EXPANSION_FACTOR, scenario, 
-                seed_value=SEED, channels=NUM_CHANNELS, images_per_class=NUM_PLOT_IMAGES_PER_CLASS)
+            if plot_images_only == True:
+                save_images_boolean = False
+            else:
+                save_images_boolean = True
+            array_random_images, classes = processImageData(image_size, EXPANSION_FACTOR, scenario, seed_value=SEED, channels=NUM_CHANNELS, 
+                images_per_class=NUM_PLOT_IMAGES_PER_CLASS, save_image_binary_files=save_images_boolean)
             plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return
 
