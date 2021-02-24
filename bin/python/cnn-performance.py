@@ -103,7 +103,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -278,7 +278,7 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, trial_seed =
     return
 
 
-def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1):
+def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_boolean = True):
     df = pd.DataFrame()
     for s in SCENARIO_LIST:
         m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val, testing = test_boolean)
@@ -295,4 +295,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1):
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=15, seed_val = 1, testing=True)
+    getScenarioModelPerformance(res=128, num_epochs=20, seed_val = 111, test_boolean=False)

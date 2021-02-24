@@ -9,6 +9,7 @@ my_dir/
 opt/
 variables/
 optimization-log*
+test-*
 
 ## Core latex/pdflatex auxiliary files:
 auto
