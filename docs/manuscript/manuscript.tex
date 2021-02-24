@@ -31,7 +31,7 @@
 %\usepackage{rotating}
 \usepackage{newtxtext,newtxmath}
 \usepackage[colorlinks=true,citecolor=red,linkcolor=black]{hyperref}
-
+\usepackage[table]{xcolor}
 
 %% Cite Title
 %\usepackage[style=numeric,backend=biber,natbib,sorting=none,maxcitenames=2,maxbibnames=99,doi=false,isbn=false,url=false,eprint=false]{biblatex}
@@ -310,14 +310,31 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 We optimized eight of these parameters using the Hyperband approach \cite{li2018hyperband}.
 The others, however, were fixed.
 
-\begin{table}[]
+\begin{table}[]\small
+\rowcolors{1}{white}{gray!35}
     \centering
-    \begin{tabular}{}
-         &  \\
-         & 
+    \begin{tabular}{l c c c c c c c}\toprule
+    \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
+     &  & \bf Activation \\\midrule
+    Convolutional  & 1         & 64                & $k$   & 2           &&& ReLu \\
+    Max. Pooling   & 1         &                   & 2               &&&             &      \\
+    Convolutional  & 2         & 128               & 3   & 1           &&& ReLu \\
+    Convolutional  & 3         & 128               & 3   & 1           &&& ReLu \\
+    Max. Pooling   & 2         &                   & 2               &&&             &      \\    
+    Convolutional  & 4         & 256               & 3   & 1           &&& ReLu \\
+    Convolutional  & 5         & 256               & 3   & 1           &&& ReLu \\
+    Max. Pooling   & 3         &                   & 2               &             &&&      \\\midrule
+    Flatten & & & & &&& \\\midrule
+     &  &   &  & &
+     \bf Rate & \bf No.\ Units & \\\midrule
+    Dense           & 1  & & &  & & $u_1^*$ & $a_1^*$ \\
+    Dropout         & 1  & & &  & $r_1^*$ & &  \\
+    Dense           & 2  & & &  & & $u_2^*$ & $a_2^*$ \\
+    Dropout         & 2  & & &  & $r_2^*$ & & \\ \bottomrule
     \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
+    \caption{Summary of the convolutional neural network hyperparameters. 
+    Those indicated by an asterisked symbol are optimized using a guided search.}
+    \label{tab:hyp}
 \end{table}
 
 \subsection{Classification scenarios}
@@ -340,7 +357,27 @@ Thus,
 
 
 \subsection{Model training and assessment}
-In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged for each class for assessing model performing. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
+The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
+The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. In this case, we use the categorical cross-entropy loss function, which is given by:
+\begin{equation}
+    L_{CE} = - \sum_{c\in C} y \log( f(c)_i)
+\end{equation}
+The softmax function returns the class prediction probabilities for a given observation $i$. It is defined for each class $c$ as:
+\begin{equation}
+    f(c)_i = \frac{e^{s^c_i}}{\sum_{c \in C} e^{s^c_i}}
+\end{equation}
+where $s^c_i$ is class score for the $i$th observation.
+Training is iteratively performed, with gradient updates averaged over a batch of input images.
+Here, we use a batch size of 32.
+The learning rate $\la$ of the optimization algorithm is an important hyperparameter that affects training performance.
+We optimized for this in the hyperparameter search as discussed.
+Furthermore, the CNN is trained over multiple passes through the entire training set.
+Each such pass is referred to as an epoch.
+
+In real terms, we measure the performance of the trained CNN by how accurately it predicts the classes in a validation set excluded from the training set. For this paper, we use a randomly sampled validation that was 20\% of the size of the input dataset of 2525 images in each training instance.
+Thus, we define the accuracy as the overall proportion of correct predictions across all classes.
+This metric was computed both for the training and validation sets in each epoch
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged for each class for assessing model performing. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
 \begin{align}
 \text{Macro-average precision: }    Pr^m &= \frac{1}{|C|}\sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
 \text{Macro-average recall: }    Re^m &= \frac{1}{|C|} \sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
@@ -358,6 +395,7 @@ The class-specific prediction metrics are given by:
     \text{False positives for class $c$: } \mathrm{FP}_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
     \text{False negatives for class $c$: } \mathrm{FN}_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
 \end{align}
+where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for a given image $i$ in class $c$. The indicator function $I(\cdot)$ returns 1 if the corresponding condition is true, and 0 otherwise.
 
 \section{Results}
 
@@ -417,12 +455,10 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 
 
 \subsection{Analysis of classification strategies}
-We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 64px resolution images.
+We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 128-pixel resolution images.
 The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
-
-
 Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
-In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significant worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
 
 \begin{figure}[ht]
     \centering
@@ -432,35 +468,35 @@ In each scenario, the model was trained over 20 epochs, but we employed early st
 \end{figure}
 
 We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
-
+Each row of the confusion mat
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
-    \label{pr_po_im_cm}
-  \end{subfigure}%
-  \begin{subfigure}[t]{.5\linewidth}
+  \begin{subfigure}[t]{.25\linewidth}
     \centering
     \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
     \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_cm}
   \end{subfigure}%
-  
-   \begin{subfigure}[t]{.5\linewidth}
+   \begin{subfigure}[t]{.25\linewidth}
     \centering
     \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
     \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_cm}
   \end{subfigure}%
-  \begin{subfigure}[t]{.5\linewidth}
+  \begin{subfigure}[t]{.25\linewidth}
     \centering
     \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
     \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_cm}
+\end{subfigure}%
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_po_im_cm}
   \end{subfigure}%
-    \caption{Confusion matrix for final model performance using the 128px images across all scenarios.}
+    \caption{Confusion matrices for CNN performance using the 128px images across all scenarios.
+    Each row of a confusion matrix indicates the proportional distribution of class predictions for the true members of each class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the macro-average $Re^m$ for each scenario.}
     \label{fig:confusion-matrix}
 \end{figure}
 
