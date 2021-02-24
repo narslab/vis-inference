@@ -31,7 +31,7 @@
 %\usepackage{rotating}
 \usepackage{newtxtext,newtxmath}
 \usepackage[colorlinks=true,citecolor=red,linkcolor=black]{hyperref}
-
+\usepackage[table]{xcolor}
 
 %% Cite Title
 %\usepackage[style=numeric,backend=biber,natbib,sorting=none,maxcitenames=2,maxbibnames=99,doi=false,isbn=false,url=false,eprint=false]{biblatex}
@@ -145,7 +145,7 @@
 \author[2]{Author 5}
 
 \affil[1]{Department of Civil and Environmental Engineering, University of Massachusetts Amherst, MA 01003, USA} %. Email: author.one@umass.edu}
-\affil[2]{Department of Ecological Conservation, University of Massachusetts Amherst, MA 01003, USA}
+\affil[2]{Department of Environmental Conservation, University of Massachusetts Amherst, MA 01003, USA}
 
 \maketitle
 
@@ -154,20 +154,19 @@
 \end{abstract}
 
 \section{Introduction}
-Power outages due to contact between tree parts and power lines annually cause tens of billions of dollars in economic and other disruptions throughout the United States, despite extensive efforts by utilities to mitigate and prevent those contacts.  Presently, the identification of potential contact between trees and power lines is labor intensive and time-consuming.  This paper describes an artificial intelligence and machine learning approach that automatically classifies trees, using only a single photograph and with a high degree of accuracy, into categories corresponding to probable failure, possible failure and improbable failure-categories corresponding to those used by utility arborists to assess risk of contact between trees and power lines.  This preliminary study demonstrates the possible efficacy of AI approaches to tree risk assessment and, following further development of the approach has the potential to reduce power outages and utility costs by allowing utilities to more effectively target their pruning and mitigation efforts.  
+Despite extensive efforts by utilities to prevent them, contacts between tree parts and power lines cause outages that annually result in tens of billions of dollars in economic costs throughout the United States.  Presently, the identification of potential contact between trees and power lines is labor intensive and time-consuming.  This paper describes an artificial intelligence and machine learning approach that automatically classifies trees, using only a single photograph and with a high degree of accuracy, into categories used by utility arborists to describe the likelihood of tree failure: probable, possible, and improbable.  This preliminary study demonstrates the possible efficacy of AI approaches to tree risk assessment and, following further development of the approach, has the potential to reduce power outages and utility costs by allowing utilities to more effectively target their pruning and mitigation efforts.  
 
-Contact between tree parts and power lines can take several forms: tree branches can grow into lines; branches can fail and fall onto lines; whole-tree failure can occur due to uprooting or trunk failure.  A study in the state of Connecticut, USA provides some context for the amount of economic disruption, documenting annual disruptions of \$8.3 billion between 2005 and 2015 \cite{graziano2020wider}.  That extremely high cost occurred despite extensive efforts on the part of utilities to mitigate conflicts between trees and power lines through active and aggressive pruning programs that, on their own cost billions of dollars annually \cite{guggenmoos2003effects}.  
+Contact between tree parts and power lines can take three forms: tree branches can grow into lines; branches can fail and fall onto lines; whole-tree failure can occur due to uprooting or trunk failure.  A study in Connecticut, USA provides some context for the amount of economic disruption, documenting annual disruptions of \$8.3 billion between 2005 and 2015 \cite{graziano2020wider}.  That extremely high cost occurred despite extensive efforts on the part of utilities to mitigate conflicts between trees and power lines through active and aggressive pruning programs that, on their own cost billions of dollars annually \cite{guggenmoos2003effects}.  
 
-Pruning, despite its high cost, has been found to be effective in reducing disruptions due to so-called ``preventable'' contact incidents between trees and power lines.  For example, in Massachusetts, USA, where tree failure was responsible for 40\% of preventable tree-caused outages, pruning was able to improve reliability by 20\% to 30\% \cite{simpson1996treecaused}, and those results were replicated in a study in Connecticut \cite{parent2019analysis}. The efficacy of pruning has also been shown in a study of two states in the Gulf Coast region of the USA that showed wind-induced power outage prediction models becoming less uncertain when pruning was included in the model \cite{nateghi2014power}.
+Despite its high cost, pruning trees to maintain clearance from power lines is an effective way to reduce outages due to so-called ``preventable'' contacts between trees and power lines.  For example, in Massachusetts, USA, where tree failure was responsible for 40\% of preventable tree-caused outages, pruning was able to improve reliability by 20\% to 30\% \cite{simpson1996treecaused}; similar results were found in a study conducted in Connecticut \cite{parent2019analysis}. The efficacy of pruning has also been shown in a study of two states in the Gulf Coast region of the USA that showed wind-induced power outage prediction models becoming less uncertain when pruning was included in the model \cite{nateghi2014power}.
 
-Even effective pruning cannot, however, completely eliminate tree-caused outages. Failure of trees away from the right-of-way can still impact the lines and cause outages \cite{guggenmoos2003effects}. The proportion of tree failures away from the wires that causes outages varies and has not been rigorously quantified. \citeN{guggenmoos2011treerelated} estimated that 95\% of tree-caused outages in the Pacific Northwest region of the USA, were due to tree failure, and \citeN{wismer2018targeted} reported approximately 25\% of interruptions in Illinois, USA, were caused by trees that uprooted or broke in the stem. 
+Even effective pruning cannot, however, completely eliminate tree-caused outages. Failure of trees outside the right-of-way can still impact the lines and cause outages \cite{guggenmoos2003effects}. The proportion of outages caused by failure of trees outside the right-of-way has not been rigorously quantified. \citeN{guggenmoos2011treerelated} estimated that 95\% of tree-caused outages in the Pacific Northwest region of the USA, were due to tree failure, and \citeN{wismer2018targeted} reported approximately 25\% of interruptions in Illinois, USA, were caused by trees that uprooted or broke in the stem. 
 
+Predicting the likelihood of failure is an inexact science, but tree risk assessment best management practices have been developed \cite{smiley2017best,goodfellow2020best}. Estimating tree risk includes assessing the likelihood of tree failure, the likelihood of impact of the failed tree (or tree part) on a target, and the severity of consequences of the impact. The likelihood of failure depends on the anticipated loads on the tree and its load-bearing capacity. The likelihood of impact depends on proximity to the target (the lines, poles, and other hardware---``infrastructure''---in the case of utility tree risk assessment), the target’s occupancy rate (which is constant for utility lines) and whether the target is sheltered, for example by neighboring trees. Severity of consequences depends on the damage done to the infrastructure---which, in turn, is partially related to the size of the tree or tree part that fails, and how much momentum it has when it impacts the infrastructure---and, more importantly in some cases, the economic costs and disruption associated with electrical outages.
 
-Predicting the likelihood of failure is an inexact science, but tree risk assessment best management practices have been developed \cite{smiley2017best,goodfellow2020best}. Risk includes assessing the likelihood of failure, the likelihood of impact, and the severity of consequences. The likelihood of failure depends on the anticipated loads on the tree and its load-bearing capacity. The likelihood of impact depends on proximity to the target (the lines, poles, and other hardware---``infrastructure''---in the case of utility tree risk assessment), the target’s occupancy rate (which is constant for utility lines) and whether the target is sheltered, for example by neighboring trees. Severity of consequences depends on the damage done to the infrastructure---which, in turn, is partially related to the size of the tree or tree part that fails, and how much momentum it has when it impacts the infrastructure---and, more importantly in some cases, the economic costs and disruption associated with outages.
+Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{smiley2017best}. Studies in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency} have shown that, compared to more time-consuming risk assessments, Level 1 risk assessments successfully identified trees with a higher degree of risk--precisely the trees that arborists prioritize for risk mitigation. The utility of Level 1 assessments demonstrated in these studies suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment while still identifying high risk trees.
 
-Individual tree risk assessment can be costly because of the time it requires. In some situations, a less time-consuming assessment may be justified to reduce costs, i.e.\ a ``Level 1'' assessment  \cite{smiley2017best}. Studies have shown that trees with greater risk ratings were more likely to be detected from Level 1 risk assessments conducted in a moving vehicle in Rhode Island, USA \cite{rooney2005reliability} and Florida, USA \cite{koeser2016frequency}. The utility of Level 1 assessments in these states suggests that artificial intelligence (AI) tools may be an effective way to reduce the cost of tree risk assessment.
-
-The method described in the paper uses convolutional neural networks (CNN) to classify images of trees among three categories of failure likelihood: probable, possible, and improbable.  The data used for training, testing and illustration of the method consists of 505 tree images that have been classified by the authors according to prevailing standards employed by professional utility arborists. 
+The method described in the paper uses convolutional neural networks (CNN) to classify images of trees among three categories of failure likelihood: probable, possible, and improbable.  The data used for training, testing and illustration of the method consists of 505 tree images that have been classified by the authors according to best management practices used by utility arborists \cite{goodfellow2020best}. 
 
 The remainder of the paper provides a brief history and background of AI and its use in earthquake risk assessment and tree identification (section 2); describes the methods used to train and validate a novel CNN to categorize likelihood of tree failure (section 3); and presents and discusses the output of the novel CNN (sections 4 and 5). The goal is to further demonstrate an innovative automated approach to tree risk assessment using an AI tool that can be readily deployed for use in various locations and also continually improved through subsequent training on new datasets.
 
@@ -176,10 +175,9 @@ The remainder of the paper provides a brief history and background of AI and its
 \section{Background}
 
 %\subsection{AI and risk assessment}
-AI-based image analysis is relatively widely used, even in engineering applications, such as earthquake risk assessment \cite{jiao2020artificial,salehi2018emerging} and structural health monitoring \cite{spencer2019advances,wang2019novel}. Neural networks have been widely applied in the field of earthquake risk assessment (an excellent review is provided by \citeN{xie2020promise}), but the authors are not aware of attempts to operate directly on, for example, building images in the absence of technical structural data to predict seismic risk.  Neural networks have also been used to interrogate remote sensing data of the landscape to assess landslide risk \cite{su2020deep}.
-
-
-A relevant application for tree species identification using a convolutional neural network (CNN) was recently demonstrated \cite{fricker2019convolutional}. Yet, AI has not been applied to the problem of tree-utility line risk assessment---one that is complicated by the very large number of tree species to be considered, seasonal variation in tree appearance and associated risk and local meteorological conditions. 
+AI-based image analysis is relatively widely used, even in engineering applications, such as earthquake risk assessment \cite{jiao2020artificial,salehi2018emerging} and structural health monitoring \cite{spencer2019advances,wang2019novel}. Neural networks, which comprise a major category of AI frameworks, have been widely applied in the field of earthquake risk assessment (an excellent review is provided by \citeN{xie2020promise}), but the authors are not aware of attempts to operate directly on, for example, building images in the absence of technical structural data to predict seismic risk.  Neural networks have also been used to interrogate remote sensing data of the landscape to assess landslide risk \cite{su2020deep}.
+A few recent efforts have demonstrated the potential for AI-based tree recognition from drone imagery \cite{santos2019assessment, egli2020cnnbased}. Furthermore, an application of a convolutional neural network (CNN) to tree species identification using was recently demonstrated by \citeN{fricker2019convolutional}. 
+Yet, AI has yet to be applied to the problem of tree-utility line risk assessment---one that is complicated by the very large number of tree species to be considered, seasonal variation in tree appearance and associated risk and local meteorological conditions. 
 
 
 %Neural networks developed over the past several decades from the introduction of the single-layer perceptron.
@@ -187,32 +185,32 @@ The groundbreaking study of \citeN{hubel1959receptive} showed that visual percep
 activation or inhibition of groups of cells in the visual cortex known as ``receptive fields.''  Further, they attempted
 to map the cortical architecture in cats and monkeys \cite{hubel1962receptive,hubel1965receptive,hubel1968receptive}.
 Subsequent attempts were then made to model neural networks that could be trained to automatically recognize visual patterns with modest performance \cite{rosenblatt1962principles,kabrisky1966proposed,giebel1971feature,fukushima1975cognitron}. However, the breakthrough came with the ``neocognitron'' \cite{fukushima1980neocognitron}, which
-was a self-learning neural network for pattern recognition that was robust to changes in position and shape distortion, a problem that plagued earlier efforts, including ``cognitron'' \cite{fukushima1975cognitron} proposed a few years earlier.
+was a self-learning neural network for pattern recognition that was robust to changes in position and shape distortion, a problem that plagued earlier efforts, including the ``cognitron'' also proposed by \citeN{fukushima1975cognitron}. %proposed a few years earlier.
 
 A few notable efforts demonstrated the neural networks for handwritten digit recognition
 \cite{fukushima1988neocognitron,denker1988neural}, but these required significant preprocessing and feature
-extraction. \cite{lecun1989handwritten} soon afterward introduced a multilayer neural network that mapped a feature in each neuron (representing a ``local receptive field'') via convolution. This network could also be trained by backpropagation like other existing neural networks and featured pooling operations for better distortion and
+extraction. \citeN{lecun1989handwritten} soon afterward introduced a multilayer neural network that mapped a feature in each neuron (representing a ``local receptive field'') via convolution. This network could also be trained by backpropagation like other existing neural networks and featured pooling operations for better distortion and
 translation invariance. Further developments from this milestone yielded the LeNet-5 convolutional neural network which attained accuracy levels that rendered it commercially viable.
 
 The big data revolution coupled with technological advancements that have made it possible to capture and store high resolution images have raised challenges that continue to be surmounted with successively high-performing
 architectures. Over the past decade, some of these efforts resulted in significant breakthroughs in performance. AlexNet \cite{krizhevsky2012imageneta}, with 5 convolutional layers and 3 dense layers---one of the largest CNNs of its time, won the ILSVRC-2012\footnote{ImageNet Large Scale Visual Recognition Challenge; held annually from 2010 through 2017.} competition with a top-5 error rate of 15.3\% and served as a landmark in the Deep Learning subdomain. \citeN{zeiler2014visualizing} then introduced ZFNet, besting the performance of AlexNet, and pioneered visualization techniques that were foundational for model inference and interpretability.  In the same year, GoogLeNet, a 22-layer network, was proposed \cite{szegedy2014going}, featuring the novel ``Inception module,'' which allowed for efficiency and accuracy in a very deep network. Subsequent improvements have been proposed to the original inception framework \cite{szegedy2015rethinking,szegedy2016inceptionv4}.  VGGNet \cite{simonyan2015very} also pushed the boundaries of depth with up 19 layers, achieving state-of-the-art performance at ILSVRC-2014. Finally, ResNet \cite{he2015deep} addressed the accuracy degradation problem that arises with increasing depth in a network by successively fitting smaller sets of layers to the residual and employing skip connections. With these innovations, an unprecedented level of depth was achieved. Implementations with with 34, 50, 101 and 152 layers were demonstrated. ResNet-152 won first place in ILSVRC-2015.
 
-Along with these developments in their architectures, CNNs have demonstrated viability for applications to image
-classification, object and text detection, object and document tracking, labeling, speech, among several other related
-fields \cite{gu2018recent}. %\hl{Paragraph on applications to be completed---with particular attention paid to tree-related efforts.}
+Along with these developments in their architectures, CNNs have demonstrated viability for applications ranging from image classification, object and text detection to document tracking, labeling, speech, among several other related
+fields \cite{gu2018recent}. 
+In this study, we show that a relatively simple CNN architecture coupled with state-of-the-art approaches for model training and regularization is capable of efficiently and effectively predicting tree failure classes.
+%\hl{Paragraph on applications to be completed---with particular attention paid to tree-related efforts.}
 
 
 \section{Data and Methods}
 \subsection{Image data description}
-The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Likelihood of failure assessments followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{smiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{smiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility rights-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{goodfellow2020best}; (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{smiley2017best}:
+The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Likelihood of failure assessments followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{smiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{smiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility right-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{goodfellow2020best}; and (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{smiley2017best}:
 \begin{itemize}
 \item \textbf{Improbable}: failure unlikely either during normal or extreme weather conditions 
 \item \textbf{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions
 \item \textbf{Probable}: failure expected under normal weather conditions within a given time frame
 \item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect people from harm
 \end{itemize}
-In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Two randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
-
+In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
 
 \begin{figure}[h!]
   \centering
@@ -223,36 +221,22 @@ In this study, only images of trees assigned to the lowest 3 likelihood of failu
 
 \begin{table}[h!]\small
     \centering
-    \begin{tabular}{l l}\toprule
-    \bf Class Label     & \bf Number of images  \\ \midrule
+    \begin{tabular}{l r}\toprule
+    \bf Category     & \bf Number of images  \\ \midrule
     Improbable & 322\\
     Possible & 80 \\
     Probable & 56 \\\midrule
     Total & 505 \\\bottomrule
     \end{tabular}
-    \caption{Class distribution of images in training set}
+    \caption{Category distribution of images in the original set of input images}
     \label{tab:classdist}
 \end{table}
 
-\subsection{Classification scenarios}
-We define four classification scenarios in \autoref{tab:scenarios}. 
-
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{l l c}\toprule
-    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
-    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
-    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
-    \texttt{PrPo\_Im}        & \{Probable|Possible, Improbable\}  & 2 \\
-    \texttt{Pr\_PoIm}        & \{Probable, Possible|Impossible\}  & 2 \\\bottomrule
-    \end{tabular}
-    \caption{Classification scenarios}
-    \label{tab:scenarios}
-\end{table}
-
-
 \subsection{Pre-processing and data augmentation}
-To achieve robustness in training, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions (pixels): $64 \times 64$, $128 \times 128$ and $224 \times 224$, creating a training set for each case. 
+Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
+Augmentation is desired, particularly in situations where the number of original observations is small, and the effectiveness of various relevant techniques in this domain has been amply demonstrated \cite{shorten2019survey}.
+
+In order to achieve robustness in our model, and given the relatively small number of training images, we randomly cropped each image on either axis to 3024 $\times$ 3024 pixels, generating five instances for each one. Thus, we increased the size of our training set from 505 to 2525 images. Further, we performed horizontal flipping with a 50\% probability on each of the generated images. For efficiency, we converted the images to grayscale and scaled the pixel values from 0 to 1. Finally, we downsampled the images to the following resolutions (pixels): $64 \times 64$, $128 \times 128$ and $224 \times 224$, creating a training set for each case. 
 Random sets of images from each class across each of the four classification scenarios are shown in \autoref{fig:processed_images}.
 
 \begin{figure}[h!]
@@ -288,11 +272,29 @@ Random sets of images from each class across each of the four classification sce
 \end{figure}
 
 \subsection{Convolutional neural network}
-
 % We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
+We employ a convolutional neural network (CNN) as the AI framework for tree risk failure likelihood prediction.
+Like other neural networks, the CNN is an arrangement of neurons within layers, each neuron performing an operation that maps from a pixel in an input image to the final output. 
+The input into each neuron is a weighted sum from the previous layer, while the output from each neuron is modulated by an activation function.
+The activation function in the final layer of an CNN is typically the softmax function, which gives the class probabilities of a given input image. 
+A class is assigned to the image based on the one with the corresponding maximum probability.
 
+Unlike other neural networks, however, the CNN performs fundamental pixel-mapping operations in its "convolutional" layers. Each convolutional layer is defined by a stack of feature maps, which result from a dot product of a filter and correspondinlgy-sized local receptive fields from the input image or preceding layer. 
+The numeric values of the filters correspond to weights whose optimal values are learned during the training of the CNN.
+The size of the filter in each convolutional layer is given by the "kernel size."
+
+In this paper, we employ a relatively simple CNN architecture, historically inspired by AlexNet \cite{krizhevsky2012imageneta}.
 The structure of the CNN is shown in \autoref{fig:cnn}.
-
+After the input layer (a matrix of pixels from the input image), we use a 64-filter convolutional layer.
+The output is downsampled using a pooling layer that returns the maximum ouput from a $2\times 2$ subsample from the previous layer.
+Next, we stack two successive convolutional layers each with a depth of 128 filters.
+We follow these with a maximum-pooling layer and then two further 256-filter convolutional layers.
+A final maximum-pooling layer is used before we "flatten" all outputs into a one-dimensional (fully-connected) array of neurons. 
+After flattening the outputs, we use a dense layer to reduce the number of outputs a specified number of units.
+Batch normalization \cite{ioffe2015batch} is employed after the first dense layer to improve training efficiency.
+A second dense layer is used prior to the output layer, with the number of outputs corresponding to the number of classes in the dataset.
+A regularization technique known as "dropout" is used after each dense layer.
+In each dropout layer, a proportion of the neurons are randomly zeroed during training in order to improve the robustness of the model.
 \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{net2vis/graph.pdf}
@@ -304,26 +306,102 @@ The structure of the CNN is shown in \autoref{fig:cnn}.
     \label{fig:cnn}
 \end{figure}
 
-\subsection{Hyperparameter optimization}
-We used the Hyperband approach \cite{li2018hyperband} to perform a guided grid search to find the optimal hyperparameter values across each scenario and input resolution instance. Thus, we performed 12 searches on the following hyperparameters in our CNN:
-\begin{itemize}
-    \item kernel size in first convolutional layer $ks$
-    \item number of units in first densely connected layer $u_1$
-    \item dropout rate applied to outputs of first dense layer $d_1$
-    \item activation function for first dense layer $a_1$
-    \item number of units in second densely connected layer $u_2$
-    \item dropout rate applied to outputs of second dense layer $d_2$
-    \item activation function for second dense layer $a_2$
-    \item learning rate (of Adam optimizer) $\lambda$
-\end{itemize}
-Each search was conducted using 90 trials of unique hyperparameter combinations.
+The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
+We optimized eight of these parameters using the Hyperband approach \cite{li2018hyperband}.
+The others, however, were fixed.
+
+\begin{table}[]\small
+\rowcolors{1}{white}{gray!35}
+    \centering
+    \begin{tabular}{l c c c c c c c}\toprule
+    \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
+     &  & \bf Activation \\\midrule
+    Convolutional  & 1         & 64                & $k$   & 2           &&& ReLu \\
+    Max. Pooling   & 1         &                   & 2               &&&             &      \\
+    Convolutional  & 2         & 128               & 3   & 1           &&& ReLu \\
+    Convolutional  & 3         & 128               & 3   & 1           &&& ReLu \\
+    Max. Pooling   & 2         &                   & 2               &&&             &      \\    
+    Convolutional  & 4         & 256               & 3   & 1           &&& ReLu \\
+    Convolutional  & 5         & 256               & 3   & 1           &&& ReLu \\
+    Max. Pooling   & 3         &                   & 2               &             &&&      \\\midrule
+    Flatten & & & & &&& \\\midrule
+     &  &   &  & &
+     \bf Rate & \bf No.\ Units & \\\midrule
+    Dense           & 1  & & &  & & $u_1^*$ & $a_1^*$ \\
+    Dropout         & 1  & & &  & $r_1^*$ & &  \\
+    Dense           & 2  & & &  & & $u_2^*$ & $a_2^*$ \\
+    Dropout         & 2  & & &  & $r_2^*$ & & \\ \bottomrule
+    \end{tabular}
+    \caption{Summary of the convolutional neural network hyperparameters. 
+    Those indicated by an asterisked symbol are optimized using a guided search.}
+    \label{tab:hyp}
+\end{table}
+
+\subsection{Classification scenarios}
+In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, 
+we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
+Each scenario represents a unique grouping of each of the three categories, with a minimum of two derived classes in each case.
+Thus, 
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l c}\toprule
+    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
+    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
+    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
+    \texttt{PrPo\_Im}        & \{Probable + Possible, Improbable\}  & 2 \\
+    \texttt{Pr\_PoIm}        & \{Probable, Possible + Impossible\}  & 2 \\\bottomrule
+    \end{tabular}
+    \caption{Classification scenarios}
+    \label{tab:scenarios}
+\end{table}
 
 
+\subsection{Model training and assessment}
+The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
+The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. In this case, we use the categorical cross-entropy loss function, which is given by:
+\begin{equation}
+    L_{CE} = - \sum_{c\in C} y \log( f(c)_i)
+\end{equation}
+The softmax function returns the class prediction probabilities for a given observation $i$. It is defined for each class $c$ as:
+\begin{equation}
+    f(c)_i = \frac{e^{s^c_i}}{\sum_{c \in C} e^{s^c_i}}
+\end{equation}
+where $s^c_i$ is class score for the $i$th observation.
+Training is iteratively performed, with gradient updates averaged over a batch of input images.
+Here, we use a batch size of 32.
+The learning rate $\la$ of the optimization algorithm is an important hyperparameter that affects training performance.
+We optimized for this in the hyperparameter search as discussed.
+Furthermore, the CNN is trained over multiple passes through the entire training set.
+Each such pass is referred to as an epoch.
+
+In real terms, we measure the performance of the trained CNN by how accurately it predicts the classes in a validation set excluded from the training set. For this paper, we use a randomly sampled validation that was 20\% of the size of the input dataset of 2525 images in each training instance.
+Thus, we define the accuracy as the overall proportion of correct predictions across all classes.
+This metric was computed both for the training and validation sets in each epoch
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged for each class for assessing model performing. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
+\begin{align}
+\text{Macro-average precision: }    Pr^m &= \frac{1}{|C|}\sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
+\text{Macro-average recall: }    Re^m &= \frac{1}{|C|} \sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
+\text{Macro-average $F_1$ score: }    F_1^m &= \frac{1}{|C|} \sum_{c\in C} \left(  \frac{2  \mathrm{Pr}_{c} \mathrm{Re}_{c}}{\mathrm{Pr}_{c} + \mathrm{Re}_c}\right)
+\end{align}
+% \begin{align}
+% \text{Weighted average precision: }    \mathrm{Pr}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
+% \text{Weighted average recall: }    \mathrm{Re}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
+% \text{Weighted average $F_1$ score: }    F_1^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{2 n_c \mathrm{Pr}_{c} \mathrm{Re}_{c}}{\mathrm{Pr}_{c} + \mathrm{Re}_c}\right)
+% \end{align}
+where $c$ is the index of a class in the set $C$ and $|C|$ the number of classes in the dataset. 
+The class-specific prediction metrics are given by:
+\begin{align}
+    \text{True positives for class $c$: } \mathrm{TP}_c &= \sum_{i \in c} I(\hat{y}_i = y_i ) \\
+    \text{False positives for class $c$: } \mathrm{FP}_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
+    \text{False negatives for class $c$: } \mathrm{FN}_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
+\end{align}
+where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for a given image $i$ in class $c$. The indicator function $I(\cdot)$ returns 1 if the corresponding condition is true, and 0 otherwise.
 
 \section{Results}
 
-\subsection{Optimal hyperparameters}
-The results of the 8 hyperparameters optimized in each of the 12 training instances is shown in \autoref{tab:opt-hyp}.
+\subsection{Hyperparameter optimization}
+We performed a guided grid search to find the optimal hyperparameter values across each of the 12 unique classification scenario and image resolution instances.
+Each search was conducted using 90 trials of unique hyperparameter combinations. The results of the 8 hyperparameters optimized in each of the 12 training instances is shown in \autoref{tab:opt-hyp}.
 \begin{table}[ht!]\small
     \centering
     \sisetup{round-mode=places,
@@ -374,6 +452,55 @@ The results of the 8 hyperparameters optimized in each of the 12 training instan
 \caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
     \label{tab:opt-hyp}
 \end{table}
+
+
+\subsection{Analysis of classification strategies}
+We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 128-pixel resolution images.
+The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
+Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
+In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.05\textwidth]{cnn-performance-metrics-128px-plot}
+    \caption{Model performance across four classification scenarios for a single training instance in each case. Training resolution was 128px. All weighted average metrics were computed on the validation set.}
+    \label{fig:cnn-perf}
+\end{figure}
+
+We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
+Each row of the confusion mat
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Im}}
+    \label{pr_im_cm}
+  \end{subfigure}%
+   \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
+    \caption{Scenario \texttt{PrPo\_Im}}
+    \label{prpo_im_cm}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
+    \caption{Scenario \texttt{Pr\_PoIm}}
+    \label{pr_poim_cm}
+\end{subfigure}%
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_po_im_cm}
+  \end{subfigure}%
+    \caption{Confusion matrices for CNN performance using the 128px images across all scenarios.
+    Each row of a confusion matrix indicates the proportional distribution of class predictions for the true members of each class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the macro-average $Re^m$ for each scenario.}
+    \label{fig:confusion-matrix}
+\end{figure}
+
+
 \subsection{Sensitivity to training resolution}
 We trained the CNN for each of the 4 classification scenarios. In each scenarios, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, twelve learning instances were generated, using a training-validation ratio of 80:20. In each instance, we performed 10 trials, each consisting of 10 epochs. Validation sets were randomly selected in each trial, but consistent across each of the 12 training instances. The trajectories of the training/validation loss and accuracy are shown in \autoref{fig:sens-overall}. Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
 
@@ -417,65 +544,6 @@ Using the Welch test for pairwise comparisons of resolution performance within e
 
 Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
 
-\subsection{Analysis of classification strategies}
-We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 64px resolution images.
-The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
-In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the weighted averages of the precision, recall and $F_1$ score metrics. The precision score $\mathrm{Pr}$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $\mathrm{Re}$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics can also be weighted by the number of observations in each class in order to better indicate class-specific performance. We formally define these metrics in the following equations:
-
-\begin{align}
-\text{Weighted average precision: }    \mathrm{Pr}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
-\text{Weighted average recall: }    \mathrm{Re}^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{n_c \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
-\text{Weighted average $F_1$ score: }    F_1^w &= \frac{1}{\sum_{c\in C} n_c} \sum_{c\in C} \left(  \frac{2 n_c \mathrm{Pr}_{c} \mathrm{Re}_{c}}{\mathrm{Pr}_{c} + \mathrm{Re}_c}\right)
-\end{align}
-where the class-based metrics are given by:
-\begin{align}
-    \mathrm{TP}_c &= \sum_{i \in c} I(\hat{y}_i = y_i ) \\
-    \mathrm{FP}_c &= \sum_{i \in c} I(\hat{y}_i \in c | y_i \notin c) \\
-    \mathrm{FN}_c &= \sum_{i \in c} I(\hat{y}_i \notin c | y_i \in c)
-\end{align}
-
-Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
-In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significant worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1.05\textwidth]{cnn-performance-metrics-128px-plot}
-    \caption{Model performance across four classification scenarios for a single training instance in each case. Training resolution was 128px. All weighted average metrics were computed on the validation set.}
-    \label{fig:cnn-perf}
-\end{figure}
-
-We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
-
-\begin{figure}[ht]
-  \centering
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
-    \label{pr_po_im_cm}
-  \end{subfigure}%
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
-    \caption{Scenario \texttt{Pr\_Im}}
-    \label{pr_im_cm}
-  \end{subfigure}%
-  
-   \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
-    \caption{Scenario \texttt{PrPo\_Im}}
-    \label{prpo_im_cm}
-  \end{subfigure}%
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
-    \caption{Scenario \texttt{Pr\_PoIm}}
-    \label{pr_poim_cm}
-  \end{subfigure}%
-    \caption{Confusion matrix for final model performance using the 128px images across all scenarios.}
-    \label{fig:confusion-matrix}
-\end{figure}
 
 \begin{table}[ht]\small
     \centering
@@ -541,23 +609,25 @@ Model explainability is increasingly critical in the application of CNNs to an e
     \label{fig:my_label}
 \end{figure}
 
-\subsection{Comparison with state-of-the-art architectures}
-We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
+% \subsection{Comparison with state-of-the-art architectures}
+% We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
 
-\begin{table}[h!]\small
-  \centering
-  \begin{tabular}{l l l l l l l }\toprule
-    \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
-    & Error & Precision & Recall     & Error & Precision & Recall \\
-    SafeTree & & & & & & \\
-    GoogleNet (InceptionV3) & & & & & & \\
-    ResNet50 & & & & & & \\
-        VGGNet & & & & & & \\
-    AlexNet & & & & & & \\\bottomrule
-  \end{tabular}
-  \caption{Comparing our model SafeTree with state-of-the-art CNN architectures trained on our data}
-  \label{tab:comp}
-\end{table}
+% \begin{table}[h!]\small
+%   \centering
+%   \begin{tabular}{l l l l l l l }\toprule
+%     \bf Model & \multicolumn{3}{c}{\bf Training metrics} &\multicolumn{3}{c}{\bf Validation metrics}  \\\midrule
+%     & Error & Precision & Recall     & Error & Precision & Recall \\
+%     SafeTree & & & & & & \\
+%     GoogleNet (InceptionV3) & & & & & & \\
+%     ResNet50 & & & & & & \\
+%         VGGNet & & & & & & \\
+%     AlexNet & & & & & & \\\bottomrule
+%   \end{tabular}
+%   \caption{Comparing our model SafeTree with state-of-the-art CNN architectures trained on our data}
+%   \label{tab:comp}
+% \end{table}
+
+
 \section{Conclusion}
 
 \section{Data Availability Statement}
