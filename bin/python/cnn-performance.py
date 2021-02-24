@@ -91,14 +91,14 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     # training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
     #                                                                                            np.array([x[1] for x in image_sets[image_size][scenario]]), 
     #                                                                                            stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), 
-    #                                                                                            test_size = .2, random_state = 1)
+    #                                                                                            test_size = .2, random_state = trial_seed)
 
     print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
     print("Number of class validation images:", validation_labels.sum(axis=0), "total: ", validation_labels.sum())
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='loss', patience=5, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -114,7 +114,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy']) 
     hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(validation_images, validation_labels),
-                     callbacks = [model_metrics, early_stopping])     
+                     callbacks = [model_metrics,early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     model_name = "opt-cnn-" + scenario + "-" +str(image_size) + "-px"
@@ -238,7 +238,7 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, trial_seed =
         for j in np.arange(images_per_class):
             print(i, j, image_counter)
             heatmap = np.uint8(cm.jet(cam[image_counter])[..., :3] * 255)            
-            ax[i, j].imshow(gradcam_images[image_counter])
+            ax[i, j].imshow(gradcam_images[image_counter], cmap='gist_gray')
             ax[i, j].imshow(heatmap, cmap='jet', alpha=0.5) # overlay
             image_counter += 1
     plt.tight_layout()
@@ -283,4 +283,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1):
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=15, seed_val = 2)
+    getScenarioModelPerformance(res=128, num_epochs=15, seed_val = 1)
