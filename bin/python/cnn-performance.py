@@ -45,9 +45,14 @@ NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
+#
+#mage_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
 
-image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
-
+image_sets = dict.fromkeys(RESOLUTION_LIST)
+for p in RESOLUTION_LIST:
+    image_sets[p] = dict.fromkeys(SCENARIO_LIST)
+    for s in SCENARIO_LIST:
+        image_sets[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
 
                                    
 # https://github.com/keisen/tf-keras-vis/blob/master/examples/attentions.ipynb
