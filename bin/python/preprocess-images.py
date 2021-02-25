@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 ## GLOBAL VARIABLES
 IMG_SIZE = 108
-IMG_SIZE_LIST = [64, 128]#, 224]#, 384]
+IMG_SIZE_LIST = [128]#, 224]#, 384]
 NUM_CHANNELS = 1
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
@@ -70,7 +70,7 @@ def processImageData(img_size, expansion_factor, class_scenario, seed_value, cha
     data = []
     image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
-    print("Preprocessing images for scenario " + class_scenario + "and resolution " + str(img_size))
+    print("Preprocessing images for scenario " + class_scenario + "; resolution " + str(img_size))
     for img in image_list:
         label = getImageOneHotVector(img, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
@@ -143,6 +143,7 @@ def plotProcessedImages(class_scenario, image_array, class_list, images_per_clas
     image_filename = '../../figures/processed_input_images_' + str(class_scenario) + '_' + str(resolution) + '_px.png'
     #plt.xticks([0,3024])
     #plt.yticks([0,4032])
+    plt.tight_layout()
     fig.savefig(image_filename, dpi=180)
     return
 
