@@ -232,7 +232,26 @@ In this study, only images of trees assigned to the lowest 3 likelihood of failu
     \label{tab:classdist}
 \end{table}
 
-\subsection{Pre-processing and data augmentation}
+
+\subsection{Classification scenarios}
+In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, 
+we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
+Each scenario represents a unique grouping of each of the three categories, with a minimum of two derived classes in each case.
+Thus, 
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l c}\toprule
+    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
+    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
+    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
+    \texttt{PrPo\_Im}        & \{Probable + Possible, Improbable\}  & 2 \\
+    \texttt{Pr\_PoIm}        & \{Probable, Possible + Impossible\}  & 2 \\\bottomrule
+    \end{tabular}
+    \caption{Classification scenarios}
+    \label{tab:scenarios}
+\end{table}
+
+\subsection{Image pre-processing and augmentation}
 Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
 Augmentation is desired, particularly in situations where the number of original observations is small, and the effectiveness of various relevant techniques in this domain has been amply demonstrated \cite{shorten2019survey}.
 
@@ -243,26 +262,26 @@ Random sets of images from each class across each of the four classification sce
   \centering
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_Po_Im_64_px}
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_Po_Im_128_px}
     \caption{Scenario \texttt{Pr\_Po\_Im}}
     \label{pr_po_im_64}
   \end{subfigure}%
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_Im_64_px}
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_Im_128_px}
     \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_64}
   \end{subfigure}%
   
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_PrPo_Im_64_px}
+    \includegraphics[width=\linewidth]{processed_input_images_PrPo_Im_128_px}
     \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_64}
   \end{subfigure}%
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_PoIm_64_px}
+    \includegraphics[width=\linewidth]{processed_input_images_Pr_PoIm_128_px}
     \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_64}
   \end{subfigure}%
@@ -307,16 +326,13 @@ In each dropout layer, a proportion of the neurons are randomly zeroed during tr
 \end{figure}
 
 The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
-We optimized eight of these parameters using the Hyperband approach \cite{li2018hyperband}.
-The others, however, were fixed.
-
 \begin{table}[]\small
 \rowcolors{1}{white}{gray!35}
     \centering
     \begin{tabular}{l c c c c c c c}\toprule
     \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
      &  & \bf Activation \\\midrule
-    Convolutional  & 1         & 64                & $k$   & 2           &&& ReLu \\
+    Convolutional  & 1         & 64                & $k^*$   & 2           &&& ReLu \\
     Max. Pooling   & 1         &                   & 2               &&&             &      \\
     Convolutional  & 2         & 128               & 3   & 1           &&& ReLu \\
     Convolutional  & 3         & 128               & 3   & 1           &&& ReLu \\
@@ -337,39 +353,117 @@ The others, however, were fixed.
     \label{tab:hyp}
 \end{table}
 
-\subsection{Classification scenarios}
-In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, 
-we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
-Each scenario represents a unique grouping of each of the three categories, with a minimum of two derived classes in each case.
-Thus, 
-\begin{table}[h!]
+\subsection{Hyperparameter optimization}
+We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
+Twelve searches were performed for each classification scenario and image resolution combination.
+Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}.
+\begin{table}[ht!]\small
+%\rowcolors{7}{white}{gray!35}
     \centering
-    \begin{tabular}{l l c}\toprule
-    \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
-    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
-    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
-    \texttt{PrPo\_Im}        & \{Probable + Possible, Improbable\}  & 2 \\
-    \texttt{Pr\_PoIm}        & \{Probable, Possible + Impossible\}  & 2 \\\bottomrule
-    \end{tabular}
-    \caption{Classification scenarios}
-    \label{tab:scenarios}
+    \sisetup{round-mode=places,
+        round-precision=2,
+        scientific-notation=fixed,
+        exponent-product = \cdot,
+        table-omit-exponent,
+        fixed-exponent=-4
+        }
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+\begin{tabular}{@{}lllrrr@{}}
+\toprule
+\multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameter}} & \multirow{2}{*}{\textbf{Range}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){4-6} 
+                          &                              &                           & \textbf{64}             & \textbf{128}            & \textbf{224}            \\ \midrule
+\multirow{8}{*}{PrPo\_Im}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
+                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & tanh                    & relu                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.25                    & 0.1                     \\
+                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
+                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 384                     & 480                     \\
+                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 256                     & 448                     \\
+                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\\midrule
+\multirow{8}{*}{Pr\_Im}    & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
+                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.1                     & 0.1                     \\
+                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.3                     & 0.3                     \\
+                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 480                     & 480                     \\
+                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 448                     & 448                     \\
+                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\\midrule
+\multirow{8}{*}{Pr\_PoIm}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
+                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & tanh                    & relu                    & tanh                    \\
+                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.25                    & 0.1                     & 0.2                     \\
+                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.3                     & 0.15                    \\
+                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 128                     & 480                     & 416                     \\
+                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 320                     & 448                     & 416                     \\
+                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\\midrule
+\multirow{8}{*}{Pr\_Po\_Im} & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
+                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & tanh                    & relu                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & tanh                    & relu                    & relu                    \\
+                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.25                    & 0.25                    & 0.1                     \\
+                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
+                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 128                     & 384                     & 480                     \\
+                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 320                     & 256                     & 448                     \\
+                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\ \bottomrule
+\end{tabular}
+% \begin{tabular}{@{}lllll@{}}
+% \toprule
+% \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
+%                             &                & 64                & 128               & 224               \\ \midrule
+% \multirow{8}{*}{PrPo\_Im}   & activation\_1  & relu              & tanh              & relu              \\
+%                             & activation\_2  & relu              & relu              & relu              \\
+%                             & dropout\_1     & 0.1               & 0.25              & 0.1               \\
+%                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
+%                             & kernel\_size   & 7                 & 5                 & 7                 \\
+%                             & learning\_rate & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\
+%                             & units\_1       & 480               & 384               & 480               \\
+%                             & units\_2       & 448               & 256               & 448               \\\midrule
+% \multirow{8}{*}{Pr\_Im}     & activation\_1  & relu              & relu              & relu              \\
+%                             & activation\_2  & relu              & relu              & relu              \\
+%                             & dropout\_1     & 0.1               & 0.1               & 0.1               \\
+%                             & dropout\_2     & 0.3               & 0.3               & 0.3               \\
+%                             & kernel\_size   & 7                 & 7                 & 7                 \\
+%                             & learning\_rate & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\
+%                             & units\_1       & 480               & 480               & 480               \\
+%                             & units\_2       & 448               & 448               & 448               \\\midrule
+% \multirow{8}{*}{Pr\_PoIm}   & activation\_1  & relu              & relu              & relu              \\
+%                             & activation\_2  & tanh              & relu              & tanh              \\
+%                             & dropout\_1     & 0.25              & 0.1               & 0.2               \\
+%                             & dropout\_2     & 0.3               & 0.3               & 0.15              \\
+%                             & kernel\_size   & 7                 & 7                 & 7                 \\
+%                             & learning\_rate & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\
+%                             & units\_1       & 128               & 480               & 416               \\
+%                             & units\_2       & 320               & 448               & 416               \\
+% \multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & relu              & tanh              & relu              \\\midrule
+%                             & activation\_2  & tanh              & relu              & relu              \\
+%                             & dropout\_1     & 0.25              & 0.25              & 0.1               \\
+%                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
+%                             & kernel\_size   & 7                 & 5                 & 7                 \\
+%                             & learning\_rate & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\
+%                             & units\_1       & 128               & 384               & 480               \\
+%                             & units\_2       & 320               & 256               & 448               \\ \bottomrule
+% \end{tabular}
+% Table edited at: https://www.tablesgenerator.com/latex_tables#
+\caption{Optimal hyperparameters found using the Hyperband search algorithm for 12 classification scenario and input image resolution combinations.}
+    \label{tab:opt-hyp}
 \end{table}
 
-
 \subsection{Model training and assessment}
+The softmax activation function in the output layer returns the class prediction probabilities for a given observation $i$. It is defined in terms of the class-specific score $s_c$:
+\begin{equation}
+    f(s_c) = \frac{e^{s^c}}{\sum\limits_{c' \in C} e^{s_{c'}}}
+\end{equation}
+Thus for the $i$th observation, the softmax activation return the predicted probability $p_{i,c}$ that the $i$th observation belongs to class $c$.
 The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
-The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. In this case, we use the categorical cross-entropy loss function, which is given by:
+The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. 
+In this case, we use the categorical cross-entropy loss function, which for a single observation can be simply defined as:
 \begin{equation}
-    L_{CE} = - \sum_{c\in C} y \log( f(c)_i)
+    L_{i}^{CE} = -  \log( p_{i,c}) = - \log(f(s_c^i))
 \end{equation}
-The softmax function returns the class prediction probabilities for a given observation $i$. It is defined for each class $c$ as:
-\begin{equation}
-    f(c)_i = \frac{e^{s^c_i}}{\sum_{c \in C} e^{s^c_i}}
-\end{equation}
-where $s^c_i$ is class score for the $i$th observation.
-Training is iteratively performed, with gradient updates averaged over a batch of input images.
+Training is iteratively performed, with gradient of the loss function computed and averaged over a batch of input images.
 Here, we use a batch size of 32.
-The learning rate $\la$ of the optimization algorithm is an important hyperparameter that affects training performance.
+The learning rate $\lambda$ of the optimization algorithm is an important hyperparameter that affects training performance.
 We optimized for this in the hyperparameter search as discussed.
 Furthermore, the CNN is trained over multiple passes through the entire training set.
 Each such pass is referred to as an epoch.
@@ -377,7 +471,7 @@ Each such pass is referred to as an epoch.
 In real terms, we measure the performance of the trained CNN by how accurately it predicts the classes in a validation set excluded from the training set. For this paper, we use a randomly sampled validation that was 20\% of the size of the input dataset of 2525 images in each training instance.
 Thus, we define the accuracy as the overall proportion of correct predictions across all classes.
 This metric was computed both for the training and validation sets in each epoch
-In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged for each class for assessing model performing. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
 \begin{align}
 \text{Macro-average precision: }    Pr^m &= \frac{1}{|C|}\sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
 \text{Macro-average recall: }    Re^m &= \frac{1}{|C|} \sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
@@ -399,59 +493,7 @@ where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for 
 
 \section{Results}
 
-\subsection{Hyperparameter optimization}
-We performed a guided grid search to find the optimal hyperparameter values across each of the 12 unique classification scenario and image resolution instances.
-Each search was conducted using 90 trials of unique hyperparameter combinations. The results of the 8 hyperparameters optimized in each of the 12 training instances is shown in \autoref{tab:opt-hyp}.
-\begin{table}[ht!]\small
-    \centering
-    \sisetup{round-mode=places,
-        round-precision=2,
-        scientific-notation=fixed,
-        exponent-product = \cdot,
-        table-omit-exponent,
-        fixed-exponent=-4
-        }
-\begin{tabular}{@{}lllll@{}}
-\toprule
-\multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
-                            &                & 64                & 128               & 224               \\ \midrule
-\multirow{8}{*}{PrPo\_Im}   & activation\_1  & relu              & tanh              & relu              \\
-                            & activation\_2  & relu              & relu              & relu              \\
-                            & dropout\_1     & 0.1               & 0.25              & 0.1               \\
-                            & dropout\_2     & 0.3               & 0.35              & 0.3               \\
-                            & kernel\_size   & 7                 & 5                 & 7                 \\
-                            & learning\_rate & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\
-                            & units\_1       & 480               & 384               & 480               \\
-                            & units\_2       & 448               & 256               & 448               \\\midrule
-\multirow{8}{*}{Pr\_Im}     & activation\_1  & relu              & relu              & relu              \\
-                            & activation\_2  & relu              & relu              & relu              \\
-                            & dropout\_1     & 0.1               & 0.1               & 0.1               \\
-                            & dropout\_2     & 0.3               & 0.3               & 0.3               \\
-                            & kernel\_size   & 7                 & 7                 & 7                 \\
-                            & learning\_rate & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\
-                            & units\_1       & 480               & 480               & 480               \\
-                            & units\_2       & 448               & 448               & 448               \\\midrule
-\multirow{8}{*}{Pr\_PoIm}   & activation\_1  & relu              & relu              & relu              \\
-                            & activation\_2  & tanh              & relu              & tanh              \\
-                            & dropout\_1     & 0.25              & 0.1               & 0.2               \\
-                            & dropout\_2     & 0.3               & 0.3               & 0.15              \\
-                            & kernel\_size   & 7                 & 7                 & 7                 \\
-                            & learning\_rate & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\
-                            & units\_1       & 128               & 480               & 416               \\
-                            & units\_2       & 320               & 448               & 416               \\
-\multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & relu              & tanh              & relu              \\\midrule
-                            & activation\_2  & tanh              & relu              & relu              \\
-                            & dropout\_1     & 0.25              & 0.25              & 0.1               \\
-                            & dropout\_2     & 0.3               & 0.35              & 0.3               \\
-                            & kernel\_size   & 7                 & 5                 & 7                 \\
-                            & learning\_rate & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\
-                            & units\_1       & 128               & 384               & 480               \\
-                            & units\_2       & 320               & 256               & 448               \\ \bottomrule
-\end{tabular}
-% Table edited at: https://www.tablesgenerator.com/latex_tables#
-\caption{Optimal hyperparameters found using the Hyperband search algorithm for all classification scenario and input image resolution combinations.}
-    \label{tab:opt-hyp}
-\end{table}
+%\subsection{Hyperparameter optimization}
 
 
 \subsection{Analysis of classification strategies}
