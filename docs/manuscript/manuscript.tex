@@ -260,33 +260,34 @@ Random sets of images from each class across each of the four classification sce
 
 \begin{figure}[h!]
   \centering
-  \begin{subfigure}[t]{.5\linewidth}
+  \begin{subfigure}[t]{.75\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_Po_Im_128_px}
+    \includegraphics[width=.8\linewidth, trim={0 3cm 0 3cm}, clip]{processed_input_images_Pr_Po_Im_128_px}
     \caption{Scenario \texttt{Pr\_Po\_Im}}
     \label{pr_po_im_64}
   \end{subfigure}%
+  
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_Im_128_px}
+    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_Pr_Im_128_px}
     \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_64}
   \end{subfigure}%
   
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_PrPo_Im_128_px}
+    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_PrPo_Im_128_px}
     \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_64}
   \end{subfigure}%
   \begin{subfigure}[t]{.5\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{processed_input_images_Pr_PoIm_128_px}
+    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_Pr_PoIm_128_px}
     \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_64}
   \end{subfigure}%
 
-  \caption{Random examples of the processed training images under each classification scenario; 64 pixels.}
+  \caption{Random examples of the processed training images under each classification scenario; 128 pixels.}
   \label{fig:processed_images}
 \end{figure}
 
@@ -332,13 +333,13 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
     \begin{tabular}{l c c c c c c c}\toprule
     \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
      &  & \bf Activation \\\midrule
-    Convolutional  & 1         & 64                & $k^*$   & 2           &&& ReLu \\
+    Convolutional  & 1         & 64                & $k^*$   & 2           &&& ReLU \\
     Max. Pooling   & 1         &                   & 2               &&&             &      \\
-    Convolutional  & 2         & 128               & 3   & 1           &&& ReLu \\
-    Convolutional  & 3         & 128               & 3   & 1           &&& ReLu \\
+    Convolutional  & 2         & 128               & 3   & 1           &&& ReLU \\
+    Convolutional  & 3         & 128               & 3   & 1           &&& ReLU \\
     Max. Pooling   & 2         &                   & 2               &&&             &      \\    
-    Convolutional  & 4         & 256               & 3   & 1           &&& ReLu \\
-    Convolutional  & 5         & 256               & 3   & 1           &&& ReLu \\
+    Convolutional  & 4         & 256               & 3   & 1           &&& ReLU \\
+    Convolutional  & 5         & 256               & 3   & 1           &&& ReLU \\
     Max. Pooling   & 3         &                   & 2               &             &&&      \\\midrule
     Flatten & & & & &&& \\\midrule
      &  &   &  & &
@@ -356,7 +357,8 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 \subsection{Hyperparameter optimization}
 We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
 Twelve searches were performed for each classification scenario and image resolution combination.
-Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}.
+Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates $\la$ for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
+
 \begin{table}[ht!]\small
 %\rowcolors{7}{white}{gray!35}
     \centering
@@ -370,37 +372,37 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
 % \usepackage{multirow}
-\begin{tabular}{@{}lllrrr@{}}
+\begin{tabular}{@{}lllccc@{}}
 \toprule
 \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameter}} & \multirow{2}{*}{\textbf{Range}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){4-6} 
                           &                              &                           & \textbf{64}             & \textbf{128}            & \textbf{224}            \\ \midrule
 \multirow{8}{*}{PrPo\_Im}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
-                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & tanh                    & relu                    \\
-                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & tanh                    & ReLU                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
                           & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.25                    & 0.1                     \\
                           & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
                           & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 384                     & 480                     \\
                           & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 256                     & 448                     \\
                           & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\\midrule
 \multirow{8}{*}{Pr\_Im}    & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
-                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
-                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
+                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
                           & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.1                     & 0.1                     \\
                           & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.3                     & 0.3                     \\
                           & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 480                     & 480                     \\
                           & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 448                     & 448                     \\
                           & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\\midrule
 \multirow{8}{*}{Pr\_PoIm}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
-                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & relu                    & relu                    \\
-                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & tanh                    & relu                    & tanh                    \\
+                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & tanh                    & ReLU                    & tanh                    \\
                           & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.25                    & 0.1                     & 0.2                     \\
                           & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.3                     & 0.15                    \\
                           & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 128                     & 480                     & 416                     \\
                           & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 320                     & 448                     & 416                     \\
                           & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\\midrule
 \multirow{8}{*}{Pr\_Po\_Im} & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
-                          & 1st dense activation, $a_1$  & \{ReLu, $\tanh$\}         & relu                    & tanh                    & relu                    \\
-                          & 2nd dense activation, $a_2$  & \{ReLu, $\tanh$\}         & tanh                    & relu                    & relu                    \\
+                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & tanh                    & ReLU                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & tanh                    & ReLU                    & ReLU                    \\
                           & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.25                    & 0.25                    & 0.1                     \\
                           & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
                           & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 128                     & 384                     & 480                     \\
@@ -411,32 +413,32 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 % \toprule
 % \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
 %                             &                & 64                & 128               & 224               \\ \midrule
-% \multirow{8}{*}{PrPo\_Im}   & activation\_1  & relu              & tanh              & relu              \\
-%                             & activation\_2  & relu              & relu              & relu              \\
+% \multirow{8}{*}{PrPo\_Im}   & activation\_1  & ReLU              & tanh              & ReLU              \\
+%                             & activation\_2  & ReLU              & ReLU              & ReLU              \\
 %                             & dropout\_1     & 0.1               & 0.25              & 0.1               \\
 %                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
 %                             & kernel\_size   & 7                 & 5                 & 7                 \\
 %                             & learning\_rate & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\
 %                             & units\_1       & 480               & 384               & 480               \\
 %                             & units\_2       & 448               & 256               & 448               \\\midrule
-% \multirow{8}{*}{Pr\_Im}     & activation\_1  & relu              & relu              & relu              \\
-%                             & activation\_2  & relu              & relu              & relu              \\
+% \multirow{8}{*}{Pr\_Im}     & activation\_1  & ReLU              & ReLU              & ReLU              \\
+%                             & activation\_2  & ReLU              & ReLU              & ReLU              \\
 %                             & dropout\_1     & 0.1               & 0.1               & 0.1               \\
 %                             & dropout\_2     & 0.3               & 0.3               & 0.3               \\
 %                             & kernel\_size   & 7                 & 7                 & 7                 \\
 %                             & learning\_rate & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\
 %                             & units\_1       & 480               & 480               & 480               \\
 %                             & units\_2       & 448               & 448               & 448               \\\midrule
-% \multirow{8}{*}{Pr\_PoIm}   & activation\_1  & relu              & relu              & relu              \\
-%                             & activation\_2  & tanh              & relu              & tanh              \\
+% \multirow{8}{*}{Pr\_PoIm}   & activation\_1  & ReLU              & ReLU              & ReLU              \\
+%                             & activation\_2  & tanh              & ReLU              & tanh              \\
 %                             & dropout\_1     & 0.25              & 0.1               & 0.2               \\
 %                             & dropout\_2     & 0.3               & 0.3               & 0.15              \\
 %                             & kernel\_size   & 7                 & 7                 & 7                 \\
 %                             & learning\_rate & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\
 %                             & units\_1       & 128               & 480               & 416               \\
 %                             & units\_2       & 320               & 448               & 416               \\
-% \multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & relu              & tanh              & relu              \\\midrule
-%                             & activation\_2  & tanh              & relu              & relu              \\
+% \multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & ReLU              & tanh              & ReLU              \\\midrule
+%                             & activation\_2  & tanh              & ReLU              & ReLU              \\
 %                             & dropout\_1     & 0.25              & 0.25              & 0.1               \\
 %                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
 %                             & kernel\_size   & 7                 & 5                 & 7                 \\
@@ -615,41 +617,41 @@ PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
 \end{table}
 
 
-\subsection{Model visualization and inference}
-Model explainability is increasingly critical in the application of CNNs to an ever-expanding set of problems.
+% \subsection{Model visualization and inference}
+% Model explainability is increasingly critical in the application of CNNs to an ever-expanding set of problems.
 
-\begin{figure}[ht]
-    \centering
+% \begin{figure}[ht]
+%     \centering
 
-    \begin{subfigure}[t]{.45\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-gradcam-Pr_Im-128-px-4-images.png}
-    \caption{Scenario \texttt{Pr\_Im}}
-    \label{prpo_im_cm}
-    \end{subfigure}%   
-    \begin{subfigure}[t]{.45\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-gradcam-PrPo_Im-128-px-4-images.png}
-    \caption{Scenario \texttt{PrPo\_Im}}
-    \label{prpo_im_cm}
-    \end{subfigure}%
+%     \begin{subfigure}[t]{.45\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{opt-gradcam-Pr_Im-128-px-4-images.png}
+%     \caption{Scenario \texttt{Pr\_Im}}
+%     \label{prpo_im_cm}
+%     \end{subfigure}%   
+%     \begin{subfigure}[t]{.45\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{opt-gradcam-PrPo_Im-128-px-4-images.png}
+%     \caption{Scenario \texttt{PrPo\_Im}}
+%     \label{prpo_im_cm}
+%     \end{subfigure}%
     
-    \begin{subfigure}[t]{.45\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-gradcam-Pr_PoIm-128-px-4-images.png}
-    \caption{Scenario \texttt{Pr\_PoIm}}
-    \label{prpo_im_cm}
-    \end{subfigure}%
-    \begin{subfigure}[t]{.45\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-gradcam-Pr_Po_Im-128-px-4-images.png}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
-    \label{prpo_im_cm}
-    \end{subfigure}%
+%     \begin{subfigure}[t]{.45\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{opt-gradcam-Pr_PoIm-128-px-4-images.png}
+%     \caption{Scenario \texttt{Pr\_PoIm}}
+%     \label{prpo_im_cm}
+%     \end{subfigure}%
+%     \begin{subfigure}[t]{.45\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{opt-gradcam-Pr_Po_Im-128-px-4-images.png}
+%     \caption{Scenario \texttt{Pr\_Po\_Im}}
+%     \label{prpo_im_cm}
+%     \end{subfigure}%
     
-    \caption{Gradient-weighted class activation maps (Grad-CAMs) for randomly selected validation images in each class. (Resolution: 128px)}
-    \label{fig:my_label}
-\end{figure}
+%     \caption{Gradient-weighted class activation maps (Grad-CAMs) for randomly selected validation images in each class. (Resolution: 128px)}
+%     \label{fig:my_label}
+% \end{figure}
 
 % \subsection{Comparison with state-of-the-art architectures}
 % We compare the performance of our selected model with existing high-performance architectures. The results are summarized in \autoref{tab:comp}.
@@ -671,6 +673,26 @@ Model explainability is increasingly critical in the application of CNNs to an e
 
 
 \section{Conclusion}
+We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood (Probable, Possible and Improbable) with respect to utility infrastructure. Specifically, we developed a convolutional neural network with state-of-the-art configurations.
+We applied data augmentation and pre-processing strategies to increase the size of our dataset by a factor of 5, thus generating 2525 images.
+From an initial resolution of $4032 \times 3024$ pixels, we created three sets of image resolutions: $64 \times 64$, $128 \times 128$ and $224 \times 224$.
+We then optimized eight of our CNN hyperparameters for 12  classification scenario and image resolution combinations. 
+We conducted ten model training trials in each of the 12 cases, using a 20\% validation set to measure model performance.
+In these trials, the average accuracy of classification was $\geq 0.94$, with a maximum standard deviation of 0.7.
+There was no statistically significant difference between the performance across image resolutions.
+
+We further conducted more detailed classification performance analyses over single training instances for the 128-pixel case.
+Our results indicate that the CNN performed best at recalling Probable vs. Improbable cases.
+The Possible category appeared to be a confounding case.
+This was not unexpected, given the uncertainty and subjectivity in assessing these trees to begin with.
+The CNN, however, performed better at distinguishing between Possible/Improbable and Probable, than between Probable/Possible and Improbable.
+This might be an indicator that the Possible cases are more likely identified as Improbable.
+When all three failure-likelihood categories were predicted individually, the Possible case had the lowest recall score.
+
+Nevertheless, given the relatively small input dataset of original images, these preliminary results are extremely promising for future improvements.
+First, we can train better models with more data.
+We also plan to rigorously quantify the uncertainty in ground truth category assignments by incorporating predictions from multiple experts on the same images.
+In order to better understand how the CNN is classifying each image, we will conduct extensive visual inference in further work, for instance, using the gradient-weighted class activation mapping approach \cite{zeiler2014visualizing}.
 
 \section{Data Availability Statement}
 All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
