@@ -133,16 +133,16 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\NameTag{Author1LastName, \today}
+\NameTag{Oke, \today}
 
 \begin{document}
 % ALL CAPS TITLE REQUIRED
-\title{Predicting tree failure likelihood for utility risk mitigation via a novel convolutional neural network}
-\author[1]{Author 1}
-\author[1]{Author 2}
-\author[2]{Author 3}
-\author[2]{Author 4}
-\author[2]{Author 5}
+\title{Predicting tree failure likelihood for utility risk mitigation via artificial intelligence}
+\author[1]{Jimi Oke}
+\author[1]{Nasko Apostolov}
+\author[2]{Ryan Suttle}
+\author[1]{Sanjay Arwade}
+\author[2]{Brian Kane}
 
 \affil[1]{Department of Civil and Environmental Engineering, University of Massachusetts Amherst, MA 01003, USA} %. Email: author.one@umass.edu}
 \affil[2]{Department of Environmental Conservation, University of Massachusetts Amherst, MA 01003, USA}
@@ -150,7 +150,14 @@
 \maketitle
 
 \begin{abstract}
-    Abstract here.
+  Critical to the resilience of utility power lines, tree failure assessments have historically been performed via
+  manual and visual inspections.  In this paper, we develop a convolutional neural network (CNN) to predict tree failure
+  likelihood categories under four classification scenarios.  Starting with an original set of expert-labeled 525 images, we perform
+  preprocessing and augmentation tasks to increase the number of samples. We optimize several hyperparameters in our CNN
+  and test its performance for three different image resolutions. The trained classifier has an average validation
+  accuracy of at least 0.94 across all scenario-resolution combinations.  Thus, via this novel framework, we
+  demonstrate the potential of artificial intelligence to automate and consequently reduce the costs of tree failure
+  likelihood assessments, thereby promoting sustainable infrastructure.
 \end{abstract}
 
 \section{Introduction}
@@ -176,7 +183,7 @@ The remainder of the paper provides a brief history and background of AI and its
 
 %\subsection{AI and risk assessment}
 AI-based image analysis is relatively widely used, even in engineering applications, such as earthquake risk assessment \cite{jiao2020artificial,salehi2018emerging} and structural health monitoring \cite{spencer2019advances,wang2019novel}. Neural networks, which comprise a major category of AI frameworks, have been widely applied in the field of earthquake risk assessment (an excellent review is provided by \citeN{xie2020promise}), but the authors are not aware of attempts to operate directly on, for example, building images in the absence of technical structural data to predict seismic risk.  Neural networks have also been used to interrogate remote sensing data of the landscape to assess landslide risk \cite{su2020deep}.
-A few recent efforts have demonstrated the potential for AI-based tree recognition from drone imagery \cite{santos2019assessment, egli2020cnnbased}. Furthermore, an application of a convolutional neural network (CNN) to tree species identification using was recently demonstrated by \citeN{fricker2019convolutional}. 
+A few recent efforts have demonstrated the potential for AI-based tree recognition from drone imagery \cite{santos2019assessment,egli2020cnnbased}. Furthermore, an application of a convolutional neural network (CNN) to tree species identification using was recently demonstrated by \citeN{fricker2019convolutional}. 
 Yet, AI has yet to be applied to the problem of tree-utility line risk assessment---one that is complicated by the very large number of tree species to be considered, seasonal variation in tree appearance and associated risk and local meteorological conditions. 
 
 
@@ -498,51 +505,7 @@ where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for 
 %\subsection{Hyperparameter optimization}
 
 
-\subsection{Analysis of classification strategies}
-We investigated in the detail the performance of the four classification scenarios earlier outlined, using the 128-pixel resolution images.
-The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
-Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
-In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1.05\textwidth]{cnn-performance-metrics-128px-plot}
-    \caption{Model performance across four classification scenarios for a single training instance in each case. Training resolution was 128px. All weighted average metrics were computed on the validation set.}
-    \label{fig:cnn-perf}
-\end{figure}
-
-We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
-Each row of the confusion mat
-\begin{figure}[ht]
-  \centering
-  \begin{subfigure}[t]{.25\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
-    \caption{Scenario \texttt{Pr\_Im}}
-    \label{pr_im_cm}
-  \end{subfigure}%
-   \begin{subfigure}[t]{.25\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
-    \caption{Scenario \texttt{PrPo\_Im}}
-    \label{prpo_im_cm}
-  \end{subfigure}%
-  \begin{subfigure}[t]{.25\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
-    \caption{Scenario \texttt{Pr\_PoIm}}
-    \label{pr_poim_cm}
-\end{subfigure}%
-  \begin{subfigure}[t]{.25\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
-    \label{pr_po_im_cm}
-  \end{subfigure}%
-    \caption{Confusion matrices for CNN performance using the 128px images across all scenarios.
-    Each row of a confusion matrix indicates the proportional distribution of class predictions for the true members of each class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the macro-average $Re^m$ for each scenario.}
-    \label{fig:confusion-matrix}
-\end{figure}
 
 
 \subsection{Sensitivity to training resolution}
@@ -589,6 +552,58 @@ Using the Welch test for pairwise comparisons of resolution performance within e
 Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
 
 
+\subsection{Analysis of classification strategies}
+We investigated in detail the performance of the four classification scenarios earlier outlined, using the 128-pixel resolution images.
+The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
+Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
+In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.05\textwidth]{cnn-performance-metrics-128px-plot}
+    \caption{Model performance across four classification scenarios for a single training instance in each case. Training resolution was 128px. All weighted average metrics were computed on the validation set.}
+    \label{fig:cnn-perf}
+\end{figure}
+
+We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
+Each row of the confusion matrix indicates the proportion of observation in a given class that are predicted to be in the classes across the columns.
+Thus, the diagonal entry in each matrix represents the class-specific recall score, $Re_{c}$.
+The matrices show that generally, the ``Possible'' category is difficult to predict accurately as an individual class.
+The classifier performs best when it only has to distinguish between ``Probable'' and ``Improbable'' (\autoref{pr_im_cm}). Performance only suffers slightly when ``Possible'' is grouped with ``Probable'' in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Im}}
+    \label{pr_im_cm}
+  \end{subfigure}%
+   \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-PrPo_Im-128-px.png}
+    \caption{Scenario \texttt{PrPo\_Im}}
+    \label{prpo_im_cm}
+  \end{subfigure}%
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_PoIm-128-px.png}
+    \caption{Scenario \texttt{Pr\_PoIm}}
+    \label{pr_poim_cm}
+\end{subfigure}%
+  \begin{subfigure}[t]{.25\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
+    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \label{pr_po_im_cm}
+  \end{subfigure}%
+    \caption{Confusion matrices for CNN performance using the 128px images across all scenarios.
+    Each row of a confusion matrix indicates the proportional distribution of class predictions for the true members of each class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the macro-average $Re^m$ for each scenario.}
+    \label{fig:confusion-matrix}
+  \end{figure}
+
+  The detailed performance metrics for the 128-pixel case are summarized in \autoref{tab:performance}.
+  
 \begin{table}[ht]\small
     \centering
 \begin{tabular}{@{}llllll@{}}
@@ -612,7 +627,7 @@ PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
          & accuracy            &      &      & 0.92 & 505 \\
          & weighted avg        & 0.93 & 0.92 & 0.92 & 505 \\ \bottomrule
 \end{tabular}
-    \caption{Performance metrics across the four scenarios}
+    \caption{Detailed performance metrics across the four scenarios in the 128-pixel case (single trial)}
     \label{tab:performance}
 \end{table}
 
@@ -671,7 +686,7 @@ PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
 %   \label{tab:comp}
 % \end{table}
 
-
+\eject
 \section{Conclusion}
 We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood (Probable, Possible and Improbable) with respect to utility infrastructure. Specifically, we developed a convolutional neural network with state-of-the-art configurations.
 We applied data augmentation and pre-processing strategies to increase the size of our dataset by a factor of 5, thus generating 2525 images.
@@ -697,10 +712,8 @@ In order to better understand how the CNN is classifying each image, we will con
 \section{Data Availability Statement}
 All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
 
-Please also see the guidelines at: \url{https://ascelibrary.org/page/dataavailability}.
-
 \section{Acknowledgments}
-The authors would like to thank...
+The authors acknowledge the support of Eversource.
 
 \appendix
 

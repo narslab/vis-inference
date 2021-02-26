@@ -104,9 +104,3 @@ def main(num_trials = NUM_MODEL_RUNS):
 
 if __name__ == "__main__":
     main()
-
-
-# predictions = model.predict_classes(x_val)
-# predictions = predictions.reshape(1,-1)[0]
-
-# print(classification_report(y_val, predictions, target_names = ['Rugby (Class 0)','Soccer (Class 1)']))

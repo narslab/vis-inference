@@ -40,7 +40,7 @@ from sklearn.metrics import classification_report, accuracy_score, f1_score, pre
 # Globals
 NUM_CHANNELS = 1
 RESOLUTION_LIST = [64, 128, 224] # 64, 128] #, 224, 384]
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["Pr_Po_Im"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", 
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -86,7 +86,7 @@ class Metrics(Callback):
 
 
 def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
-    
+    random.reset_seeds()
     # IMAGES (former approach)
     training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
@@ -103,9 +103,10 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=15, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
+    del model
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
     model = constructBaseCNN(image_size, scenario, num_channels = NUM_CHANNELS)    ## get model
@@ -295,4 +296,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=20, seed_val = 111, test_boolean=False)
+    getScenarioModelPerformance(res=128, num_epochs=100, seed_val = 1, test_boolean=True)
