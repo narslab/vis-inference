@@ -31,7 +31,7 @@ import sys
 sys.path.append("../python/")
 from helpers import *
 from sklearn.metrics import classification_report, accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+#from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 #from sklearn.preprocessing import OrdinalEncoder
 #enc = OrdinalEncoder()
 
@@ -39,7 +39,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128] # 64, 128] #, 224, 384]
+RESOLUTION_LIST = [64, 128, 224] # 64, 128] #, 224, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
@@ -103,7 +103,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=6, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -115,7 +115,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(validation_images, validation_labels),
-                     callbacks = [model_metrics,early_stopping])     
+                     callbacks = [model_metrics, early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     if testing == True:
@@ -183,17 +183,17 @@ def visualizeCNN(model, scenario, image_size, images_per_class = 4, trial_seed =
     print(validation_labels.sum(axis=0))    
     
     # GRAD CAM
-    random.seed(trial_seed)
+    #random.seed(trial_seed)
     # Randomly sample images from each class
-    random_image_selection_class_0 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 0], k = images_per_class)    
-    random.seed(trial_seed+1)
-    random_image_selection_class_1 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 1], k = images_per_class)
+    random_image_selection_class_0 = random.choices([i for i, j in enumerate(validation_labels) if np.argmax(j) == 0], k = images_per_class)    
+    #random.seed(trial_seed+1)
+    random_image_selection_class_1 = random.choices([i for i, j in enumerate(validation_labels) if np.argmax(j) == 1], k = images_per_class)
     assert validation_labels[random_image_selection_class_0].mean(axis=0)[0] == 1 #assert that indices of class 0 labels are correct
     assert validation_labels[random_image_selection_class_1].mean(axis=0)[1] == 1 #assert that indices of class 1 labels are correct
     cam_list = random_image_selection_class_0 + random_image_selection_class_1 # join lists of indices in both classes
     if scenario=="Pr_Po_Im": # in 3-class case
-        random.seed(trial_seed+2)
-        random_image_selection_class_2 = random.sample([i for i, j in enumerate(validation_labels) if np.argmax(j) == 2], k = images_per_class)    
+        #random.seed(trial_seed+2)
+        random_image_selection_class_2 = random.choices([i for i, j in enumerate(validation_labels) if np.argmax(j) == 2], k = images_per_class)    
         cam_list = cam_list + random_image_selection_class_2 # join to prior list of class 0 and class 1
         assert validation_labels[random_image_selection_class_2].mean(axis=0)[2] == 1 #assert that indices of class 2 labels are correct
     # subset validation images to use for gradcam
@@ -295,4 +295,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=64, num_epochs=15, seed_val = 1, test_boolean=False)
+    getScenarioModelPerformance(res=128, num_epochs=13, seed_val = 2, test_boolean=False)

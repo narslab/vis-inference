@@ -143,7 +143,7 @@ def plotProcessedImages(class_scenario, image_array, class_list, images_per_clas
     image_filename = '../../figures/processed_input_images_' + str(class_scenario) + '_' + str(resolution) + '_px.png'
     #plt.xticks([0,3024])
     #plt.yticks([0,4032])
-    plt.tight_layout()
+    #plt.tight_layout()
     fig.savefig(image_filename, dpi=180)
     return
 
