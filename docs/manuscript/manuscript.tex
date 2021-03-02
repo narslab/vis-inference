@@ -152,7 +152,7 @@
 \begin{abstract}
   Critical to the resilience of utility power lines, tree failure assessments have historically been performed via
   manual and visual inspections.  In this paper, we develop a convolutional neural network (CNN) to predict tree failure
-  likelihood categories under four classification scenarios.  Starting with an original set of expert-labeled 525 images, we perform
+  likelihood categories under four classification scenarios.  Starting with an original set of 525 expert-labeled images, we perform
   preprocessing and augmentation tasks to increase the number of samples. We optimize several hyperparameters in our CNN
   and test its performance for three different image resolutions. The trained classifier has an average validation
   accuracy of at least 0.94 across all scenario-resolution combinations.  Thus, via this novel framework, we
@@ -175,7 +175,7 @@ Individual tree risk assessment can be costly because of the time it requires. I
 
 The method described in the paper uses convolutional neural networks (CNN) to classify images of trees among three categories of failure likelihood: probable, possible, and improbable.  The data used for training, testing and illustration of the method consists of 505 tree images that have been classified by the authors according to best management practices used by utility arborists \cite{goodfellow2020best}. 
 
-The remainder of the paper provides a brief history and background of AI and its use in earthquake risk assessment and tree identification (section 2); describes the methods used to train and validate a novel CNN to categorize likelihood of tree failure (section 3); and presents and discusses the output of the novel CNN (sections 4 and 5). The goal is to further demonstrate an innovative automated approach to tree risk assessment using an AI tool that can be readily deployed for use in various locations and also continually improved through subsequent training on new datasets.
+The remainder of the paper provides a brief history and background of AI and its use in infrastructure risk assessment and tree identification (section 2); describes the methods used to train and validate a novel CNN to categorize likelihood of tree failure (section 3); and presents and discusses the output of the novel CNN (sections 4 and 5). The goal is to further demonstrate an innovative automated approach to tree risk assessment using an AI tool that can be readily deployed for use in various locations and also continually improved through subsequent training on new datasets.
 
 
 
@@ -212,10 +212,10 @@ In this study, we show that a relatively simple CNN architecture coupled with st
 \subsection{Image data description}
 The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Likelihood of failure assessments followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{smiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{smiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility right-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{goodfellow2020best}; and (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{smiley2017best}:
 \begin{itemize}
-\item \textbf{Improbable}: failure unlikely either during normal or extreme weather conditions 
-\item \textbf{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions
-\item \textbf{Probable}: failure expected under normal weather conditions within a given time frame
-\item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect people from harm
+\item \textbf{Improbable}: failure unlikely either during normal or extreme weather conditions;
+\item \textbf{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions;
+\item \textbf{Probable}: failure expected under normal weather conditions within a given time frame;
+\item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect targets from impact.
 \end{itemize}
 In this study, only images of trees assigned to the lowest 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were used due to the rarity of trees in the \textit{imminent} category. Randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
 
@@ -364,7 +364,7 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 \subsection{Hyperparameter optimization}
 We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
 Twelve searches were performed for each classification scenario and image resolution combination.
-Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates $\la$ for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
+Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates $\lambda$ for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
 
 \begin{table}[ht!]\small
 %\rowcolors{7}{white}{gray!35}
@@ -461,7 +461,7 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 \subsection{Model training and assessment}
 The softmax activation function in the output layer returns the class prediction probabilities for a given observation $i$. It is defined in terms of the class-specific score $s_c$:
 \begin{equation}
-    f(s_c) = \frac{e^{s^c}}{\sum\limits_{c' \in C} e^{s_{c'}}}
+    f(s_c) = \frac{e^{s_c}}{\sum\limits_{c' \in C} e^{s_{c'}}}
 \end{equation}
 Thus for the $i$th observation, the softmax activation return the predicted probability $p_{i,c}$ that the $i$th observation belongs to class $c$.
 The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
@@ -479,7 +479,7 @@ Each such pass is referred to as an epoch.
 
 In real terms, we measure the performance of the trained CNN by how accurately it predicts the classes in a validation set excluded from the training set. For this paper, we use a randomly sampled validation that was 20\% of the size of the input dataset of 2525 images in each training instance.
 Thus, we define the accuracy as the overall proportion of correct predictions across all classes.
-This metric was computed both for the training and validation sets in each epoch
+This metric was computed both for the training and validation sets in each epoch.
 In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is a important measure of how good a classifier is. Meanwhile, the recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged. Thus, each class is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
 \begin{align}
 \text{Macro-average precision: }    Pr^m &= \frac{1}{|C|}\sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
@@ -501,15 +501,8 @@ The class-specific prediction metrics are given by:
 where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for a given image $i$ in class $c$. The indicator function $I(\cdot)$ returns 1 if the corresponding condition is true, and 0 otherwise.
 
 \section{Results}
-
-%\subsection{Hyperparameter optimization}
-
-
-
-
-
 \subsection{Sensitivity to training resolution}
-We trained the CNN for each of the 4 classification scenarios. In each scenarios, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, twelve learning instances were generated, using a training-validation ratio of 80:20. In each instance, we performed 10 trials, each consisting of 10 epochs. Validation sets were randomly selected in each trial, but consistent across each of the 12 training instances. The trajectories of the training/validation loss and accuracy are shown in \autoref{fig:sens-overall}. Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
+We trained the CNN for each of the 4 classification scenarios. In each scenario, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, twelve learning instances were generated, using a training-validation ratio of 80:20. In each instance, we performed 10 trials, each consisting of 10 epochs. Validation sets were randomly selected in each trial, but consistent across each of the 12 training instances. The trajectories of the training/validation loss and accuracy are shown in \autoref{fig:sens-overall}. Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
 
 \begin{figure}[ht]
     \centering
@@ -527,36 +520,36 @@ Using the Welch test for pairwise comparisons of resolution performance within e
     \caption{Boxplots of validation accuracy values with error bars for each scenario and resolution combination. Mean values are depicted as white squares in each box.}
     \label{fig:sens-val-acc}
 \end{figure}
-\begin{table}[h!]\small
-    \centering
-    \begin{tabular}{ l c r r}\toprule
-\bf Scenario & \bf Resolution & \multicolumn{2}{c}{\bf Validation Accuracy}\\
-& & Mean & SD \\\midrule
-    \texttt{PrPo\_Im} & 64  & 0.96 & 0.04 \\
-                      & 128 & 0.96 & 0.05 \\
-                      &224  &      0.96&  0.05  \\ \midrule        
-    \texttt{Pr\_Im}   & 64  & 0.98 & 0.03 \\
-                      & 128 & 0.97 & 0.03 \\
-                      & 224 & 0.97 & 0.03\\\midrule       
-    \texttt{Pr\_PoIm} & 64  & 0.96 & 0.04 \\
-                      & 128 & 0.97 & 0.04 \\
-                      & 224 & 0.97 & 0.04 \\\midrule       
-    \texttt{Pr\_Po\_Im}& 64  & 0.94 & 0.07 \\
-                      & 128 & 0.95 & 0.07 \\
-                      & 224 & 0.95 & 0.06 \\\bottomrule
-    \end{tabular}
-    \caption{Summary validation accuracy (mean and standard deviation to 2 decimal places) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
-    \label{tab:meanvalacc}
-\end{table}
+% \begin{table}[h!]\small
+%     \centering
+%     \begin{tabular}{ l c r r}\toprule
+% \bf Scenario & \bf Resolution & \multicolumn{2}{c}{\bf Validation Accuracy}\\
+% & & Mean & SD \\\midrule
+%     \texttt{PrPo\_Im} & 64  & 0.96 & 0.04 \\
+%                       & 128 & 0.96 & 0.05 \\
+%                       &224  &      0.96&  0.05  \\ \midrule        
+%     \texttt{Pr\_Im}   & 64  & 0.98 & 0.03 \\
+%                       & 128 & 0.97 & 0.03 \\
+%                       & 224 & 0.97 & 0.03\\\midrule       
+%     \texttt{Pr\_PoIm} & 64  & 0.96 & 0.04 \\
+%                       & 128 & 0.97 & 0.04 \\
+%                       & 224 & 0.97 & 0.04 \\\midrule       
+%     \texttt{Pr\_Po\_Im}& 64  & 0.94 & 0.07 \\
+%                       & 128 & 0.95 & 0.07 \\
+%                       & 224 & 0.95 & 0.06 \\\bottomrule
+%     \end{tabular}
+%     \caption{Summary validation accuracy (mean and standard deviation to 2 decimal places) for each scenario and input image resolution training instance. There is no statistically significant difference between the performance for each resolution case under each scenario.}
+%     \label{tab:meanvalacc}
+% \end{table}
 
 Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
 
 
 \subsection{Analysis of classification strategies}
-We investigated in detail the performance of the four classification scenarios earlier outlined, using the 128-pixel resolution images.
+We investigated in detail the performance of the four classification scenarios outlined earlier, using the 128-pixel resolution images.
 The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
 Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
-In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+In each scenario, the model was trained over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin with. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
 
 \begin{figure}[ht]
     \centering
@@ -565,11 +558,11 @@ In each scenario, the model was trained over 20 epochs, but we employed early st
     \label{fig:cnn-perf}
 \end{figure}
 
-We also plot the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
-Each row of the confusion matrix indicates the proportion of observation in a given class that are predicted to be in the classes across the columns.
+We also plotted the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
+Each row of the confusion matrix indicates the proportion of observations in a given class that are predicted to be in the classes across the columns.
 Thus, the diagonal entry in each matrix represents the class-specific recall score, $Re_{c}$.
 The matrices show that generally, the ``Possible'' category is difficult to predict accurately as an individual class.
-The classifier performs best when it only has to distinguish between ``Probable'' and ``Improbable'' (\autoref{pr_im_cm}). Performance only suffers slightly when ``Possible'' is grouped with ``Probable'' in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
+The classifier performed best when it only had to distinguish between ``Probable'' and ``Improbable'' (\autoref{pr_im_cm}). Performance only suffered slightly when ``Possible'' was grouped with ``Probable'' in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
 
 \begin{figure}[ht]
   \centering
