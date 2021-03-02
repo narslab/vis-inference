@@ -152,9 +152,9 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     con_mat_df = pd.DataFrame(con_mat_norm, index = class_labels, columns = class_labels)
     #print("Confusion matrix for scenario " + scenario + ", resolution: " + str(image_size) + ":")
     #print(con_mat_df)
-    figure = plt.figure(figsize=(4, 4))    ## Confusion matrix heatmap
+    figure = plt.figure()#figsize=(4, 4))    ## Confusion matrix heatmap
     ax = sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues, fmt='g', cbar = False, annot_kws={"size": 16})
-    figure.tight_layout()
+    #figure.tight_layout()
     plt.ylabel('True',fontsize=16)
     ax.set_yticklabels(class_labels,va='center',fontsize=14)
     ax.set_xticklabels(class_labels, ha='center',fontsize=14)
@@ -164,7 +164,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
         con_mat_heatmap_file = "../../figures/test-opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
     else:
         con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
-    figure.savefig(con_mat_heatmap_file, dpi=180, bbox_inches='tight')
+    figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
     return(model, hist) 
 
 
@@ -281,11 +281,12 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     df = pd.DataFrame()
     for s in SCENARIO_LIST:
         m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val, testing = test_boolean)
-        visualizeCNN(m, s, res, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
+        #visualizeCNN(m, s, res, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
         perf[['Scenario']] = s
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
+        #del m
     if test_boolean == True:
         df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + str(res) + "px.csv"
     else:
