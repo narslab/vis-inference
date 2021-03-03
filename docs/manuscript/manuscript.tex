@@ -215,12 +215,30 @@ The training dataset consisted of 505 images, each having an original size of $4
 \item \textbf{Probable}: failure expected under normal weather conditions within a given time frame;
 \item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect targets from impact.
 \end{itemize}
-In this study, only images of trees assigned to the 3 likelihood of failure categories of \textit{improbable, possible, \textit{and} probable} were included in modeling, while images of \textit{imminent} trees were excluded due to their rarity. Randomly chosen examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
+In this study, only images of trees assigned to the 3 likelihood of failure categories of \textit{Improbable}, \textit{Possible},and \textit{Probable} were included in modeling, while images of \textit{Imminent} trees were excluded due to their rarity. Typical examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
 
-\begin{figure}[h!]
+\begin{figure}[ht]
   \centering
-  \includegraphics[width=.7\textwidth]{raw_input_images_2}
-  \caption{Random examples of the raw training images (2 are shown per class). Images are antialiased in this figure for greater clarity.}
+  % \includegraphics[width=\textwidth]{raw_input_images_2}
+  \begin{subfigure}[t]{.32\linewidth}\centering
+    \includegraphics[width=\textwidth,angle=-90]{probable-example-1} %probable_standing dead.JPG
+
+    \includegraphics[width=\textwidth,angle=-90]{probable-example-2} %Probable (deadwood above line hieght, vine)
+    \caption{Probable}
+  \end{subfigure}
+    \begin{subfigure}[t]{.32\linewidth}\centering
+    \includegraphics[width=\textwidth,angle=-90]{possible-example-1} % Possible (spruce, codominant and dieback)
+
+    \includegraphics[width=\textwidth,angle=-90]{possible-example-2} % Possible (silver maple, codom weak attach, reaction wood)
+    \caption{Possible}   
+  \end{subfigure}
+  \begin{subfigure}[t]{.32\linewidth}\centering
+    \includegraphics[width=\textwidth,angle=-90]{improbable-example-1} %Improbable_3_london plane
+
+    \includegraphics[width=\textwidth,angle=-90]{improbable-example-2}
+    \caption{Improbable}
+  \end{subfigure}
+  \caption{Examples of training images in each of the three tree risk categories considered in this study: Probable, Possible and Improbable. Two are shown in each case.}
   \label{fig:raw_images}
 \end{figure}
 
@@ -250,7 +268,7 @@ Thus,
     \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
     \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
     \texttt{PrPo\_Im}        & \{Probable + Possible, Improbable\}  & 2 \\
-    \texttt{Pr\_PoIm}        & \{Probable, Possible + Impossible\}  & 2 \\\bottomrule
+    \texttt{Pr\_PoIm}        & \{Probable, Possible + Improbable\}  & 2 \\\bottomrule
     \end{tabular}
     \caption{Classification scenarios}
     \label{tab:scenarios}
@@ -304,12 +322,14 @@ The input into each neuron is a weighted sum from the previous layer, while the 
 The activation function in the final layer of an CNN is typically the softmax function, which gives the class probabilities of a given input image. 
 A class is assigned to the image based on the one with the corresponding maximum probability.
 
-Unlike other neural networks, however, the CNN performs fundamental pixel-mapping operations in its "convolutional" layers. Each convolutional layer is defined by a stack of feature maps, which result from a dot product of a filter and correspondinlgy-sized local receptive fields from the input image or preceding layer. 
-The numeric values of the filters correspond to weights whose optimal values are learned during the training of the CNN.
-The size of the filter in each convolutional layer is given by the "kernel size."
+Unlike other neural networks, however, the CNN performs fundamental pixel-mapping operations in its convolutional
+layers. Each convolutional layer is defined by a stack of feature maps, which result from a dot product of a filter and
+correspondinlgy-sized local receptive fields from the input image or preceding layer.  The numeric values of the filters
+correspond to weights whose optimal values are learned during the training of the CNN.  The size of the filter in each
+convolutional layer is given by the \textit{kernel size}.
 
 In this paper, we employ a relatively simple CNN architecture, historically inspired by AlexNet \cite{krizhevsky2012imageneta}.
-The structure of the CNN is shown in \autoref{fig:cnn}.
+The structure of the CNN is shown in \autoref{fig:cnn} (generated using an automated  framework \cite{bauerle2021net2vis}).
 After the input layer (a matrix of pixels from the input image), we use a 64-filter convolutional layer.
 The output is downsampled using a pooling layer that returns the maximum ouput from a $2\times 2$ subsample from the previous layer.
 Next, we stack two successive convolutional layers each with a depth of 128 filters.
@@ -327,7 +347,7 @@ In each dropout layer, a proportion of the neurons are randomly zeroed during tr
     \medskip
     
     \includegraphics[width=.7\textwidth]{figures/net2vis-name-labels/legend}
-    \caption{Diagram of convolutional neural network structure. Hyperparameters that are optimized include the number of units in the penultimate dense layers. (Generated using automated framework \cite{bauerle2021net2vis})}
+    \caption{Diagram of convolutional neural network structure. Hyperparameters that are optimized include the number of units in the penultimate dense layers.}
     \label{fig:cnn}
 \end{figure}
 
@@ -337,22 +357,22 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
     \centering
     \begin{tabular}{l c c c c c c c}\toprule
     \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
-     &  & \bf Activation \\\midrule
-    Convolutional  & 1         & 64                & $k^*$   & 2           &&& ReLU \\
+    \bf Activation &   \bf Rate & \bf No.\ Units  \\\midrule
+    Convolutional  & 1         & 64                & $k^*$   & 2           & ReLU && \\
     Max. Pooling   & 1         &                   & 2               &&&             &      \\
-    Convolutional  & 2         & 128               & 3   & 1           &&& ReLU \\
-    Convolutional  & 3         & 128               & 3   & 1           &&& ReLU \\
+    Convolutional  & 2         & 128               & 3   & 1           & ReLU && \\
+    Convolutional  & 3         & 128               & 3   & 1           & ReLU && \\
     Max. Pooling   & 2         &                   & 2               &&&             &      \\    
-    Convolutional  & 4         & 256               & 3   & 1           &&& ReLU \\
-    Convolutional  & 5         & 256               & 3   & 1           &&& ReLU \\
+    Convolutional  & 4         & 256               & 3   & 1           & ReLU && \\
+    Convolutional  & 5         & 256               & 3   & 1           & ReLU && \\
     Max. Pooling   & 3         &                   & 2               &             &&&      \\\midrule
     Flatten & & & & &&& \\\midrule
-     &  &   &  & &
-     \bf Rate & \bf No.\ Units & \\\midrule
-    Dense           & 1  & & &  & & $u_1^*$ & $a_1^*$ \\
-    Dropout         & 1  & & &  & $r_1^*$ & &  \\
-    Dense           & 2  & & &  & & $u_2^*$ & $a_2^*$ \\
-    Dropout         & 2  & & &  & $r_2^*$ & & \\ \bottomrule
+%     &  &   &  & & &
+%     \bf Rate & \bf No.\ Units  \\\midrule
+    Dense           & 1  & & &  &  $a_1^*$ & & $u_1^*$ \\
+    Dropout         & 1  & & &  && $r_1^*$ &   \\
+    Dense           & 2  & & &  &  $a_2^*$ & & $u_2^*$  \\
+    Dropout         & 2  & & &  && $r_2^*$ &  \\ \bottomrule
     \end{tabular}
     \caption{Summary of the convolutional neural network hyperparameters. 
     Those indicated by an asterisked symbol are optimized using a guided search.}
@@ -381,14 +401,6 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 \toprule
 \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameter}} & \multirow{2}{*}{\textbf{Range}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){4-6} 
                           &                              &                           & \textbf{64}             & \textbf{128}            & \textbf{224}            \\ \midrule
-\multirow{8}{*}{PrPo\_Im}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
-                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & tanh                    & ReLU                    \\
-                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
-                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.25                    & 0.1                     \\
-                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
-                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 384                     & 480                     \\
-                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 256                     & 448                     \\
-                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\\midrule
 \multirow{8}{*}{Pr\_Im}    & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
                           & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
                           & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
@@ -397,6 +409,14 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
                           & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 480                     & 480                     \\
                           & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 448                     & 448                     \\
                           & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\\midrule
+\multirow{8}{*}{PrPo\_Im}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 5                       & 7                       \\
+                          & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & tanh                    & ReLU                    \\
+                          & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
+                          & 1st dropout rate, $r_1$      & $\{0, .05, \ldots, 5\}$   & 0.1                     & 0.25                    & 0.1                     \\
+                          & 2nd dropout rate, $r_2$      & $\{0, .05, \ldots, 5\}$   & 0.3                     & 0.35                    & 0.3                     \\
+                          & 1st dense layer units, $u_1$ & $\{32, 64, \ldots, 512\}$ & 480                     & 384                     & 480                     \\
+                          & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 448                     & 256                     & 448                     \\
+                          & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\\midrule
 \multirow{8}{*}{Pr\_PoIm}  & 1st conv. kernel size, $k$   & $\{5, 7\}$                & 7                       & 7                       & 7                       \\
                           & 1st dense activation, $a_1$  & \{ReLU, $\tanh$\}         & ReLU                    & ReLU                    & ReLU                    \\
                           & 2nd dense activation, $a_2$  & \{ReLU, $\tanh$\}         & tanh                    & ReLU                    & tanh                    \\
@@ -499,24 +519,34 @@ The class-specific prediction metrics are given by:
 where $\hat y_i$ is the predicted class and $y_i$ the observed (true) class for a given image $i$ in class $c$. The indicator function $I(\cdot)$ returns 1 if the corresponding condition is true, and 0 otherwise.
 
 \section{Results}
-\subsection{Sensitivity to training resolution}
-We trained the CNN for each of the 4 classification scenarios. In each scenario, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, we generated twelve learning cases. In each case, we performed a five-fold cross-validation (resulting in a training-validation ratio of 80:20), each consisting of 10 epochs. The trajectories of the training/validation loss and accuracy are shown in \autoref{fig:sens-overall}. Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
+We trained the CNN for each of the 4 classification scenarios. In each scenario, we also trained on three image resolution sets (64, 108 and 224). The goal was to determine the best performing resolution, given the tradeoff between performance and computational expenditure. Thus, we generated twelve learning cases. In each case, we performed a 5-fold cross-validation (resulting in a training-validation ratio of 80:20 in each fold).
+We trained the CNN over 20 epochs in all the cases. The trajectories of the  loss and accuracy are shown in \autoref{fig:sens-overall} for both the training and validation sets. % Although the 64-pixel case is the slowest to converge in all scenarios, it appears to have a similar performance with respect to the other two resolutions (128px and 224px).
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1.05\textwidth]{scenario_resolution_performance.png}
-    \caption{Performance metrics for each scenario and input resolution instance. Average metrics and 95\% confidence intervals (trials, $n=5$) are shown for 10 epochs in each case.}
+    \caption{Performance metrics for each scenario and input resolution instance. Average metrics and 95\% confidence intervals (trials, $n=5$) are shown for 20 epochs in each case.}
     \label{fig:sens-overall}
 \end{figure}
 
-\autoref{fig:sens-val-acc} shows the boxplots of the validation accuracy in all twelve instances ($n=10$).
+\subsection{Sensitivity to training resolution}
+\autoref{fig:sens-val-acc} shows the boxplots of the validation performance metrics for all twelve cases considered.
+The metrics are: accuracy and the macro-averages of precision, recall and the $F_{1}$ score.
+%With respect to the accuracy, there are no significant differences between the 
+Taking all metrics into consideration, Welch pairwise tests showed that there are no significant differences in performance among the 3 training resolutions, with one exception.
+In the scenario Pr\_PoIm, the accuracy, $F_{1}^{m}$, $Re^{m}$ for the 128-pixel case are greater than those for the 224-pixel case ($p<.001$).
+This difference in performance is not as stark between the 128-pixel and 64-pixel cases in the same scenario.
+This outcome implies that we can achieve efficiency by  training at lower resolutions without significant losses in performance.
+
 % We further summarize the statistics (mean and standard deviation) of the validation accuracies in \autoref{tab:meanvalacc}.
-Using the Welch test for pairwise comparisons of resolution performance within each scenario, we found no statistically significant difference between the validation accuracy for each resolution ($p\ge 0.57$).
-\begin{figure}[ht]
+% Using the Welch test for pairwise comparisons of resolution performance within each scenario, we found no statistically significant difference between the validation accuracy for each resolution ($p\ge 0.57$).
+
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/scenario_resolution_validation_accuracy_boxplot.png}
-    \caption{Boxplots of validation accuracy values with error bars for each scenario and resolution combination. Mean values are depicted as white squares in each box. The upper and lower bounds of the box are the first and third quartiles; the whiskers are a standard deviation (SD); and the diamonds are outliers.} % >X SDs from the mean}
-    \label{fig:sens-val-acc}
+    \includegraphics[width=\textwidth]{figures/scenario_resolution_performance_metrics_facet_boxplot.png}
+    \caption{Boxplots of validation performance metrics for each scenario and resolution combination.
+      The upper and lower bounds of each box are the first and third quartiles; the whiskers are three standard deviations apart; and the diamonds are outliers. Mean values are depicted as white squares in each box.}
+ \label{fig:sens-val-acc}
 \end{figure}
 % \begin{table}[h!]\small
 %     \centering
@@ -540,12 +570,21 @@ Using the Welch test for pairwise comparisons of resolution performance within e
 %     \label{tab:meanvalacc}
 % \end{table}
 
-Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
+\subsection{Scenario sensitivity}
+We conducted pairwise tests between each scenario combination for all resolutions.
+The results indicated that considering all metrics, the scenarios are statistically significantly different from each other ($p < .005$) except Pr\_Im compared to PrPo\_Im and Pr\_PoIm compared to Pr\_Po\_Im, with respect to certain metrics.
+If the accuracy is not taken into account, then there is no strong evidence that Pr\_Im differs in performance when compared with PrPo\_Im.
+In the case of Pr\_PoIm versus Pr\_Po\_Im, there is greater evidence to support their similarity in performance 
+with respect to  $F_{1}^{m}$ and $Re^{m}$. %and $Pr^{m}$
+Otherwise, the performance between these two scenarios is significantly different.
+From \autoref{fig:sens-val-acc}, we observe the best performances in Pr\_Im and PrPo\_Im, with all metrics greater than or equal to 0.90
+The performance in Pr\_PoIm is lower, and Pr\_Po\_Im has the lowest performance of all four.
 
 
 \subsection{Analysis of classification strategies}
-We investigated in detail the performance of the four classification scenarios outlined earlier, using the 128-pixel resolution images.
-The goal of this analysis was to explore the efficiencies of various grouping strategies for tree failure risk.
+Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
+%We investigated in detail the performance of the four classification scenarios outlined earlier, using the 128-pixel resolution images.
+The goal of this analysis was to explore the efficiencies of various classification strategies for tree failure risk.
 Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
 In each scenario, we trained the model over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin with. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
 
