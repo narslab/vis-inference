@@ -114,7 +114,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(validation_images, validation_labels),
-                     callbacks = [model_metrics, early_stopping])     
+                     callbacks = [model_metrics]) #, early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     if testing == True:
@@ -295,4 +295,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=13, seed_val = 1, test_boolean=False)
+    getScenarioModelPerformance(res=128, num_epochs=13, seed_val = 2, test_boolean=False)
