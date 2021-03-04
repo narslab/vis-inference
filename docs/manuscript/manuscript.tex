@@ -152,7 +152,7 @@
 \begin{abstract}
   Critical to the resilience of utility power lines, tree failure assessments have historically been performed via
   manual and visual inspections.  In this paper, we develop a convolutional neural network (CNN) to predict tree failure
-  likelihood categories under four classification scenarios.  Starting with an original set of 525 expert-labeled images, we perform
+  likelihood categories under four classification scenarios.  Starting with an original set of 505 expert-labeled images, we perform
   preprocessing and augmentation tasks to increase the number of samples. We optimize several hyperparameters in our CNN
   and test its performance for three different image resolutions. The trained classifier has an average validation
   accuracy of at least 0.94 across all scenario-resolution combinations.  Thus, via this novel framework, we
@@ -239,7 +239,7 @@ In this study, only images of trees assigned to the 3 likelihood of failure cate
     \caption{Improbable}
   \end{subfigure}
   \caption{Examples of training images in each of the three tree risk categories considered in this study.
-  Trees in the left columnwere categorized as improbable due to their lack of structural defects as well as good physiologicalhealth. Trees in the center column were categorized as possible due to weak branch unions anddieback of crown extremities. Trees in the right column were categorized as probable for extensivesections of dead wood in the upper photograph, and a standing dead tree in the lower photograph.Images are antialiased in this figure for greater clarity}
+  Trees in the right-hand column were categorized as improbable due to their lack of structural defects as well as good physiological health. Trees in the center column were categorized as possible due to weak branch unions and crown dieback. Trees in the left-hand column were categorized as probable because they were dead. Leaves in the bottom image in the left-hand column are from vines attached to the dead tree. Images are antialiased in this figure for greater clarity}
   \label{fig:raw_images}
 \end{figure}
 
@@ -275,6 +275,8 @@ Thus,
     \label{tab:scenarios}
 \end{table}
 
+
+In \autoref{tab:scenarios}, the first scenario considered each likelihood of failure category separately, as an arborist would do in practice. The second scenario considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since Previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure (KOESER), in the third scenario, we pooled trees in the probable and possible categories and compared them to trees in the improbable category. In the fourth scenario, we pooled trees in the possible and improbable categories and compared them to trees in the probable scenario. In practice, this scenario is less likely because arborists typically distinguish trees with an improbable likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}.
 \subsection{Image pre-processing and augmentation}
 Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
 Augmentation is desired, particularly in situations where the number of original observations is small, and the effectiveness of various relevant techniques in this domain has been amply demonstrated \cite{shorten2019survey}.
@@ -384,6 +386,26 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
 Twelve searches were performed for each classification scenario and image resolution combination.
 Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates $\lambda$ for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l c}\toprule
+    \bf Symbol            & \bf Definition  \\\midrule
+    \texttt i     &  \ Given observation \\
+    \texttt c          & \ Class\\
+    \texttt s_c        & \ Class-specified score \\
+    \texttt $\hat y_i$       & \ Predicted class of a given observation \\
+    \texttt y_i        & \ Observed (true) class of a given observation \\
+    \texttt f(s_c)        & \ Softmax activation function \\
+    \texttt p_{i,c}        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class c \\
+    \texttt L^{CE}_i        & \ Categorical cross entropy loss function of a single observation \\
+    \textttt Pr & \ Precision \\
+    \textttt Re & \ Recall \\
+    \textttt F_1 & \ F_1 score \\\bottomrule
+    \end{tabular}
+    \caption{Symbols description}
+    \label{tab:symbols}
+\end{table}
 
 \begin{table}[ht!]\small
 %\rowcolors{7}{white}{gray!35}
