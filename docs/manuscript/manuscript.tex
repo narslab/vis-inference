@@ -219,19 +219,19 @@ In this study, only images of trees assigned to the likelihood of failure catego
 
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[t]{.32\linewidth}\centering
+  \begin{subfigure}[t]{.325\linewidth}\centering
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{probable-example-1} %probable_standing dead.JPG
 
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{probable-example-2} %Probable (deadwood above line hieght, vine)
     \caption{Probable}
   \end{subfigure}
-  \begin{subfigure}[t]{.32\linewidth}\centering
+  \begin{subfigure}[t]{.325\linewidth}\centering
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{possible-example-1} % Possible (spruce, codominant and dieback)
 
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{possible-example-2} % Possible (silver maple, codom weak attach, reaction wood)
     \caption{Possible}   
   \end{subfigure}
-  \begin{subfigure}[t]{.32\linewidth}\centering
+  \begin{subfigure}[t]{.325\linewidth}\centering
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{improbable-example-1} %Improbable_3_london plane
 
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{improbable-example-2}
@@ -246,12 +246,12 @@ In this study, only images of trees assigned to the likelihood of failure catego
     \centering
     \begin{tabular}{l r}\toprule
     \bf Category     & \bf Number of images  \\ \midrule
-    Improbable & 322\\
-    Possible & 80 \\
-    Probable & 56 \\\midrule
+    \textit{Improbable} & 322\\
+    \textit{Possible} & 80 \\
+    \textit{Probable} & 56 \\\midrule
     Total & 505 \\\bottomrule
     \end{tabular}
-    \caption{Category distribution of images in the original set of input images}
+    \caption{Category distribution  in the set of raw input images}
     \label{tab:classdist}
 \end{table}
 
@@ -263,17 +263,17 @@ Each scenario represents a unique grouping of each of the three categories, with
     \centering
     \begin{tabular}{l l c}\toprule
     \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
-    Pr\_Im          & \{Probable, Improbable\}           & 2 \\
-    PrPo\_Im        & \{Probable + Possible, Improbable\}  & 2 \\
-    Pr\_PoIm        & \{Probable, Possible + Improbable\}  & 2 \\
-    Pr\_Po\_Im     &  \{Probable, Possible, Improbable\} & 3 \\
+    Pr\_Im          & \{\textit{Probable}, \textit{Improbable}\}           & 2 \\
+    PrPo\_Im        & \{\textit{Probable} + \textit{Possible}, \textit{Improbable}\}  & 2 \\
+    Pr\_PoIm        & \{\textit{Probable}, \textit{Possible} + \textit{Improbable}\}  & 2 \\
+    Pr\_Po\_Im     &  \{\textit{Probable}, \textit{Possible}, \textit{Improbable}\} & 3 \\
     \bottomrule
     \end{tabular}
     \caption{Classification scenarios}
     \label{tab:scenarios}
 \end{table}
 
-Scenario Pr\_Im considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure \cite{koeser2020can}, in scenario PrPo\_Im, we pooled trees in the \textit{Probable} and \textit{Possible} categories and compared them to trees in the \textit{Improbable} category. In scenario Pr\_PoIm, we pooled trees in the \textit{Possible} and \textit{Improbable} categories and compared them to trees in the \textit{Probable} category. In practice, this scenario is less likely because arborists typically distinguish trees with an \textit{Improbable} likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}. Scenario \texttt{Pr\_Po\_Im} considered each likelihood of failure category separately, as an arborist would do in practice. 
+Scenario Pr\_Im considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure \cite{koeser2020can}, in scenario PrPo\_Im, we pooled trees in the \textit{Probable} and \textit{Possible} categories and compared them to trees in the \textit{Improbable} category. In scenario Pr\_PoIm, we pooled trees in the \textit{Possible} and \textit{Improbable} categories and compared them to trees in the \textit{Probable} category. In practice, this scenario is less likely because arborists typically distinguish trees with an \textit{Improbable} likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}. Scenario Pr\_Po\_Im considered each likelihood of failure category separately, as an arborist would do in practice. 
 
 \subsection{Image pre-processing and augmentation}
 Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
@@ -283,35 +283,64 @@ In order to achieve robustness in our model, and given the relatively small numb
 Random sets of images from each class across each of the four classification scenarios are shown in \autoref{fig:processed_images}.
 
 \begin{figure}[h!]
-  \centering
-  \begin{subfigure}[t]{.75\linewidth}
+  \begin{subfigure}[b]{.24\linewidth}
     \centering
-    \includegraphics[width=.8\linewidth, trim={0 3cm 0 3cm}, clip]{processed_input_images_Pr_Po_Im_128_px}
-    \caption{Scenario \texttt{Pr\_Po\_Im}}
+    \textit{\footnotesize Probable}
+    
+    \includegraphics[width=\textwidth]{processed-probable-example-1}
+    
+    \textit{\footnotesize Improbable}
+    
+    \includegraphics[width=\textwidth]{processed-improbable-example-1}
+    \caption{Scenario Pr\_Im}
+    \label{pr_im_64}
+  \end{subfigure}%
+  \begin{subfigure}[b]{.24\linewidth}
+    \centering
+    \textit{\footnotesize Probable/Possible}
+    
+    \includegraphics[width=\textwidth]{processed-probable-example-2-flipped}
+
+    \textit{\footnotesize Improbable}
+    
+    \includegraphics[width=\textwidth]{processed-improbable-example-2}
+    \caption{Scenario  PrPo\_Im}
+    \label{prpo_im_64}
+  \end{subfigure}%  
+  \begin{subfigure}[b]{.24\linewidth}
+    \centering
+    \textit{\footnotesize Probable}
+    
+    \includegraphics[width=\textwidth]{processed-probable-example-1-flipped}
+
+    \textit{\footnotesize Possible/Improbable}
+    
+    \includegraphics[width=\textwidth]{processed-possible-example-2-flipped}
+    \caption{Scenario Pr\_PoIm}
+    \label{pr_poim_64}
+  \end{subfigure}%  
+  \begin{subfigure}[b]{.24\linewidth}
+    \centering
+    % \includegraphics[width=.8\linewidth, trim={0 3cm 0 3cm}, clip]{processed_input_images_Pr_Po_Im_128_px}
+    \textit{\footnotesize Probable}
+    
+    \includegraphics[width=\textwidth]{processed-probable-example-2}
+
+    \textit{\footnotesize Possible}
+    
+    \includegraphics[width=\textwidth]{processed-possible-example-1}
+    
+    \textit{\footnotesize Improbable}
+    
+    \includegraphics[width=\textwidth]{processed-improbable-example-2-flipped}
+    \caption{Scenario Pr\_Po\_Im}
     \label{pr_po_im_64}
   \end{subfigure}%
   
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_Pr_Im_128_px}
-    \caption{Scenario \texttt{Pr\_Im}}
-    \label{pr_im_64}
-  \end{subfigure}%
-  
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_PrPo_Im_128_px}
-    \caption{Scenario \texttt{PrPo\_Im}}
-    \label{prpo_im_64}
-  \end{subfigure}%
-  \begin{subfigure}[t]{.5\linewidth}
-    \centering
-    \includegraphics[width=\linewidth, trim={0 3cm 0 2cm}, clip]{processed_input_images_Pr_PoIm_128_px}
-    \caption{Scenario \texttt{Pr\_PoIm}}
-    \label{pr_poim_64}
-  \end{subfigure}%
-
-  \caption{Random examples of the processed training images under each classification scenario; 128 pixels.}
+  \caption{Selected processed training images under each classification scenario.
+    The images shown are processed versions of those shown in \autoref{fig:raw_images}.
+    All were randomly cropped along the vertical axis and some horizontally flipped as well.
+  }
   \label{fig:processed_images}
 \end{figure}
 
@@ -335,11 +364,11 @@ After the input layer (a matrix of pixels from the input image), we use a 64-fil
 The output is downsampled using a pooling layer that returns the maximum ouput from a $2\times 2$ subsample from the previous layer.
 Next, we stack two successive convolutional layers each with a depth of 128 filters.
 We follow these with a maximum-pooling layer and then two further 256-filter convolutional layers.
-A final maximum-pooling layer is used before we "flatten" all outputs into a one-dimensional (fully-connected) array of neurons. 
+A final maximum-pooling layer is used before we ``flatten'' all outputs into a one-dimensional (fully-connected) array of neurons. 
 After flattening the outputs, we use a dense layer to reduce the number of outputs a specified number of units.
 Batch normalization \cite{ioffe2015batch} is employed after the first dense layer to improve training efficiency.
 A second dense layer is used prior to the output layer, with the number of outputs corresponding to the number of classes in the dataset.
-A regularization technique known as "dropout" is used after each dense layer.
+A regularization technique known as ''dropout'' is used after each dense layer.
 In each dropout layer, a proportion of the neurons are randomly zeroed during training in order to improve the robustness of the model.
 \begin{figure}
     \centering
@@ -383,29 +412,7 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 \subsection{Hyperparameter optimization}
 We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
 Twelve searches were performed for each classification scenario and image resolution combination.
-Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
-
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{l l c}\toprule
-    \bf Symbol            & \bf Definition  \\\midrule
-    $i$     &  \ Given observation \\
-    $c$          & \ Class\\
-    $s_c$        & \ Class-specified score \\
-    $\hat y_i$       & \ Predicted class of a given observation \\
-    $y_i$        & \ Observed (true) class of a given observation \\
-    $f(s_c)$        & \ Softmax activation function \\
-    $p_{i,c}$        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class $c$ \\
-    $L^{CE}_i$        & \ Categorical cross entropy loss function of a single observation \\
-    $Pr_c$ & \ Class-specific precision \\
-    $Re_c$ & \ Class-specific recall \\
-    $Pr^m$ & \ Macro-average precision \\
-    $Re^m$ & \ Macro-average recall \\
-    $F_1^m$ & \ Macro-average $F_1$ score \\\bottomrule
-    \end{tabular}
-    \caption{Symbols description}
-    \label{tab:symbols}
-\end{table}
+Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called ``vanishing gradient'' problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
 
 \begin{table}[ht!]\small
 %\rowcolors{7}{white}{gray!35}
@@ -462,17 +469,44 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
 \end{table}
 
 \subsection{Model training and assessment}
+In this subsection, we provide an overview of the learning procedure for the convolutional neural network.
+As a reference, all the symbols used here are summarized in \autoref{tab:symbols}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l l c}\toprule
+    \bf Symbol            & \bf Definition  \\\midrule
+      $c$          & \ Index of given class\\
+      $f(s_c)$        & \ Softmax activation function \\
+      $F_{1c}$ & \ Class-specific  $F_1$ score \\      
+      $F_1^m$ & \ Macro-average $F_1$ score \\
+      $i$     &  \ Index of given image observation \\           
+      $L^{CE}_i$        & \ Categorical cross entropy loss function of a single observation \\
+      $\hat{p}_{i,c}$        & \ Predicted probability that the $i$\textsuperscript{th} observation belongs to class $c$ \\      
+    $Pr_c$ & \ Class-specific precision \\
+      $Pr^m$ & \ Macro-average precision \\
+      $Re_c$ & \ Class-specific recall \\
+      $Re^m$ & \ Macro-average recall \\
+          $s_c$        & \ Class-specific score \\
+    $y_i$        & \ Observed (true) class of a given observation \\
+      $\hat y_i$       & \ Predicted class of a given observation \\
+      \bottomrule
+    \end{tabular}
+    \caption{Summary of symbols related to the training and assessment of the convolutional neural network}
+    \label{tab:symbols}
+\end{table}
+  
 The softmax activation function  $f(\cdot)$ in the output layer returns the class prediction probabilities for a given observation $i$. It is defined in terms of the class-specific score $s_c$ as:
 \begin{equation}
     f(s_c) = \frac{e^{s_c}}{\sum\limits_{c' \in C} e^{s_{c'}}}
 \end{equation}
 where $C$ is the set of classes and $c, c'$ are indices for a given class.
-Thus for the $i$th observation, the softmax activation returns the predicted probability $p_{i,c}$ that the $i$th observation belongs to class $c$.
+Thus for the $i$th observation, the softmax activation returns the predicted probability $\hat{p}_{i,c}$ that the $i$th observation belongs to class $c$.
 The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
 The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. 
 In this case, we use the categorical cross-entropy loss function, which for a single observation can be simply defined as:
 \begin{equation}
-    L_{i}^{CE} = -  \log( p_{i,c}) = - \log(f(s_c^i))
+    L_{i}^{CE} = -  \log( \hat{p}_{i,c}) = - \log(f(s_c^i))
 \end{equation}
 Training is iteratively performed, with gradient of the loss function computed and averaged over a batch of input images.
 Here, we use a batch size of 32.
@@ -484,7 +518,7 @@ Each such pass is referred to as an epoch.
 In real terms, we measured the performance of the trained CNN by how accurately it predicts the classes in a validation set excluded from the training set. For this paper, we used a randomly sampled validation that was 20\% of the size of the input dataset of 2525 images in each training instance.
 Thus, we define the accuracy as the overall proportion of correct predictions across all classes.
 This metric was computed both for the training and validation sets in each epoch.
-In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is an important measure of how good a classifier is. The recall $Re$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_1$ metric is given as the harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged. Thus, each category is given equal weight, ensuring that misclassifications within the smaller classes ("Probable" and "Possible") are adequately represented in the aggregation. These metrics are formally defined as follows:
+In addition to overall accuracy of making correct classifications, we assessed the models trained under these scenarios based on the macro-averages of the precision, recall and $F_1$ score metrics computed over the validation set in each epoch. The precision score $Pr_{c}$ captures the proportion of correct predictions for a certain class relative to all the predictions for that class, and is an important measure of how good a classifier is. The recall $Re_{c}$ captures the ability of a classifier to correctly predict observations for a certain class relative to all the true observations in that class. The $F_{1c}$ metric is given as the class-specific harmonic mean of the precision and recall, and is thus more sensitive than the overall accuracy score. These three metrics are macro-averaged. Thus, each category is given equal weight, ensuring that misclassifications within the smaller classes (\textit{Probable} and \textit{Possible}) are adequately represented in the aggregation. These metrics are formally defined as follows:
 \begin{align}
 \text{Macro-average precision: }    Pr^m &= \frac{1}{|C|}\sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FP}_c}\right) \\
 \text{Macro-average recall: }    Re^m &= \frac{1}{|C|} \sum_{c\in C} \left(  \frac{ \mathrm{TP}_{c} }{\mathrm{TP}_{c} + \mathrm{FN}_c}\right) \\
@@ -563,7 +597,7 @@ If the accuracy is not taken into account, then there is no strong evidence that
 In the case of Pr\_PoIm versus Pr\_Po\_Im, there is greater evidence to support their similarity in performance 
 with respect to  $F_{1}^{m}$ and $Re^{m}$. %and $Pr^{m}$
 Otherwise, the performance between these two scenarios is significantly different.
-From \autoref{fig:sens-val-acc}, we observe the best performances in Pr\_Im and PrPo\_Im, with all metrics greater than or equal to 0.90
+From \autoref{fig:sens-val-acc}, we observe the best performances in Pr\_Im and PrPo\_Im, with all metrics greater than or equal to 0.90.
 The performance in Pr\_PoIm is lower, and Pr\_Po\_Im has the lowest performance of all four.
 
 
@@ -585,68 +619,70 @@ We also plotted the confusion matrix for each scenario in \autoref{fig:confusion
 Each row of the confusion matrix indicates the proportion of observations in a given class that are predicted to be in the classes across the columns.
 Thus, the diagonal entry in each matrix represents the class-specific recall score, $Re_{c}$.
 The matrices show that generally, the ``Possible'' category is difficult to predict accurately as an individual class.
-The classifier performed best when it only had to distinguish between ``Probable'' and ``Improbable'' (\autoref{pr_im_cm}). Performance only suffered slightly when ``Possible'' was grouped with ``Probable'' in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
+The classifier performed best when it only had to distinguish between \textit{Probable} and \textit{Improbable} (\autoref{pr_im_cm}). Performance only suffered slightly when \textit{Possible} was grouped with \textit{Probable} in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
 
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[t]{.4\linewidth}
+  \begin{subfigure}[t]{.45\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_Im-128-px.png}
     \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_cm}
   \end{subfigure}%
-   \begin{subfigure}[t]{.4\linewidth}
+   \begin{subfigure}[t]{.45\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-PrPo_Im-128-px.png}
     \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_cm}
   \end{subfigure}%
   
-  \begin{subfigure}[t]{.4\linewidth}
+  \begin{subfigure}[t]{.45\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_PoIm-128-px.png}
     \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_cm}
 \end{subfigure}%
-  \begin{subfigure}[t]{.4\linewidth}
+  \begin{subfigure}[t]{.45\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
     \caption{Scenario \texttt{Pr\_Po\_Im}}
     \label{pr_po_im_cm}
   \end{subfigure}%
-    \caption{Confusion matrices for CNN performance using the 128px images across all scenarios.
-    Each row of a confusion matrix indicates the proportional distribution of class predictions for the true members of each class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the macro-average $Re^m$ for each scenario.}
+  \caption{Scenario confusion matrices for a single training instance using the 128-pixel images.  Each row of a
+    confusion matrix indicates the proportional distribution of class predictions for the true members of each
+    class. Thus, the diagonals indicate the recall for each class $Re_c$. The average of the diagonal values gives the
+    macro-average $Re^m$ for each scenario.}
     \label{fig:confusion-matrix}
   \end{figure}
 
-  The detailed performance metrics for the 128-pixel case are summarized in \autoref{tab:performance}.
+%   The detailed performance metrics for the 128-pixel case are summarized in \autoref{tab:performance}.
   
-\begin{table}[ht]\small
-    \centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-\textbf{Scenario} & \textbf{Averaging method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{Support} \\ \midrule
-Pr\_Im    & Probable            & 0.9  & 0.75 & 0.81 & 103 \\
-         & Improbable          & 0.92 & 0.97 & 0.95 & 322 \\
-         & accuracy            &      &      & 0.92 & 425 \\
-         & weighted avg        & 0.92 & 0.92 & 0.92 & 425 \\ \midrule
-Pr\_Po\_Im & Probable            & 0.82 & 0.56 & 0.67 & 103 \\
-         & Possible            & 0.43 & 0.74 & 0.54 & 80  \\
-         & Improbable          & 0.93 & 0.86 & 0.89 & 322 \\
-         & accuracy            &      &      & 0.78 & 505 \\
-         & weighted avg        & 0.83 & 0.78 & 0.79 & 505 \\ \midrule
-Pr\_PoIm  & Probable            & 0.77 & 0.75 & 0.76 & 103 \\
-         & Possible/Improbable & 0.94 & 0.94 & 0.94 & 402 \\
-         & accuracy            &      &      & 0.9  & 505 \\
-         & weighted avg        & 0.9  & 0.9  & 0.9  & 505 \\ \midrule
-PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
-         & Improbable          & 0.97 & 0.9  & 0.94 & 322 \\
-         & accuracy            &      &      & 0.92 & 505 \\
-         & weighted avg        & 0.93 & 0.92 & 0.92 & 505 \\ \bottomrule
-\end{tabular}
-    \caption{Detailed performance metrics across the four scenarios in the 128-pixel case (single trial)}
-    \label{tab:performance}
-\end{table}
+% \begin{table}[ht]\small
+%     \centering
+% \begin{tabular}{@{}llllll@{}}
+% \toprule
+% \textbf{Scenario} & \textbf{Averaging method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{Support} \\ \midrule
+% Pr\_Im    & Probable            & 0.9  & 0.75 & 0.81 & 103 \\
+%          & Improbable          & 0.92 & 0.97 & 0.95 & 322 \\
+%          & accuracy            &      &      & 0.92 & 425 \\
+%          & weighted avg        & 0.92 & 0.92 & 0.92 & 425 \\ \midrule
+% Pr\_Po\_Im & Probable            & 0.82 & 0.56 & 0.67 & 103 \\
+%          & Possible            & 0.43 & 0.74 & 0.54 & 80  \\
+%          & Improbable          & 0.93 & 0.86 & 0.89 & 322 \\
+%          & accuracy            &      &      & 0.78 & 505 \\
+%          & weighted avg        & 0.83 & 0.78 & 0.79 & 505 \\ \midrule
+% Pr\_PoIm  & Probable            & 0.77 & 0.75 & 0.76 & 103 \\
+%          & Possible/Improbable & 0.94 & 0.94 & 0.94 & 402 \\
+%          & accuracy            &      &      & 0.9  & 505 \\
+%          & weighted avg        & 0.9  & 0.9  & 0.9  & 505 \\ \midrule
+% PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
+%          & Improbable          & 0.97 & 0.9  & 0.94 & 322 \\
+%          & accuracy            &      &      & 0.92 & 505 \\
+%          & weighted avg        & 0.93 & 0.92 & 0.92 & 505 \\ \bottomrule
+% \end{tabular}
+%     \caption{Detailed performance metrics across the four scenarios in the 128-pixel case (single trial)}
+%     \label{tab:performance}
+% \end{table}
 
 
 % \subsection{Model visualization and inference}
@@ -705,7 +741,7 @@ PrPo\_Im  & Probable/Possible   & 0.85 & 0.96 & 0.9  & 183 \\
 
 \eject
 \section{Conclusion}
-We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood (Probable, Possible and Improbable) with respect to utility infrastructure. Specifically, we developed a convolutional neural network with state-of-the-art configurations.
+We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood (\textit{Probable}, \textit{Possible} and \textit{Improbable}) with respect to utility infrastructure. Specifically, we developed a convolutional neural network with state-of-the-art configurations.
 We applied data augmentation and pre-processing strategies to increase the size of our dataset by a factor of 5, thus generating 2525 images.
 From an initial resolution of $4032 \times 3024$ pixels, we created three sets of image resolutions: $64 \times 64$, $128 \times 128$ and $224 \times 224$.
 We then optimized eight of our CNN hyperparameters for 12  classification scenario and image resolution combinations. 
@@ -714,12 +750,12 @@ In these trials, the average accuracy of classification was $\geq 0.94$, with a 
 There was no statistically significant difference between the performance across image resolutions.
 
 We further conducted more detailed classification performance analyses over single training instances for the 128-pixel case.
-Our results indicate that the CNN performed best at recalling Probable vs. Improbable cases.
-The Possible category appeared to be a confounding case.
+Our results indicate that the CNN performed best at recalling \textit{Probable} vs. \textit{Improbable} cases.
+The \textit{Possible} category appeared to be a confounding case.
 This was not unexpected, given the uncertainty and subjectivity in assessing these trees to begin with.
-The CNN, however, performed better at distinguishing between Possible/Improbable and Probable, than between Probable/Possible and Improbable.
-This might be an indicator that the Possible cases are more likely identified as Improbable.
-When all three failure-likelihood categories were predicted individually, the Possible case had the lowest recall score.
+The CNN, however, performed better at distinguishing between \textit{Possible}/\textit{Improbable} and \textit{Probable}, than between \textit{Probable}/\textit{Possible} and \textit{Improbable}.
+This might be an indicator that trees in the \textit{Possible} category are more likely to be identified as \textit{Improbable}.
+When all three failure-likelihood categories were predicted individually, the \textit{Possible} category had the lowest recall score.
 
 Nevertheless, given the relatively small input dataset of original images, these preliminary results are extremely promising for future improvements.
 First, we can train better models with more data.
