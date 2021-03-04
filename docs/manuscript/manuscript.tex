@@ -73,12 +73,15 @@
 \begin{abstract}
   Critical to the resilience of utility power lines, tree failure assessments have historically been performed via
   manual and visual inspections.  In this paper, we develop a convolutional neural network (CNN) to predict tree failure
-  likelihood categories under four classification scenarios.  Starting with an original set of 505 expert-labeled images, we perform
-  preprocessing and augmentation tasks to increase the number of samples. We optimize several hyperparameters in our CNN
-  and test its performance for three different image resolutions. The trained classifier has an average validation
-  accuracy of at least 0.94 across all scenario-resolution combinations.  Thus, via this novel framework, we
-  demonstrate the potential of artificial intelligence to automate and consequently reduce the costs of tree failure
-  likelihood assessments, thereby promoting sustainable infrastructure.
+  likelihood categories (\textit{Probable}, \textit{Possible}, \textit{Improbable}) under four classification scenarios.
+  Starting with an original set of 505 expert-labeled images, we perform preprocessing and augmentation tasks to
+  increase the number of samples. We optimize several hyperparameters in our CNN and then train and test its performance
+  for three different image resolutions. The trained CNN produced a validation accuracy of at least 0.94
+  ($\hat\sigma = 0.1)$ in the best-performing, yet hypothetical scenario as it excludes one of the categories.  The
+  second-best performing scenario, which includes all categories and therefore more practical, resulted in a validation
+  accuracy of 0.92 ($\hat\sigma = 0.1$). Thus, via this novel framework, we demonstrate the potential of artificial
+  intelligence to automate and consequently reduce the costs of tree failure likelihood assessments, thereby promoting
+  sustainable infrastructure.
 \end{abstract}
 
 \section{Introduction}
@@ -158,8 +161,11 @@ In this study, only images of trees assigned to the likelihood of failure catego
     \includegraphics[width=\textwidth,keepaspectratio=true,angle=-90]{improbable-example-2}
     \caption{Improbable}
   \end{subfigure}
-  \caption{Examples of training images in each of the three tree risk categories considered in this study.
-  Trees in the right-hand column were categorized as improbable due to their lack of structural defects as well as good physiological health. Trees in the center column were categorized as possible due to weak branch unions and crown dieback. Trees in the left-hand column were categorized as probable because they were dead. Leaves in the bottom image in the left-hand column are from vines attached to the dead tree. Images are antialiased in this figure for greater clarity}
+  \caption{Examples of training images in each of the three tree risk categories considered in this study.  Trees in  
+     column (a) were categorized as \textit{Improbable} due to their lack of structural defects as well as good
+    physiological health. Trees in the center column were categorized as \textit{Possible} due to weak branch unions and crown
+    dieback. Trees in column (c)  were categorized as \textit{Probable} because they were dead. Leaves in the bottom
+    image in the left-hand column are from vines attached to the dead tree.}
   \label{fig:raw_images}
 \end{figure}
 
@@ -167,9 +173,9 @@ In this study, only images of trees assigned to the likelihood of failure catego
     \centering
     \begin{tabular}{l r}\toprule
     \bf Category     & \bf Number of images  \\ \midrule
-    \textit{Improbable} & 322\\
-    \textit{Possible} & 80 \\
-    \textit{Probable} & 56 \\\midrule
+    \textit{Probable} & 56 \\
+      \textit{Possible} & 80 \\
+      \textit{Improbable} & 322\\\midrule
     Total & 505 \\\bottomrule
     \end{tabular}
     \caption{Category distribution  in the set of raw input images}
@@ -260,18 +266,19 @@ Random sets of images from each class across each of the four classification sce
   
   \caption{Selected processed training images under each classification scenario.
     The images shown are processed versions of those shown in \autoref{fig:raw_images}.
-    All were randomly cropped along the vertical axis and some horizontally flipped as well.
+    All were randomly cropped along the vertical axis and 50\% were horizontally flipped (including some in this figure).
   }
   \label{fig:processed_images}
 \end{figure}
 
 \subsection{Convolutional neural network}
 % We can apply cut-out (occluding portions of the image) for improved performance \cite{devries2017improved}. Also, it has been shown that training with lower resolution improves performance on higher resolution test images \cite{touvron2019fixing}.
-We employ a convolutional neural network (CNN) as the AI framework for tree risk failure likelihood prediction.
-Like other neural networks, the CNN is an arrangement of neurons within layers, each neuron performing an operation that maps from a pixel in an input image to the final output. 
-The input into each neuron is a weighted sum from the previous layer, while the output from each neuron is modulated by an activation function.
-The activation function in the final layer of an CNN is typically the softmax function, which gives the class probabilities of a given input image. 
-A class is assigned to the image based on the one with the corresponding maximum probability.
+We employ a convolutional neural network (CNN) as the AI framework for tree risk failure likelihood prediction.  Like
+other neural networks, the CNN is an arrangement of neurons within layers, each neuron performing an operation that maps
+from a pixel in an input image to the final output.  The input into each neuron is a weighted sum from the previous
+layer, while the output from each neuron is modulated by an activation function.  The activation function in the final
+layer of an CNN is typically the softmax function, which gives the class probabilities of a given input image.  A class
+is assigned to the image based on the one with the corresponding maximum probability.
 
 Unlike other neural networks, however, the CNN performs fundamental pixel-mapping operations in its convolutional
 layers. Each convolutional layer is defined by a stack of feature maps, which result from a dot product of a filter and
@@ -282,7 +289,7 @@ convolutional layer is given by the \textit{kernel size}.
 In this paper, we employ a relatively simple CNN architecture, historically inspired by AlexNet \cite{krizhevsky2012imageneta}.
 The structure of the CNN is shown in \autoref{fig:cnn} (generated using an automated  framework \cite{bauerle2021net2vis}).
 After the input layer (a matrix of pixels from the input image), we use a 64-filter convolutional layer.
-The output is downsampled using a pooling layer that returns the maximum ouput from a $2\times 2$ subsample from the previous layer.
+The output is downsampled using a pooling layer that returns the maximum output from a $2\times 2$ subsample from the previous layer.
 Next, we stack two successive convolutional layers each with a depth of 128 filters.
 We follow these with a maximum-pooling layer and then two further 256-filter convolutional layers.
 A final maximum-pooling layer is used before we ``flatten'' all outputs into a one-dimensional (fully-connected) array of neurons. 
@@ -295,10 +302,11 @@ In each dropout layer, a proportion of the neurons are randomly zeroed during tr
     \centering
     \includegraphics[width=.9\textwidth]{net2vis/graph.pdf}
     
-    \medskip
+    \bigskip
     
-    \includegraphics[width=.7\textwidth]{figures/net2vis-name-labels/legend}
-    \caption{Diagram of convolutional neural network structure. Hyperparameters that are optimized include the number of units in the penultimate dense layers.}
+    \includegraphics[width=.5\textwidth, trim={4cm 0 0 0}, clip]{figures/net2vis-name-labels/legend}
+    \caption{Diagram of convolutional neural network structure (excluding the input layer). Hyperparameters that are
+      optimized include the number of units in the penultimate dense layers. Here, 480 and 448 units are used, respectively.}
     \label{fig:cnn}
 \end{figure}
 
@@ -522,12 +530,32 @@ From \autoref{fig:sens-val-acc}, we observe the best performances in Pr\_Im and 
 The performance in Pr\_PoIm is lower, and Pr\_Po\_Im has the lowest performance of all four.
 
 
+Scenario Pr\_Im unsurprisingly has the best performance (greatest accuracy and $Pr^{m}$ of 0.95), since the
+classifier only has to predict two extreme categories of \textit{Probable} and \textit{Improbable}.  However, the
+\textit{Possible} category cannot be evaded in reality.  Thus, from the perspective of practical application, scenario
+PrPo\_Im, which is the next best performing scenario (best accuracy of 0.92, $\hat\sigma=0.01$), demonstrates that it is
+most viable to group \textit{Probable} with \textit{Possible} for the best CNN performance.
+
+ 
 \subsection{Analysis of classification strategies}
-Given that there was no significant difference in performance among the three resolutions tested, we focus our attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four scenarios and then evaluated performance on the following validation metrics: average precision, average recall and accuracy.
-%We investigated in detail the performance of the four classification scenarios outlined earlier, using the 128-pixel resolution images.
+Given that there was no significant difference in performance among the three resolutions tested, we focused our
+attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four
+scenarios using this resolution and then evaluated performance on the afore-mentioned validation metrics: accuracy and the macro-averages of
+class-specific precision, recall and $F_{1}$ score.
 The goal of this analysis was to explore the efficiencies of various classification strategies for tree failure risk.
-Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The metrics are shown in \autoref{fig:cnn-perf}.
-In each scenario, we trained the model over 20 epochs, but we employed early stopping using validation loss as the criterion with a patience of 3. That is, the training routine would set the weights of the final model at the epoch from which there was no further improvement in validation loss after three subsequent iterations. From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the uncertainty surrounding the subjective risk classification of the trees to begin with. Given the results from the sensitivity tests, however, it is possible that a different training instance may have provided better results, or perhaps, further iterations were required to achieve convergence.
+
+Using a randomly sampled validation set that was 20\% of the augmented dataset as before, we trained the CNN with the
+respective optimal hyperparameters for a single instance in order to compare the performance across the scenarios. The
+metrics are shown in \autoref{fig:cnn-perf}.  In each scenario, we trained the model over 13 epochs. % but we employed
+% early stopping using validation loss as the criterion with a patience of 3.
+% That is, the training routine would set the
+% weights of the final model at the epoch from which there was no further improvement in validation loss after three
+% subsequent iterations.
+From this figure, we see that Pr\_Po\_Im performs significantly worse than the other three. This indicates the
+uncertainty surrounding the expert, yet subjective, failure likelihood assessment of the trees to begin
+with, particularly when the category is deemed to be \textit{Possible}. % Given the results
+% from the sensitivity tests, however, it is possible that a different training instance may have provided better
+% results, or perhaps, further iterations were required to achieve convergence.
 
 \begin{figure}[ht]
     \centering
@@ -536,11 +564,17 @@ In each scenario, we trained the model over 20 epochs, but we employed early sto
     \label{fig:cnn-perf}
 \end{figure}
 
-We also plotted the confusion matrix for each scenario in \autoref{fig:confusion-matrix}.
-Each row of the confusion matrix indicates the proportion of observations in a given class that are predicted to be in the classes across the columns.
-Thus, the diagonal entry in each matrix represents the class-specific recall score, $Re_{c}$.
-The matrices show that generally, the ``Possible'' category is difficult to predict accurately as an individual class.
-The classifier performed best when it only had to distinguish between \textit{Probable} and \textit{Improbable} (\autoref{pr_im_cm}). Performance only suffered slightly when \textit{Possible} was grouped with \textit{Probable} in the PrPo\_Im scenario (\autoref{prpo_im_cm}).
+We also plotted the confusion matrix for each scenario in \autoref{fig:confusion-matrix} to further investigate the
+performance of the classifier.  Each row of the confusion matrix indicates the proportion of observations in a given
+class that are predicted to be in the classes across the columns.  Thus, the diagonal entry in each matrix represents
+the class-specific recall score, $Re_{c}$.  The matrices show that generally, the \textit{Possible} category is
+difficult to predict accurately as an individual class.  The classifier performs best when it only has to distinguish
+between \textit{Probable} and \textit{Improbable} (\autoref{pr_im_cm}). Performance only suffers slightly when
+\textit{Possible} was grouped with \textit{Probable} in the PrPo\_Im scenario (\autoref{prpo_im_cm}), which we would
+select as the best strategy from a practical standpoint.  These two scenarios (Pr\_Im and PrPo\_Im) have the highest
+class-specific recall scores $Re_{c}$ ($\ge 0.90$) compared to the other two scenarios Pr\_PoIm ($Re_{c} \ge 0.58$) and
+Pr\_Po\_Im ($Re_{c} \ge 0.54)$. In scenario Pr\_PoIm, we see that even grouping \textit{Possible} with
+\textit{Improbable} worsens the ability of the classifier to distinguish the \textit{Probable} category.
 
 \begin{figure}[ht]
   \centering
@@ -662,32 +696,52 @@ The classifier performed best when it only had to distinguish between \textit{Pr
 
 \eject
 \section{Conclusion}
-We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood (\textit{Probable}, \textit{Possible} and \textit{Improbable}) with respect to utility infrastructure. Specifically, we developed a convolutional neural network with state-of-the-art configurations.
-We applied data augmentation and pre-processing strategies to increase the size of our dataset by a factor of 5, thus generating 2525 images.
-From an initial resolution of $4032 \times 3024$ pixels, we created three sets of image resolutions: $64 \times 64$, $128 \times 128$ and $224 \times 224$.
-We then optimized eight of our CNN hyperparameters for 12  classification scenario and image resolution combinations. 
-We conducted ten model training trials in each of the 12 cases, using a 20\% validation set to measure model performance.
-In these trials, the average accuracy of classification was $\geq 0.94$, with a maximum standard deviation of 0.7.
-There was no statistically significant difference between the performance across image resolutions.
+We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood
+(\textit{Probable}, \textit{Possible} and \textit{Improbable}) with respect to utility infrastructure. Specifically, we
+developed a convolutional neural network with state-of-the-art configurations.  We applied data augmentation and
+pre-processing strategies to increase the size of our dataset by a factor of 5, thus generating 2525 images.  From an
+initial resolution of $4032 \times 3024$ pixels, we created three sets of image resolutions: $64 \times 64$,
+$128 \times 128$ and $224 \times 224$. We then defined four classification scenarios to investigate the performance of
+various groupings of the three categories: Pr\_Im (\textit{Probable} vs.\ \textit{Improbable}); PrPo\_Im
+(\textit{Probable} and \textit{Possible} vs.\ \textit{Improbable}); Pr\_PoIm (\textit{Probable} vs.\ \textit{Possible}
+and \textit{Improbable}); and Pr\_Po\_Im (\textit{Probable} vs.\ \textit{Possible} vs. \textit{Improbable}).
+We then optimized eight of our CNN hyperparameters for 12 classification
+scenario and image resolution combinations.  We conducted five-fold cross-validation for each of the 12 cases, and
+assessed model performance based on accuracy and the macro-averages of precision, recall and $F_{1}$ score.
 
-We further conducted more detailed classification performance analyses over single training instances for the 128-pixel case.
-Our results indicate that the CNN performed best at recalling \textit{Probable} vs. \textit{Improbable} cases.
-The \textit{Possible} category appeared to be a confounding case.
-This was not unexpected, given the uncertainty and subjectivity in assessing these trees to begin with.
-The CNN, however, performed better at distinguishing between \textit{Possible}/\textit{Improbable} and \textit{Probable}, than between \textit{Probable}/\textit{Possible} and \textit{Improbable}.
-This might be an indicator that trees in the \textit{Possible} category are more likely to be identified as \textit{Improbable}.
-When all three failure-likelihood categories were predicted individually, the \textit{Possible} category had the lowest recall score.
+Our results indicated that there generally was no significant difference in performance between the resolutions.  Among
+the scenarios, however, Pr\_Im performed the best with a top accuracy and $Pr^{m}$ of 0.94 ($\hat\sigma = 0.01)$.
+The next best-performing scenario was PrPo\_Im with a top accuracy and $Pr^{m}$ of 0.92 ($\hat\sigma = 0.01$).  For
+practical applications, scenario PrPo\_Im is more realistic, as it includes all three categories.  Thus, we deemed this
+as the most viable.  Scenarios Pr\_PoIm and Pr\_Po\_Im had best accuracy scores of 0.91 ($\hat\sigma = 0.01$) and 0.84
+($\hat\sigma = 0.02$), respectively.  But their performance across the other metrics was considerably worse.
 
-Nevertheless, given the relatively small input dataset of original images, these preliminary results are extremely promising for future improvements.
-First, we can train better models with more data.
-We also plan to rigorously quantify the uncertainty in ground truth category assignments by incorporating predictions from multiple experts on the same images.
-In order to better understand how the CNN is classifying each image, we will conduct extensive visual inference in further work, for instance, using the gradient-weighted class activation mapping approach \cite{zeiler2014visualizing}.
+We further conducted more detailed classification performance analyses over single training instances for the 128-pixel
+case.  Our results indicate that the CNN performed best at recalling \textit{Probable} vs. \textit{Improbable} or
+\textit{Probable}/\textit{Possible} vs.\ \textit{Improbable}.  The \textit{Possible} category appeared to be a
+confounding for the classifier.  This was not unexpected, given the uncertainty and subjectivity in assessing these trees
+to begin with.  The CNN, however, performed better at distinguishing between \textit{Possible}/\textit{Improbable} and
+\textit{Probable}, than between \textit{Probable}/\textit{Possible} and \textit{Improbable}.  This might be an indicator
+that trees in the \textit{Possible} category are more likely to be identified as \textit{Improbable}.  When all three
+failure-likelihood categories were predicted individually in scenario Pr\_Po\_Im, the \textit{Possible} category had the
+lowest class-specific recall score.
+
+Nevertheless, given the relatively small input dataset of original images, these preliminary results are extremely
+promising for future improvements.  First, we can train better models with more data.  We also plan to rigorously
+quantify the uncertainty in ground truth category assignments by incorporating predictions from multiple experts on the
+same images.  In order to better understand how the CNN is classifying each image, we will conduct extensive visual
+inference in further work, for instance, using the gradient-weighted class activation mapping approach
+\cite{zeiler2014visualizing}.  There is also a potential for mapping the visual cues learned by the CNN to physical
+relationships governing tree structure, in order to gain greater insights into tree failure processes.  The automation
+for tree failure likelihood assessments can potentially supplement human decision-making for increased resilience and,
+in the future, reduce costs and improve reliability in tree assessments, thus leading to more sustainable communities.
+
 
 \section{Data Availability Statement}
 All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
 
 \section{Acknowledgments}
-The authors acknowledge the support of Eversource.
+The authors acknowledge the partial support of Eversource in funding this work.
 
 \appendix
 
