@@ -210,12 +210,12 @@ In this study, we show that a relatively simple CNN architecture coupled with st
 \subsection{Image data description}
 The training dataset consisted of 505 images, each having an original size of $4032\times3024$ pixels.   Images were captured over a single field season in Massachusetts, USA, between May and September 2020 to limit any potential influence of changes in tree appearance due to seasonal leaf senescence on image processing.  ESRI ArcMaps was used to randomly distribute sampling sites across the state.  Field assessments of trees to classify likelihood of failure followed the “Level 1” methods outlined in the second edition of the International Society of Arboriculture’s (ISA) Tree Risk Assessment Best Management Practices \cite{smiley2017best} and ISA’s Utility Tree Risk Assessment Best Management Practices \cite{goodfellow2020best}.  This method is commonly used to assess trees in the United States.  A Level 1 assessment was selected for this study because: (1) individual risk assessments may be prohibitively expensive at higher orders, i.e. Level 2 or Level 3 \cite{smiley2017best}, given the hundreds of thousands of trees utilities must manage across territory areas;  (2) utility right-of-way (ROW) easements may not allow utility inspectors full access to trees in practical application of higher order risk assessment procedure if the trees are beyond the edge of the ROW \cite{goodfellow2020best}; and (3) studies have shown reasonable efficacy of limited basic visual assessment techniques in identifying more severe tree defects \cite{rooney2005reliability,koeser2016frequency} leading to greater likelihood of failure ratings.  The four categories of likelihood of tree failure, which are always considered in a stated time frame, are defined as follows \cite{smiley2017best}:
 \begin{itemize}
-\item \textbf{Improbable}: failure unlikely either during normal or extreme weather conditions;
-\item \textbf{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions;
-\item \textbf{Probable}: failure expected under normal weather conditions within a given time frame;
-\item \textbf{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect targets from impact.
+\item \textit{Improbable}: failure unlikely either during normal or extreme weather conditions;
+\item \textit{Possible}: failure expected under extreme weather conditions; but unlikely during normal weather conditions;
+\item \textit{Probable}: failure expected under normal weather conditions within a given time frame;
+\item \textit{Imminent}: failure has started or is most likely to occur in the near future, even if there is no significant wind or increased load. This is a rare occurrence for a risk assessor to encounter, and may require immediate action to protect targets from impact.
 \end{itemize}
-In this study, only images of trees assigned to the 3 likelihood of failure categories of \textit{Improbable}, \textit{Possible},and \textit{Probable} were included in modeling, while images of \textit{Imminent} trees were excluded due to their rarity. Typical examples are shown for each category in \autoref{fig:raw_images}.   In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
+In this study, only images of trees assigned to the likelihood of failure categories of \textit{Improbable}, \textit{Possible} and \textit{Probable} were included in modeling. Images of \textit{Imminent} trees were excluded due to their rarity. Typical examples are shown for each category in \autoref{fig:raw_images}.  In the original set of training images, the class distribution is given in \autoref{tab:classdist}.
 
 \begin{figure}[ht]
   \centering
@@ -225,7 +225,7 @@ In this study, only images of trees assigned to the 3 likelihood of failure cate
     \includegraphics[width=\textwidth,keepaspectratio=true]{probable-example-2} %Probable (deadwood above line hieght, vine)
     \caption{Probable}
   \end{subfigure}
-    \begin{subfigure}[t]{.32\linewidth}\centering
+  \begin{subfigure}[t]{.32\linewidth}\centering
     \includegraphics[width=\textwidth,keepaspectratio=true]{possible-example-1} % Possible (spruce, codominant and dieback)
 
     \includegraphics[width=\textwidth,keepaspectratio=true]{possible-example-2} % Possible (silver maple, codom weak attach, reaction wood)
@@ -257,24 +257,23 @@ In this study, only images of trees assigned to the 3 likelihood of failure cate
 
 
 \subsection{Classification scenarios}
-In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, 
-we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
+In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
 Each scenario represents a unique grouping of each of the three categories, with a minimum of two derived classes in each case.
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l c}\toprule
     \bf Scenario            & \bf Description  & \bf No.\ classes\\\midrule
-    \texttt{Pr\_Po\_Im}     &  \{Probable, Possible, Improbable\} & 3 \\
-    \texttt{Pr\_Im}          & \{Probable, Improbable\}           & 2 \\
-    \texttt{PrPo\_Im}        & \{Probable + Possible, Improbable\}  & 2 \\
-    \texttt{Pr\_PoIm}        & \{Probable, Possible + Improbable\}  & 2 \\\bottomrule
+    Pr\_Im          & \{Probable, Improbable\}           & 2 \\
+    PrPo\_Im        & \{Probable + Possible, Improbable\}  & 2 \\
+    Pr\_PoIm        & \{Probable, Possible + Improbable\}  & 2 \\
+    Pr\_Po\_Im     &  \{Probable, Possible, Improbable\} & 3 \\
+    \bottomrule
     \end{tabular}
     \caption{Classification scenarios}
     \label{tab:scenarios}
 \end{table}
 
-
-In \autoref{tab:scenarios}, the first scenario considered each likelihood of failure category separately, as an arborist would do in practice. The second scenario considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since Previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure \cite{koeser2020can}, in the third scenario, we pooled trees in the probable and possible categories and compared them to trees in the improbable category. In the fourth scenario, we pooled trees in the possible and improbable categories and compared them to trees in the probable scenario. In practice, this scenario is less likely because arborists typically distinguish trees with an improbable likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}.
+Scenario Pr\_Im considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure \cite{koeser2020can}, in scenario PrPo\_Im, we pooled trees in the \textit{Probable} and \textit{Possible} categories and compared them to trees in the \textit{Improbable} category. In scenario Pr\_PoIm, we pooled trees in the \textit{Possible} and \textit{Improbable} categories and compared them to trees in the \textit{Probable} category. In practice, this scenario is less likely because arborists typically distinguish trees with an \textit{Improbable} likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}. Scenario \texttt{Pr\_Po\_Im} considered each likelihood of failure category separately, as an arborist would do in practice. 
 
 \subsection{Image pre-processing and augmentation}
 Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
@@ -396,7 +395,7 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
     $\hat y_i$       & \ Predicted class of a given observation \\
     $y_i$        & \ Observed (true) class of a given observation \\
     $f(s_c)$        & \ Softmax activation function \\
-    $p_{i,c}$        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class c \\
+    $p_{i,c}$        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class $c$ \\
     $L^{CE}_i$        & \ Categorical cross entropy loss function of a single observation \\
     $Pr$ & \ Precision \\
     $Re$ & \ Recall \\
@@ -456,53 +455,16 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
                           & 2nd dense layer units, $u_2$ & $\{32, 64, \ldots, 512\}$ & 320                     & 256                     & 448                     \\
                           & learning rate, $\lambda$     & $[10^{-4}, 10^{-2}]$      & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\ \bottomrule
 \end{tabular}
-% \begin{tabular}{@{}lllll@{}}
-% \toprule
-% \multirow{2}{*}{\textbf{Scenario}} & \multirow{2}{*}{\textbf{Hyperparameters}} & \multicolumn{3}{c}{\textbf{Resolution}} \\ \cmidrule(l){3-5} 
-%                             &                & 64                & 128               & 224               \\ \midrule
-% \multirow{8}{*}{PrPo\_Im}   & activation\_1  & ReLU              & tanh              & ReLU              \\
-%                             & activation\_2  & ReLU              & ReLU              & ReLU              \\
-%                             & dropout\_1     & 0.1               & 0.25              & 0.1               \\
-%                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
-%                             & kernel\_size   & 7                 & 5                 & 7                 \\
-%                             & learning\_rate & \num{0.000102956216062} & \num{0.000109137476524} & \num{0.000102956216062} \\
-%                             & units\_1       & 480               & 384               & 480               \\
-%                             & units\_2       & 448               & 256               & 448               \\\midrule
-% \multirow{8}{*}{Pr\_Im}     & activation\_1  & ReLU              & ReLU              & ReLU              \\
-%                             & activation\_2  & ReLU              & ReLU              & ReLU              \\
-%                             & dropout\_1     & 0.1               & 0.1               & 0.1               \\
-%                             & dropout\_2     & 0.3               & 0.3               & 0.3               \\
-%                             & kernel\_size   & 7                 & 7                 & 7                 \\
-%                             & learning\_rate & \num{0.000102956216062} & \num{0.000102956216062} & \num{0.000102956216062} \\
-%                             & units\_1       & 480               & 480               & 480               \\
-%                             & units\_2       & 448               & 448               & 448               \\\midrule
-% \multirow{8}{*}{Pr\_PoIm}   & activation\_1  & ReLU              & ReLU              & ReLU              \\
-%                             & activation\_2  & tanh              & ReLU              & tanh              \\
-%                             & dropout\_1     & 0.25              & 0.1               & 0.2               \\
-%                             & dropout\_2     & 0.3               & 0.3               & 0.15              \\
-%                             & kernel\_size   & 7                 & 7                 & 7                 \\
-%                             & learning\_rate & \num{0.000175822328104} & \num{0.000102956216062} & \num{0.000114656409879} \\
-%                             & units\_1       & 128               & 480               & 416               \\
-%                             & units\_2       & 320               & 448               & 416               \\
-% \multirow{8}{*}{Pr\_Po\_Im} & activation\_1  & ReLU              & tanh              & ReLU              \\\midrule
-%                             & activation\_2  & tanh              & ReLU              & ReLU              \\
-%                             & dropout\_1     & 0.25              & 0.25              & 0.1               \\
-%                             & dropout\_2     & 0.3               & 0.35              & 0.3               \\
-%                             & kernel\_size   & 7                 & 5                 & 7                 \\
-%                             & learning\_rate & \num{0.000175822328104} & \num{0.000109137476524} & \num{0.000102956216062} \\
-%                             & units\_1       & 128               & 384               & 480               \\
-%                             & units\_2       & 320               & 256               & 448               \\ \bottomrule
-% \end{tabular}
-% Table edited at: https://www.tablesgenerator.com/latex_tables#
 \caption{Optimal hyperparameters found using the Hyperband search algorithm for 12 classification scenario and input image resolution combinations.}
     \label{tab:opt-hyp}
 \end{table}
 
 \subsection{Model training and assessment}
-The softmax activation function  $f(\cdot)$ in the output layer returns the class prediction probabilities for a given observation $i$. It is defined in terms of the class-specific score $s_c$:
+The softmax activation function  $f(\cdot)$ in the output layer returns the class prediction probabilities for a given observation $i$. It is defined in terms of the class-specific score $s_c$ as:
 \begin{equation}
     f(s_c) = \frac{e^{s_c}}{\sum\limits_{c' \in C} e^{s_{c'}}}
 \end{equation}
+where $C$ is the set of classes and $c, c'$ are indices for a given class.
 Thus for the $i$th observation, the softmax activation returns the predicted probability $p_{i,c}$ that the $i$th observation belongs to class $c$.
 The CNN is trained using a variant of the stochastic gradient algorithm, Adam \cite{kingma2017adam}.
 The goal of the training procedure is to learn the optimal weights and bias terms for the CNN by minimizing a loss function. 
@@ -625,26 +587,26 @@ The classifier performed best when it only had to distinguish between ``Probable
 
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[t]{.45\linewidth}
+  \begin{subfigure}[t]{.4\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_Im-128-px.png}
     \caption{Scenario \texttt{Pr\_Im}}
     \label{pr_im_cm}
   \end{subfigure}%
-   \begin{subfigure}[t]{.45\linewidth}
+   \begin{subfigure}[t]{.4\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-PrPo_Im-128-px.png}
     \caption{Scenario \texttt{PrPo\_Im}}
     \label{prpo_im_cm}
   \end{subfigure}%
   
-  \begin{subfigure}[t]{.45\linewidth}
+  \begin{subfigure}[t]{.4\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_PoIm-128-px.png}
     \caption{Scenario \texttt{Pr\_PoIm}}
     \label{pr_poim_cm}
 \end{subfigure}%
-  \begin{subfigure}[t]{.45\linewidth}
+  \begin{subfigure}[t]{.4\linewidth}
     \centering
     \includegraphics[width=\linewidth, trim={0 0 1cm 1cm}, clip]{opt-confusion-matrix-Pr_Po_Im-128-px.png}
     \caption{Scenario \texttt{Pr\_Po\_Im}}
