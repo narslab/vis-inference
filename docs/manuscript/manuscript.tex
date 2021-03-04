@@ -219,23 +219,22 @@ In this study, only images of trees assigned to the 3 likelihood of failure cate
 
 \begin{figure}[ht]
   \centering
-  % \includegraphics[width=\textwidth]{raw_input_images_2}
   \begin{subfigure}[t]{.32\linewidth}\centering
-    \includegraphics[width=\textwidth,angle=-90]{probable-example-1} %probable_standing dead.JPG
+    \includegraphics[width=\textwidth,keepaspectratio=true]{probable-example-1} %probable_standing dead.JPG
 
-    \includegraphics[width=\textwidth,angle=-90]{probable-example-2} %Probable (deadwood above line hieght, vine)
+    \includegraphics[width=\textwidth,keepaspectratio=true]{probable-example-2} %Probable (deadwood above line hieght, vine)
     \caption{Probable}
   \end{subfigure}
     \begin{subfigure}[t]{.32\linewidth}\centering
-    \includegraphics[width=\textwidth,angle=-90]{possible-example-1} % Possible (spruce, codominant and dieback)
+    \includegraphics[width=\textwidth,keepaspectratio=true]{possible-example-1} % Possible (spruce, codominant and dieback)
 
-    \includegraphics[width=\textwidth,angle=-90]{possible-example-2} % Possible (silver maple, codom weak attach, reaction wood)
+    \includegraphics[width=\textwidth,keepaspectratio=true]{possible-example-2} % Possible (silver maple, codom weak attach, reaction wood)
     \caption{Possible}   
   \end{subfigure}
   \begin{subfigure}[t]{.32\linewidth}\centering
-    \includegraphics[width=\textwidth,angle=-90]{improbable-example-1} %Improbable_3_london plane
+    \includegraphics[width=\textwidth,keepaspectratio=true]{improbable-example-1} %Improbable_3_london plane
 
-    \includegraphics[width=\textwidth,angle=-90]{improbable-example-2}
+    \includegraphics[width=\textwidth,keepaspectratio=true]{improbable-example-2}
     \caption{Improbable}
   \end{subfigure}
   \caption{Examples of training images in each of the three tree risk categories considered in this study.
@@ -261,7 +260,6 @@ In this study, only images of trees assigned to the 3 likelihood of failure cate
 In order to investigate the efficacy of an AI classifier to distinguish the failure-likelihood categories, 
 we defined four classification scenarios in \autoref{tab:scenarios} for our experiments. 
 Each scenario represents a unique grouping of each of the three categories, with a minimum of two derived classes in each case.
-Thus, 
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l c}\toprule
@@ -277,6 +275,7 @@ Thus,
 
 
 In \autoref{tab:scenarios}, the first scenario considered each likelihood of failure category separately, as an arborist would do in practice. The second scenario considered only the highest and lowest likelihood of failure categories used in the study to clearly distinguish between categories. Since Previous research has suggested that professionals more often disagree when distinguishing between possible and probable likelihood of failure (KOESER), in the third scenario, we pooled trees in the probable and possible categories and compared them to trees in the improbable category. In the fourth scenario, we pooled trees in the possible and improbable categories and compared them to trees in the probable scenario. In practice, this scenario is less likely because arborists typically distinguish trees with an improbable likelihood of failure as those with minimal or no structural defects. It requires additional judgment to distinguish trees with probable or possible likelihood of failure because an arborist must assess the severity of structural defects, the presence of response growth, and the expected loads \cite{smiley2017best}.
+
 \subsection{Image pre-processing and augmentation}
 Data augmentation refers to the variety of methods that are employed for synthetically generating more samples in a training dataset in order to improve model performance \cite{wong2016understanding}.
 Augmentation is desired, particularly in situations where the number of original observations is small, and the effectiveness of various relevant techniques in this domain has been amply demonstrated \cite{shorten2019survey}.
@@ -385,23 +384,23 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
 \subsection{Hyperparameter optimization}
 We optimized eight of the CNN hyperparameters using Hyperband \cite{li2018hyperband}, an efficient guided grid-search algorithm.
 Twelve searches were performed for each classification scenario and image resolution combination.
-Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates $\lambda$ for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
+Each search was conducted using 90 trials of unique hyperparameter combinations. The specified range of each parameter along with the search results are shown in \autoref{tab:opt-hyp}. For the kernel size in the first convolutional layer, we allowed for a choice between a $5\times 5$ and a $7\times 7$ kernel. The activation function in both dense layers was specified as a choice between the rectified linear unit (ReLU) function and the hyperbolic tangent ($\tanh$). The ReLU was introduced to address the so-called "vanishing gradient" problem and has been shown to improve performance in CNNs \cite{glorot2011deep}. Nevertheless, the $\tanh$ function remains a viable option, as well. The dropout rates were allowed to range from 0 to 5 in steps of 0.05, while the number of neurons or units in each dense layer varied from 32 to 512 in steps of 32. Finally, we uniformly sampled learning rates for the optimizer in the $\log_{10}$ space of $[10^{-4}, 10^{-2}]$.
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l c}\toprule
     \bf Symbol            & \bf Definition  \\\midrule
-    \texttt i     &  \ Given observation \\
-    \texttt c          & \ Class\\
-    \texttt s_c        & \ Class-specified score \\
-    \texttt $\hat y_i$       & \ Predicted class of a given observation \\
-    \texttt y_i        & \ Observed (true) class of a given observation \\
-    \texttt f(s_c)        & \ Softmax activation function \\
-    \texttt p_{i,c}        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class c \\
-    \texttt L^{CE}_i        & \ Categorical cross entropy loss function of a single observation \\
-    \textttt Pr & \ Precision \\
-    \textttt Re & \ Recall \\
-    \textttt F_1 & \ F_1 score \\\bottomrule
+    $i$     &  \ Given observation \\
+    $c$          & \ Class\\
+    $s_c$        & \ Class-specified score \\
+    $\hat y_i$       & \ Predicted class of a given observation \\
+    $y_i$        & \ Observed (true) class of a given observation \\
+    $f(s_c)$        & \ Softmax activation function \\
+    $p_{i,c}$        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class c \\
+    $L^{CE}_i$        & \ Categorical cross entropy loss function of a single observation \\
+    $Pr$ & \ Precision \\
+    $Re$ & \ Recall \\
+    $F_1$ & \ F_1 score \\\bottomrule
     \end{tabular}
     \caption{Symbols description}
     \label{tab:symbols}
@@ -513,7 +512,7 @@ In this case, we use the categorical cross-entropy loss function, which for a si
 \end{equation}
 Training is iteratively performed, with gradient of the loss function computed and averaged over a batch of input images.
 Here, we use a batch size of 32.
-The learning rate $\lambda$ of the optimization algorithm is an important hyperparameter that affects training performance.
+The learning rate  of the optimization algorithm is an important hyperparameter that affects training performance.
 We optimized for this in the hyperparameter search as discussed.
 Furthermore, the CNN is trained over multiple passes through the entire training set.
 Each such pass is referred to as an epoch.
