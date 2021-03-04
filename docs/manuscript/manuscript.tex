@@ -397,9 +397,11 @@ Each search was conducted using 90 trials of unique hyperparameter combinations.
     $f(s_c)$        & \ Softmax activation function \\
     $p_{i,c}$        & \ Predicted probability that the i\textsuperscript{th} observation belongs to class $c$ \\
     $L^{CE}_i$        & \ Categorical cross entropy loss function of a single observation \\
-    $Pr$ & \ Precision \\
-    $Re$ & \ Recall \\
-    $F_1$ & \ $F_1$ score \\\bottomrule
+    $Pr_c$ & \ Class-specific precision \\
+    $Re_c$ & \ Class-specific recall \\
+    $Pr^m$ & \ Macro-average precision \\
+    $Re^m$ & \ Macro-average recall \\
+    $F_1^m$ & \ Macro-average $F_1$ score \\\bottomrule
     \end{tabular}
     \caption{Symbols description}
     \label{tab:symbols}
