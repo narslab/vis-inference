@@ -74,9 +74,9 @@
   Critical to the resilience of utility power lines, tree failure assessments have historically been performed via
   manual and visual inspections.  In this paper, we develop a convolutional neural network (CNN) to predict tree failure
   likelihood categories (\textit{Probable}, \textit{Possible}, \textit{Improbable}) under four classification scenarios.
-  Starting with an original set of 505 expert-labeled images, we perform preprocessing and augmentation tasks to
-  increase the number of samples. We optimize several hyperparameters in our CNN and then train and test its performance
-  for three different image resolutions. The trained CNN produced a validation accuracy of at least 0.94
+  Starting with an original set of 505 expert-labeled images, we performed preprocessing and augmentation tasks to
+  increase the number of samples by a factor of 5. We optimized several hyperparameters in the CNN and then trained and assessed its performance via cross-validation
+  for three different image resolutions under all four scenarios. The CNN produced a validation accuracy of at least 0.94
   ($\hat\sigma = 0.1)$ in the best-performing, yet hypothetical scenario as it excludes one of the categories.  The
   second-best performing scenario, which includes all categories and therefore more practical, resulted in a validation
   accuracy of 0.92 ($\hat\sigma = 0.1$). Thus, via this novel framework, we demonstrate the potential of artificial
@@ -317,7 +317,7 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
     \begin{tabular}{l c c c c c c c}\toprule
     \bf Layer & \bf Layer \# & \bf No.\ Filters & \bf Kernel Size & \bf Strides &
     \bf Activation &   \bf Rate & \bf No.\ Units  \\\midrule
-    Convolutional  & 1         & 64                & $k^*$   & 2           & ReLU && \\
+    Convolutional  & 1         & 64                & $k$   & 2           & ReLU && \\
     Max. Pooling   & 1         &                   & 2               &&&             &      \\
     Convolutional  & 2         & 128               & 3   & 1           & ReLU && \\
     Convolutional  & 3         & 128               & 3   & 1           & ReLU && \\
@@ -328,13 +328,13 @@ The various hyperparameters in the model are summarized in \autoref{tab:hyp}.
     Flatten & & & & &&& \\\midrule
 %     &  &   &  & & &
 %     \bf Rate & \bf No.\ Units  \\\midrule
-    Dense           & 1  & & &  &  $a_1^*$ & & $u_1^*$ \\
-    Dropout         & 1  & & &  && $r_1^*$ &   \\
-    Dense           & 2  & & &  &  $a_2^*$ & & $u_2^*$  \\
-    Dropout         & 2  & & &  && $r_2^*$ &  \\ \bottomrule
+    Dense           & 1  & & &  &  $a_1$ & & $u_1$ \\
+    Dropout         & 1  & & &  && $r_1$ &   \\
+    Dense           & 2  & & &  &  $a_2$ & & $u_2$  \\
+    Dropout         & 2  & & &  && $r_2$ &  \\ \bottomrule
     \end{tabular}
     \caption{Summary of the convolutional neural network hyperparameters. 
-    Those indicated by an asterisked symbol are optimized using a guided search.}
+    Those represented by a symbol are optimized using a guided search.}
     \label{tab:hyp}
 \end{table}
 
@@ -483,7 +483,7 @@ We trained the CNN over 20 epochs in all the cases. The trajectories of the  los
 The metrics are: accuracy and the macro-averages of precision, recall and the $F_{1}$ score.
 %With respect to the accuracy, there are no significant differences between the 
 Taking all metrics into consideration, Welch pairwise tests showed that there are no significant differences in performance among the 3 training resolutions, with one exception.
-In the scenario Pr\_PoIm, the accuracy, $F_{1}^{m}$, $Re^{m}$ for the 128-pixel case are greater than those for the 224-pixel case ($p<.001$).
+In the scenario Pr\_PoIm, the accuracy, $F_{1}^{m}$, and $Re^{m}$ for the 128-pixel case are greater than those for the 224-pixel case ($p<.001$).
 This difference in performance is not as stark between the 128-pixel and 64-pixel cases in the same scenario.
 This outcome implies that we can achieve efficiency by  training at lower resolutions without significant losses in performance.
 
@@ -538,9 +538,9 @@ most viable to group \textit{Probable} with \textit{Possible} for the best CNN p
 
  
 \subsection{Analysis of classification strategies}
-Given that there was no significant difference in performance among the three resolutions tested, we focused our
-attention on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all the four
-scenarios using this resolution and then evaluated performance on the afore-mentioned validation metrics: accuracy and the macro-averages of
+Given that there was no significant difference in performance among the three resolutions tested, we focused 
+on the 128-px case, as a tradeoff between efficiency and performance. We re-trained the model on all four
+scenarios using this resolution and then evaluated performance on the aforementioned validation metrics: accuracy and the macro-averages of
 class-specific precision, recall and $F_{1}$ score.
 The goal of this analysis was to explore the efficiencies of various classification strategies for tree failure risk.
 
@@ -551,7 +551,7 @@ metrics are shown in \autoref{fig:cnn-perf}.  In each scenario, we trained the m
 % That is, the training routine would set the
 % weights of the final model at the epoch from which there was no further improvement in validation loss after three
 % subsequent iterations.
-From this figure, we see that Pr\_Po\_Im performs significantly worse than the other three. This indicates the
+From this figure, we see that Pr\_Po\_Im performed significantly worse than the other three. This indicates the
 uncertainty surrounding the expert, yet subjective, failure likelihood assessment of the trees to begin
 with, particularly when the category is deemed to be \textit{Possible}. % Given the results
 % from the sensitivity tests, however, it is possible that a different training instance may have provided better
@@ -569,7 +569,7 @@ performance of the classifier.  Each row of the confusion matrix indicates the p
 class that are predicted to be in the classes across the columns.  Thus, the diagonal entry in each matrix represents
 the class-specific recall score, $Re_{c}$.  The matrices show that generally, the \textit{Possible} category is
 difficult to predict accurately as an individual class.  The classifier performs best when it only has to distinguish
-between \textit{Probable} and \textit{Improbable} (\autoref{pr_im_cm}). Performance only suffers slightly when
+between \textit{Probable} and \textit{Improbable} (\autoref{pr_im_cm}). This observation aligns with previous work \cite{koeser2020can} and is arboriculturally intuitive. The \textit{Improbable} category includes trees with no apparent structural defects, which is comparatively easy for a qualified arborist to assess. When a defect is present, however, an arborist must estimate the severity of the defect that is present, whether the tree has grown in such a way that structurally compensates for the presence of the defect, and the anticipated loads on the tree. Although there are guidelines to inform an arborist's assessment \cite{smiley2017best,goodfellow2020best}, evaluating each of these factors still depends on an arborist's judgment and experience, making it more difficult to distinguish between trees in the \textit{Possible} and \textit{Probable} categories. Thus, it was not surprising that performance only suffered slightly when
 \textit{Possible} was grouped with \textit{Probable} in the PrPo\_Im scenario (\autoref{prpo_im_cm}), which we would
 select as the best strategy from a practical standpoint.  These two scenarios (Pr\_Im and PrPo\_Im) have the highest
 class-specific recall scores $Re_{c}$ ($\ge 0.90$) compared to the other two scenarios Pr\_PoIm ($Re_{c} \ge 0.58$) and
@@ -741,7 +741,7 @@ in the future, reduce costs and improve reliability in tree assessments, thus le
 All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
 
 \section{Acknowledgments}
-The authors acknowledge the partial support of Eversource in funding this work.
+The authors acknowledge the partial support of Eversource Energy in funding this work.
 
 \appendix
 
