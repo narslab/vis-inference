@@ -694,7 +694,6 @@ Pr\_Po\_Im ($Re_{c} \ge 0.54)$. In scenario Pr\_PoIm, we see that even grouping 
 %   \label{tab:comp}
 % \end{table}
 
-\eject
 \section{Conclusion}
 We have demonstrated the efficacy of an artificial intelligence framework for predicting tree failure likelihood
 (\textit{Probable}, \textit{Possible} and \textit{Improbable}) with respect to utility infrastructure. Specifically, we
@@ -738,7 +737,7 @@ in the future, reduce costs and improve reliability in tree assessments, thus le
 
 
 \section{Data Availability Statement}
-All data, models, or code generated or used during the study are available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
+All data, models, or code generated or used during the study are publicly available in a GitHub repository online at \url{https://github.com/narslab/tree-risk-ai}.
 
 \section{Acknowledgments}
 The authors acknowledge the partial support of Eversource Energy in funding this work.
@@ -746,7 +745,7 @@ The authors acknowledge the partial support of Eversource Energy in funding this
 \appendix
 \section{Summary of validation performance metrics}
 For further reference we tabulate the mean and standard deviation of the performance metrics obtained on the scenario-resolution sensitivity tests. These values are shown in \autoref{tab:meanstd}.
-The metrics are accuracy, macro-average $F_1$ ($F_1^m$), macro-average recall ($Re^m$) and macro-average precision ($Pr^m$).
+The metrics are: accuracy, macro-average $F_1$ ($F_1^m$), macro-average recall ($Re^m$) and macro-average precision ($Pr^m$).
 
 \begin{table}[ht]\small\centering
 \caption{Mean and standard deviation of the 5-fold cross-validation estimates of classifier performance metrics on the 12 scenario-resolution cases investigated. ``SD'' represents ``standard deviation.''}
@@ -774,6 +773,8 @@ The metrics are accuracy, macro-average $F_1$ ($F_1^m$), macro-average recall ($
 \section{Welch $t$-test results}
 Here, we summarize the p-values resulting from the Welch independent $t$-tests used to determine if the mean values of the various performance metrics are statistically significant or not.
 Strong evidence of significant difference is given by a low p-value (a typical threshold is $< 0.01$).
+In \autoref{tab:welch-resolution}, we consider pairwise comparisons between different image resolutions in all four scenarios.
+In \autoref{tab:welch-scenario}, we compare different scenarios for the same image resolution.
 
 \begin{table}[ht]\small\centering
 \caption{Welch's $t$-test p-value results for pairwise comparisons between image resolutions across all four scenarios.
