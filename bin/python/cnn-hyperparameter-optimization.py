@@ -36,6 +36,7 @@ HYPERBAND_MAX_EPOCHS = 10 #10
 EXECUTIONS_PER_TRIAL = 2 #5
 HYPERBAND_ITER = 3 #80
 
+# TODO: make image_dict a function
 image_dict = dict.fromkeys(RESOLUTION_LIST)
 for p in RESOLUTION_LIST:
     image_dict[p] = dict.fromkeys(SCENARIO_LIST)

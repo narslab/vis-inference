@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import random
 import ntpath
 
-raw_image_dir = '../../data/raw/Pictures for AI'
-tidy_image_dir = '../../data/tidy/labeled_images/'
+RAW_IMAGE_DIR = '../../data/raw/Pictures for AI'
+TIDY_IMAGE_DIR = '../../data/tidy/labeled_images/'
 
 def getListOfFiles(dirName):
     """Returns single list of the filepath of each of the training image files"""
@@ -36,18 +36,18 @@ def saveImageFiles(image_file_list):
     improbable_counter = 1
     possible_counter = 1
     probable_counter = 1
-    if not os.path.exists(tidy_image_dir):
-        os.makedirs(tidy_image_dir)
+    if not os.path.exists(TIDY_IMAGE_DIR):
+        os.makedirs(TIDY_IMAGE_DIR)
     for filename in image_file_list:
         if '.JPG' in filename or '.jpg' in filename:        
             if any(re.findall(r'improbable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'improbable' + '-' + str(improbable_counter) + '.jpg'
+                save_name = TIDY_IMAGE_DIR + 'improbable' + '-' + str(improbable_counter) + '.jpg'
                 improbable_counter += 1
             elif any(re.findall(r'probable', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'probable' + '-' + str(probable_counter) + '.jpg'
+                save_name = TIDY_IMAGE_DIR + 'probable' + '-' + str(probable_counter) + '.jpg'
                 probable_counter += 1 
             elif any(re.findall(r'possible', filename, re.IGNORECASE)):
-                save_name = tidy_image_dir + 'possible' + '-' + str(possible_counter) + '.jpg'
+                save_name = TIDY_IMAGE_DIR + 'possible' + '-' + str(possible_counter) + '.jpg'
                 possible_counter += 1 
             imageio.imwrite(save_name, np.array(Image.open(filename)))
     print('Number of improbable images saved:', improbable_counter - 1)    
@@ -75,9 +75,9 @@ def plotRawImages(image_file_list, images_per_class = 2):
     fig.savefig(image_filename, dpi=120)
 
 def main():    
-    tree_image_list = getListOfFiles(raw_image_dir)
+    tree_image_list = getListOfFiles(RAW_IMAGE_DIR)
     saveImageFiles(tree_image_list)
-    tree_image_list_labeled = getListOfFiles(tidy_image_dir)
+    tree_image_list_labeled = getListOfFiles(TIDY_IMAGE_DIR)
     plotRawImages(tree_image_list_labeled, images_per_class = 2)
 
 if __name__ == "__main__":
