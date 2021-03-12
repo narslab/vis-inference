@@ -1,5 +1,5 @@
-# tree-risk-ai
-Artificial Intelligence for Tree Failure Identification and Risk Quantification
+# inference-tree-risk
+Inference Methods for Tree Failure Identification and Risk Quantification
 
 ## Summary
 The code and models in this repository implement convolutional neural network (CNN) models to predict tree likelihood of failure categories from a given input image. The categories are:
