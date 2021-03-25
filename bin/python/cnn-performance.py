@@ -39,8 +39,8 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128, 224] # 64, 128] #, 224, 384]
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+RESOLUTION_LIST = [128] # 64, 128] #, 224, 384]
+SCENARIO_LIST = ["PrPo_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'

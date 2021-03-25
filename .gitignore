@@ -7,7 +7,8 @@ images
 my_dir/
 *.pyc
 opt/
-variables/
+models/variables/
+!models/opt-cnn-PrPo_Im-128-px/variables/
 optimization-log*
 test-*
 
