@@ -39,8 +39,8 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128, 224] # 64, 128] #, 224, 384]
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+RESOLUTION_LIST = [128] # 64, 128, 224, 384]
+SCENARIO_LIST = ["PrPo_Im"] #, "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -94,7 +94,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     print("Class labels:", class_labels)
     training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
                                                                                                np.array([x[1] for x in image_sets[image_size][scenario]]), 
-                                                                                               stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), 
+                                                                                               stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), #Same distribution of the clases
                                                                                                test_size = .2, random_state = trial_seed)
 
     print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
