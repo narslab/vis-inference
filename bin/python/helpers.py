@@ -166,6 +166,7 @@ def getLayerWeights(model_path, layer_name):
     w = np.moveaxis(w, 2, 0)
     w = np.moveaxis(w, 3, 0)
     print(w.shape)
+#     return w
     
 
 # define callback to save batch-wise loss/accuracy; Source: https://stackoverflow.com/a/52206330/3023033
