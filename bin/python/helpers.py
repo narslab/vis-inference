@@ -143,8 +143,7 @@ def f1(y_true, y_pred):
 	precision = precision(y_true, y_pred)
 	recall = recall(y_true, y_pred)
 	return 2*((precision*recall)/(precision+recall+K.epsilon()))
-
-   
+    
 def reset_weights(model):
 	"""This function re-initializes model weights at each compile"""
 	for layer in model.layers: 
@@ -157,6 +156,17 @@ def reset_weights(model):
 		# find the corresponding variable
 		var = getattr(layer, k.replace("_initializer", ""))
 		var.assign(initializer(var.shape, var.dtype))
+        
+def getLayerWeights(model_path, layer_name):
+    """This function loads a model and retrieves the weight of a specific layer"""
+    m = models.load_model(model_path)
+    layer_variables = m.get_layer(layer_name).get_weights()
+    weights = layer_variables[0]
+    w = np.array(weights)
+    w = np.moveaxis(w, 2, 0)
+    w = np.moveaxis(w, 3, 0)
+    print(w.shape)
+    
 
 # define callback to save batch-wise loss/accuracy; Source: https://stackoverflow.com/a/52206330/3023033
 class Histories(Callback):
