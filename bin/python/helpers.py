@@ -168,7 +168,7 @@ def getLayerWeights(model_path, layer_name):
     print(w.shape)
 #     return w
     
-
+    
 # define callback to save batch-wise loss/accuracy; Source: https://stackoverflow.com/a/52206330/3023033
 class Histories(Callback):
 	def on_train_begin(self,logs={}):
