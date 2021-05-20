@@ -11,6 +11,13 @@ variables/
 optimization-log*
 test-*
 
+## Visualizations
+plottingActivationMaximizations/*
+plottingActivations/*
+plottingFilters/*
+plottingGradCam/*
+plottingSaliency/*
+
 ## Core latex/pdflatex auxiliary files:
 auto
 *.ttt
