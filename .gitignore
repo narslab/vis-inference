@@ -16,7 +16,9 @@ plottingActivationMaximizations/*
 plottingActivations/*
 plottingFilters/*
 plottingGradCam/*
+figures/plottingBackProp/*
 plottingSaliency/*
+figures/test/*
 
 ## Core latex/pdflatex auxiliary files:
 auto
