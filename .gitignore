@@ -20,6 +20,9 @@ figures/plottingBackProp/*
 plottingSaliency/*
 figures/test/*
 
+ggcam_test/*.png
+ggcam_test/*.jpg
+
 ## Core latex/pdflatex auxiliary files:
 auto
 *.ttt
