@@ -16,6 +16,7 @@ plottingActivationMaximizations/*
 plottingActivations/*
 plottingFilters/*
 plottingGradCam/*
+plottingGuided-GradCam/*
 figures/plottingBackProp/*
 plottingSaliency/*
 figures/test/*
