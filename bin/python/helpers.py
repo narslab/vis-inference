@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from timeit import default_timer as timer
-import matplotlib.pyplot as plt
 import pydot
 import random
 
@@ -11,6 +10,7 @@ from tensorflow.keras.optimizers import SGD
 from tensorflow.keras import backend as K
 from tensorflow.keras.callbacks import Callback
 
+import matplotlib.pyplot as plt
         
 from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, recall_score, confusion_matrix
 from sklearn.datasets import make_classification
@@ -42,6 +42,40 @@ def splitData(image_array, prop = 0.80, seed_num = 111):
 	train = image_array[:train_size]
 	test = image_array[train_size:]
 	return(train, test)
+
+# Reference: https://colab.research.google.com/drive/17tAC7xx2IJxjK700bdaLatTVeDA02GJn#scrollTo=4-OduFD-wH14&line=15&uniqifier=1
+def deprocess_image(x):
+    """Same normalization as in:
+    https://github.com/fchollet/keras/blob/master/examples/conv_filter_visualization.py
+    Returns normalized guided backpropagation output
+    """
+    # normalize tensor: center on 0., ensure std is 0.25
+    x = x.copy()
+    x -= x.mean()
+    x /= (x.std() + K.epsilon())
+    x *= 0.25
+
+    # clip to [0, 1]
+    x += 0.5
+    x = np.clip(x, 0, 1)
+
+    # convert to RGB array
+    x *= 255
+#     if K.image_data_format() == 'channels_first':
+#         x = x.transpose((1, 2, 0))
+    x = np.clip(x, 0, 255).astype('uint8')
+    return x
+
+def standardizePlot(index, plot_dir, title):
+    '''Standardizing the plotting functionality when rendering the visual output of each technique'''
+    if not os.path.exists(plot_dir):
+        os.makedirs(plot_dir)
+    plt.figure(figsize=(5, 5))
+    plt.suptitle(title)
+    plt.title('Index ' + str(index), y=-0.06)
+    plt.axis('off')
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.92)
 
 def getImageShape(image_array, num_channels):
 	"""Returns shape of image from array of images, e.g. WIDTH x HEIGHT x NUM_CHANNELS"""
