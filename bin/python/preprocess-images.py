@@ -19,11 +19,11 @@ import matplotlib.pyplot as plt
 IMG_SIZE = 108
 IMG_SIZE_LIST = [128]#, 224]#, 384]
 NUM_CHANNELS = 1
-CLASSIFICATION_SCENARIO = "Pr_Im"
+CLASSIFICATION_SCENARIO = "PrPo_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
 EXPANSION_FACTOR = 5 #5 of augmented images
-LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
-PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
+LABELED_IMAGES_DIR = '../../data/tidy/summer21_all'
+PROCESSED_IMAGES_DIR = '../../data/tidy/summer21_all/preprocessed_images'
 SEED = 100  # 10 seed for repeatability
 NUM_PLOT_IMAGES_PER_CLASS = 1 #4
 
@@ -66,6 +66,7 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
         else :
             return np.array([0, 0]) # if label is not present for current image        
 
+        
 def processImageData(img_size, expansion_factor, class_scenario, seed_value, channels=1, images_per_class=4, save_image_binary_files=True): # original size 4032 × 3024 px
     data = []
     image_list = os.listdir(LABELED_IMAGES_DIR)
