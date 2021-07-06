@@ -151,6 +151,7 @@ def constructBaseCNN(image_size, scenario, num_channels = 1):
     return(base_model)
 
 
+
 #https://github.com/keras-team/keras/issues/5400#issuecomment-408743570
 def check_units(y_true, y_pred):
 	if y_pred.shape[1] != 1:
