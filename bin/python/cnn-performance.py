@@ -46,7 +46,8 @@ SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 #
-image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
+image_sets_square_train = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, train=True, rectangular = False)
+image_sets_square_test = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, train=False, rectangular = False)
 
 # image_sets = dict.fromkeys(RESOLUTION_LIST)
 # for p in RESOLUTION_LIST:
@@ -85,17 +86,17 @@ class Metrics(Callback):
         return
 
 
-def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
+def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     # training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
     # validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-    training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
-                                                                                               np.array([x[1] for x in image_sets[image_size][scenario]]), 
-                                                                                               stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), #Same distribution of the clases
-                                                                                               test_size = .2, random_state = trial_seed)
+    training_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_train[image_width][scenario]]) ## TOD)
+    training_labels = np.array([x[1] for x in image_sets_square_train[image_width][scenario]]) 
+    validation_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_test[image_width][scenario]]) ## TOD)
+    validation_labels = np.array([x[1] for x in image_sets_square_test[image_width][scenario]]) 
 
     print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
     print("Number of class validation images:", validation_labels.sum(axis=0), "total: ", validation_labels.sum())
