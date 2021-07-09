@@ -14,18 +14,17 @@ import os # used for navigating to image path
 import imageio # used for writing images
 import random
 import matplotlib.pyplot as plt
-
+from sklearn.model_selection import train_test_split
 ## GLOBAL VARIABLES
 IMG_SIZE = 108
-REDUCTION_FACTOR_LIST = [9]#, 224]#, 384]
+IMAGE_WIDTH_LIST = [189, 252, 336]
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
 # Reduction factor of 12: 252 x 336
 # Reduction factor of 16: 189 x 252
-
 NUM_CHANNELS = 3
 CLASSIFICATION_SCENARIO = "Pr_Im"
-CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
+CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
 
@@ -72,24 +71,30 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
         else :
             return np.array([0, 0]) # if label is not present for current image        
 
-def processImageData(reduction_factor, class_scenario, seed_value, channels=1, save_image_binary_files=True, test = False): # original size 4032 × 3024 px
-    data = []
+
+def processImageData(image_width, class_scenario, seed_value, channels=1, save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
+    data_train = []
+    data_test = []
     if test==True: # test just a few images to see what is going on
-        image_list = os.listdir(LABELED_IMAGES_DIR)[0:4]
+        image_list = os.listdir(LABELED_IMAGES_DIR)[0:10]
     else:
         image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
-    print("Preprocessing images for scenario " + class_scenario + "; reduction factor " + str(reduction_factor))
-    for img in image_list:
+    print("Preprocessing images for scenario " + class_scenario + "; image width" + str(image_width))
+    image_list_train, image_list_test =  train_test_split(image_list, test_size = .2, random_state = seed_value)
 
+    for img in image_list:
         label = getImageOneHotVector(img, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
             continue
         path = os.path.join(LABELED_IMAGES_DIR, img)
         img = Image.open(path) # read in image
         print(np.array(img).shape)
-        img_width = int(img.size[0]/reduction_factor)
-        img_height = int(img.size[1]/reduction_factor)
+        img_width = int(image_width) 
+        if rectangular==True:
+            img_height = int(img.size[0] * image_width/img.size[1]) ##because of input orientation, this is flipped.
+        else:
+            img_height = img_width
         if channels == 1:
             img = img.convert('L') # convert image to monochrome 
             ## RANDOM CROPPING PRIOR IMPLEMENTATION
@@ -114,14 +119,20 @@ def processImageData(reduction_factor, class_scenario, seed_value, channels=1, s
         print("Image shape: " + str(img.size))            
         resized_img = img.resize((img_width, img_height), Image.BICUBIC)  
         if test == True:
-            resized_img.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
+            pass
+            # resized_img.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
         resized_img_array = np.array(resized_img)/255. # convert to array and scale to 0-1
-        flipped_resized_img_array = np.fliplr(resized_img_array)
-        data.append([resized_img_array, label])            
-        data.append([flipped_resized_img_array, label])     
         print("Resized Image shape: " + str(resized_img_array.shape))  
-        print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))  
-    print("Images:", class_scenario, (np.array([x[1] for x in data])).sum(axis=0) )
+        if img in image_list_train:
+            flipped_resized_img_array = np.fliplr(resized_img_array)
+            data_train.append([resized_img_array, label])            
+            data_train.append([flipped_resized_img_array, label])
+            print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+        else:
+            data_test.append([resized_img_array, label])            
+        
+    print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
+    print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
     # random_image_selection_class_0 = random.sample([i[0] for i in data if i[1][0] == 1], k = images_per_class)
     # random_image_selection_class_1 = random.sample([i[0] for i in data if i[1][1] == 1], k = images_per_class)
     # image_selection_array = [random_image_selection_class_0, random_image_selection_class_1]
@@ -137,13 +148,16 @@ def processImageData(reduction_factor, class_scenario, seed_value, channels=1, s
     #     image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
     
     #data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
-    data_filename = 'w_' + str(img_width) + 'px_h_' + str(img_height) + "px_scenario_" + class_scenario + ".npy"
+    data_filename_train = 'w_' + str(img_width) + 'px_h_' + str(img_height) + "px_scenario_" + class_scenario + "_train.npy"
+    data_filename_test = 'w_' + str(img_width) + 'px_h_' + str(img_height) + "px_scenario_" + class_scenario + "_test.npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
     if save_image_binary_files == True:
-        np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename), data) #save as .npy (binary) file
-        print("Saved " + data_filename + " to data/tidy/" + PROCESSED_IMAGES_DIR)
-    return data #(image_selection_array, class_list)
+        np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_train), data_train) #save as .npy (binary) file
+        np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_test), data_test) #save as .npy (binary) file        
+        print("Saved " + data_filename_train + " to data/tidy/" + PROCESSED_IMAGES_DIR)
+        print("Saved " + data_filename_test + " to data/tidy/" + PROCESSED_IMAGES_DIR)        
+    return  #(image_selection_array, class_list)
 
 ## The plotting routine can be here, but perhaps better in a separate fiel.
 # def plotProcessedImages(class_scenario, image_array, class_list, images_per_class, resolution):
@@ -172,11 +186,11 @@ def processImageData(reduction_factor, class_scenario, seed_value, channels=1, s
 
 def main():
     for scenario in CLASSIFICATION_SCENARIO_LIST:
-        for factor in REDUCTION_FACTOR_LIST:
-            dat = processImageData(factor, scenario, seed_value=SEED, channels=NUM_CHANNELS, 
-                save_image_binary_files=True)
+        for width in IMAGE_WIDTH_LIST:
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=True)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = False, save_image_binary_files=True, test=True)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
-    return dat
+    return 
 
 if __name__ == "__main__":
     main()
