@@ -38,16 +38,16 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 #from contextlib import redirect_stdout
 
 # Globals
-NUM_CHANNELS = 1
-RESOLUTION_LIST = [128] # 64, 128, 224, 384]
-SCENARIO_LIST = ["PrPo_Im"] #, "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+NUM_CHANNELS = 3
+IMAGE_WIDTH_LIST = [189, 252, 336]
+SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 #
-image_sets_square_train = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, train=True, rectangular = False)
-image_sets_square_test = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, train=False, rectangular = False)
+image_sets_square_train = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+image_sets_square_test = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
 
 # image_sets = dict.fromkeys(RESOLUTION_LIST)
 # for p in RESOLUTION_LIST:
@@ -108,7 +108,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    model = constructBaseCNN(image_size, scenario, num_channels = NUM_CHANNELS)    ## get model
+    model = constructBaseCNN(image_width, scenario, num_channels = NUM_CHANNELS)    ## get model
     opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']    ## learning rate
     opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     reset_weights(model) # re-initialize model weights
@@ -169,7 +169,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     return(model, hist) 
 
 
-def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(res = 189, num_epochs = 15, seed_val = 1, test_boolean = True):
     df = pd.DataFrame()
     for s in SCENARIO_LIST:
         m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val, testing = test_boolean)
@@ -187,4 +187,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=13, seed_val = 2, test_boolean=False)
+    getScenarioModelPerformance(res=189, num_epochs=13, seed_val = 2, test_boolean=True)

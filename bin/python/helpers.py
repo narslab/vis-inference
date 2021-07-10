@@ -108,7 +108,7 @@ def getClassLabels(scenario):
     return(labels)	
 
 def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False):
-    image_dict = dict.fromkeys(resolution_list)
+    image_dict = dict.fromkeys(image_width_list)
     if train==True:
         train_test = 'train'
     else:
@@ -134,9 +134,10 @@ def getOptCNNHyperparams(image_size, scenario):
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
-def constructBaseCNN(image_size, scenario, num_channels = 1):
+def constructBaseCNN(image_size, scenario, num_channels = 1, opt_params = True):
     image_shape = (image_size, image_size, num_channels)
-    p_dict = getOptCNNHyperparams(image_size, scenario)
+    if opt_params:
+        p_dict = getOptCNNHyperparams(image_size, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3
     else:
