@@ -38,15 +38,16 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 #from contextlib import redirect_stdout
 
 # Globals
-NUM_CHANNELS = 1
-RESOLUTION_LIST = [128] # 64, 128, 224, 384]
-SCENARIO_LIST = ["PrPo_Im"] #, "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+NUM_CHANNELS = 3
+IMAGE_WIDTH_LIST = [189, 252, 336]
+SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 #
-image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
+image_sets_square_train = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+image_sets_square_test = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
 
 # image_sets = dict.fromkeys(RESOLUTION_LIST)
 # for p in RESOLUTION_LIST:
@@ -85,17 +86,17 @@ class Metrics(Callback):
         return
 
 
-def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
+def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     # training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
     # validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-    training_images, validation_images, training_labels, validation_labels =  train_test_split(np.array([np.expand_dims(x[0],axis=2) for x in image_sets[image_size][scenario]]), 
-                                                                                               np.array([x[1] for x in image_sets[image_size][scenario]]), 
-                                                                                               stratify= np.array([x[1] for x in image_sets[image_size][scenario]]), #Same distribution of the clases
-                                                                                               test_size = .2, random_state = trial_seed)
+    training_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_train[image_width][scenario]]) ## TOD)
+    training_labels = np.array([x[1] for x in image_sets_square_train[image_width][scenario]]) 
+    validation_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_test[image_width][scenario]]) ## TOD)
+    validation_labels = np.array([x[1] for x in image_sets_square_test[image_width][scenario]]) 
 
     print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
     print("Number of class validation images:", validation_labels.sum(axis=0), "total: ", validation_labels.sum())
@@ -107,7 +108,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    model = constructBaseCNN(image_size, scenario, num_channels = NUM_CHANNELS)    ## get model
+    model = constructBaseCNN(image_width, scenario, num_channels = NUM_CHANNELS)    ## get model
     opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']    ## learning rate
     opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     reset_weights(model) # re-initialize model weights
@@ -168,7 +169,7 @@ def trainModelWithDetailedMetrics(image_size, scenario, num_epochs = 10, trial_s
     return(model, hist) 
 
 
-def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(res = 189, num_epochs = 15, seed_val = 1, test_boolean = True):
     df = pd.DataFrame()
     for s in SCENARIO_LIST:
         m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val, testing = test_boolean)
@@ -186,4 +187,4 @@ def getScenarioModelPerformance(res = 64, num_epochs = 15, seed_val = 1, test_bo
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=128, num_epochs=13, seed_val = 2, test_boolean=False)
+    getScenarioModelPerformance(res=189, num_epochs=13, seed_val = 2, test_boolean=True)

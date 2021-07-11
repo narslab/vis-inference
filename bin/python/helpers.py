@@ -107,12 +107,25 @@ def getClassLabels(scenario):
         labels = ["Probable", "Possible/Improbable"]
     return(labels)	
 
-def createResolutionScenarioImageDict(resolution_list, scenario_list):
-    image_dict = dict.fromkeys(resolution_list)
-    for p in resolution_list:
-        image_dict[p] = dict.fromkeys(scenario_list)
+def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False):
+    image_dict = dict.fromkeys(image_width_list)
+    if train==True:
+        train_test = 'train'
+    else:
+        train_test = 'test'
+    for w in image_width_list:
+        image_dict[w] = dict.fromkeys(scenario_list)
         for s in scenario_list:
-            image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
+            if rectangular==True:
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed_images/w_' + str(w) + 'px_h_' + str(w) + 'px_scenario_' + s + '_' + train_test + '.npy', allow_pickle = True)
+            else:
+                if w == 189:
+                    h = 252
+                elif w == 252:
+                    h = 336
+                elif w == 336:
+                    h = 448
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed_images/w_' + str(w) + 'px_h_' + str(h) + 'px_scenario_' + s + '_' + train_test + '.npy', allow_pickle = True)
     return(image_dict)
 
 def getOptCNNHyperparams(image_size, scenario):
@@ -121,9 +134,10 @@ def getOptCNNHyperparams(image_size, scenario):
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
-def constructBaseCNN(image_size, scenario, num_channels = 1):
+def constructBaseCNN(image_size, scenario, num_channels = 1, opt_params = True):
     image_shape = (image_size, image_size, num_channels)
-    p_dict = getOptCNNHyperparams(image_size, scenario)
+    if opt_params:
+        p_dict = getOptCNNHyperparams(image_size, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3
     else:
