@@ -20,6 +20,7 @@ plottingGradCam/*
 figures/plottingBackProp/*
 plottingSaliency/*
 figures/test/*
+figures/plot_grid*
 
 ggcam_test/*.png
 ggcam_test/*.jpg
