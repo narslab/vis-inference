@@ -15,8 +15,10 @@ import imageio # used for writing images
 import random
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from helpers import *
+
+
 ## GLOBAL VARIABLES
-IMG_SIZE = 108
 IMAGE_WIDTH_LIST = [189, 252, 336]
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
@@ -80,57 +82,58 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
     else:
         image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
-    print("Preprocessing images for scenario " + class_scenario + "; image width" + str(image_width))
+    print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px")
     image_list_train, image_list_test =  train_test_split(image_list, test_size = .2, random_state = seed_value)
 
-    for img in image_list:
-        label = getImageOneHotVector(img, class_scenario)
+    for image_index in image_list:
+        label = getImageOneHotVector(image_index, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
             continue
-        path = os.path.join(LABELED_IMAGES_DIR, img)
-        img = Image.open(path) # read in image
-        print(np.array(img).shape)
-        img_width = int(image_width) 
+        path = os.path.join(LABELED_IMAGES_DIR, image_index)
+        image = Image.open(path) # read in image
+        #print(np.array(image).shape)
+        image_width = int(image_width) 
         if rectangular==True:
-            img_height = int(img.size[0] * image_width/img.size[1]) ##because of input orientation, this is flipped.
+            image_height = getRectangularImageHeight(image_width) #int(image.size[0] * image_width/image.size[1]) ##because of input orientation, this is flipped.
         else:
-            img_height = img_width
+            image_height = image_width
         if channels == 1:
-            img = img.convert('L') # convert image to monochrome 
+            image = image.convert('L') # convert image to monochrome 
             ## RANDOM CROPPING PRIOR IMPLEMENTATION
             # for i in range(expansion_factor):
             #     value = random.random()
             #     crop_value = int(value*(4032 - 3024))
             #     # crop image to 3024 x 3024 (original size: 4032 x 3024 (portrait) or 3024 x 4032 (lscape))
-            #     if np.array(img).shape[0] == 3024: # if landscape mode (tree oriented sideways)
-            #         cropped_img = img.crop((crop_value, 0, crop_value + 3024, 3024))                     
+            #     if np.array(image).shape[0] == 3024: # if landscape mode (tree oriented sideways)
+            #         cropped_image = image.crop((crop_value, 0, crop_value + 3024, 3024))                     
             #     else: # if portrait mode
-            #         cropped_img = img.crop((0, crop_value, 3024, crop_value + 3024))
-            #     cropped_img = cropped_img.resize((img_width, img_width), Image.BICUBIC) # resize image
-            #     cropped_img_array = np.array(cropped_img)/255. # convert to array and scale to 0-1                
-            #     if np.array(img).shape[0] == 3024: # if original image is landscape  
-            #         cropped_img_array = cropped_img_array.T # transpose cropped/resized version
+            #         cropped_image = image.crop((0, crop_value, 3024, crop_value + 3024))
+            #     cropped_image = cropped_image.resize((image_width, image_width), Image.BICUBIC) # resize image
+            #     cropped_image_array = np.array(cropped_image)/255. # convert to array and scale to 0-1                
+            #     if np.array(image).shape[0] == 3024: # if original image is landscape  
+            #         cropped_image_array = cropped_image_array.T # transpose cropped/resized version
             #     if value <= 0.5: # flip horizontally with 50% probability
-            #         cropped_img_array = np.fliplr(cropped_img_array)  
-            #     data.append([cropped_img_array, label])
-        if np.array(img).shape[1] == 3024: # if original image is landscape  
+            #         cropped_image_array = np.fliplr(cropped_image_array)  
+            #     data.append([cropped_image_array, label])
+        if np.array(image).shape[1] == 3024: # if original image is landscape  
             print("Image is landscape")
-            img = img.transpose(Image.ROTATE_270) # transpose cropped/resized version 
-        print("Image shape: " + str(img.size))            
-        resized_img = img.resize((img_width, img_height), Image.BICUBIC)  
+            image = image.transpose(Image.ROTATE_270) # transpose cropped/resized version 
+        #print("Image shape: " + str(image.size))            
+        resized_image = image.resize((image_width, image_height), Image.BICUBIC)  
         if test == True:
             pass
-            # resized_img.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
-        resized_img_array = np.array(resized_img)/255. # convert to array and scale to 0-1
-        print("Resized Image shape: " + str(resized_img_array.shape))  
-        if img in image_list_train:
-            flipped_resized_img_array = np.fliplr(resized_img_array)
-            data_train.append([resized_img_array, label])            
-            data_train.append([flipped_resized_img_array, label])
-            print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            # resized_image.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
+        resized_image_array = np.array(resized_image)/255. # convert to array and scale to 0-1
+        #print("Resized Image shape: " + str(resized_image_array.shape))  
+        if image_index in image_list_train:
+            flipped_resized_image_array = np.fliplr(resized_image_array)
+            data_train.append([resized_image_array, label])            
+            data_train.append([flipped_resized_image_array, label])
+            #print("Flipped and Resized Image shape: " + str(flipped_resized_image_array.shape))              
         else:
-            data_test.append([resized_img_array, label])            
-        
+            data_test.append([resized_image_array, label])            
+    print(len(data_train))
+    print(len(data_test))  
     print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
     print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
     # random_image_selection_class_0 = random.sample([i[0] for i in data if i[1][0] == 1], k = images_per_class)
@@ -147,8 +150,8 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
     #     class_list = ["Improbable", "Possible", "Probable"]
     #     image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
     
-    #data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
-    filename_prefix = 'w-' + str(img_width) + 'px-h-' + str(img_height) + "px-scenario-" + class_scenario
+    #data_filename = 'size' + str(image_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
+    filename_prefix = 'w-' + str(image_width) + 'px-h-' + str(image_height) + "px-scenario-" + class_scenario
     data_filename_train = filename_prefix+ "-train.npy"
     data_filename_test = filename_prefix + "-test.npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist

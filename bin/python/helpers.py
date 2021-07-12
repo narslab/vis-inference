@@ -107,9 +107,9 @@ def getClassLabels(scenario):
         labels = ["Probable", "Possible/Improbable"]
     return(labels)	
 
-def getRectangularImageHeight(w):
+def getRectangularImageHeight(width):
     """Gets corresponding height for rectangular image width"""
-    height = width * 4032/3024
+    height = int(width * 4032/3024)
     return height
 
 def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False):
