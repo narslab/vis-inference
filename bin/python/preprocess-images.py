@@ -25,8 +25,8 @@ IMAGE_WIDTH_LIST = [189, 252, 336]
 NUM_CHANNELS = 3
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
-LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
-PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
+LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
+PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images'
 
 SEED = 100  # 10 seed for repeatability ## NOT USED IN CURRENT IMPLEMENTATION
 NUM_PLOT_IMAGES_PER_CLASS = 1 #4 ## NOT USED IN CURRENT IMPLEMENTATION
