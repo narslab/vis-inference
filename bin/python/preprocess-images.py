@@ -115,7 +115,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             #     data.append([cropped_img_array, label])
         if np.array(img).shape[1] == 3024: # if original image is landscape  
             print("Image is landscape")
-            img = img.transpose(Image.rotate_270) # transpose cropped/resized version 
+            img = img.transpose(Image.ROTATE_270) # transpose cropped/resized version 
         print("Image shape: " + str(img.size))            
         resized_img = img.resize((img_width, img_height), Image.BICUBIC)  
         if test == True:
