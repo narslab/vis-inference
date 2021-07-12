@@ -20,6 +20,7 @@ import ntpath
 import shutil
 import csv
 from timeit import default_timer as timer
+import platform
 
 RAW_IMAGE_DIR = '../../data/raw/Pictures for AI'
 RAW_IMAGE_DIR_SUMMER = '../../data/raw/Summer 2021 AI Photos'
@@ -69,14 +70,27 @@ def splitIndexDescrArb(images):
     description_list = []
     arborist_list = []
     for fn in images:
-        if ('_' in fn):
-            index = fn.split('_')[0].split('\\')[-1]
-            description = fn.split('_')[1]
-            arborist = fn.split('_')[0].split('\\')[1].split('/')[-1]
-        else:
-            index = fn.split('-')[0].split('\\')[-1].rstrip(' ')
-            description = fn.split('-')[1]
-            arborist = fn.split('_')[0].split('\\')[1].split('/')[-1]        
+        print('fn: ' + fn)
+        if (platform.system() == 'Windows'):
+            if ('_' in fn):
+                index = fn.split('_')[0].split('\\')[-1]
+                description = fn.split('_')[1]
+                arborist = fn.split('_')[0].split('\\')[1].split('/')[-1]
+            else:
+                index = fn.split('-')[0].split('\\')[-1].rstrip(' ')
+                description = fn.split('-')[1]
+                arborist = fn.split('_')[0].split('\\')[1].split('/')[-1]        
+        else: #Unix/Linux systems
+            if ('_' in fn):
+                index = fn.split('_')[0].split('/')[-1]
+                print("Index" + index)
+                description = fn.split('_')[1]
+                arborist = fn.split('_')[0].split('/')[-3] #.split('/')[-2]
+                print(arborist)
+            else:
+                index = fn.split('-')[0].split('/')[-1].rstrip(' ')
+                description = fn.split('-')[1]
+                arborist = fn.split('-')[0].split('/')[-3]                    
         index = int(index)
         index_list.append(index)
         description_list.append(description)
