@@ -27,12 +27,12 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 
 
 # Globals
-NUM_CHANNELS = 1
-RESOLUTION_LIST = [64, 128, 224] #, 224, 384]
+NUM_CHANNELS = 3
+IMAGE_WIDTH_LIST = [189, 252, 336]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_MODEL_RUNS = 5
 NUM_EPOCHS = 15
-RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests-02272021' #'../../results/sensitivity-tests'
+RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests-07122021' #'../../results/sensitivity-tests'
 
 
 

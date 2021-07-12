@@ -46,8 +46,11 @@ SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 #
-image_sets_square_train = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
-image_sets_square_test = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
+IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
+
 
 # image_sets = dict.fromkeys(RESOLUTION_LIST)
 # for p in RESOLUTION_LIST:
@@ -85,8 +88,8 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
-def testCNN(image_size, image_size, num_channels=3):
-    image_shape = (image_size, image_size, num_channels)
+def testCNN(image_width, image_height, num_channels=3):
+    image_shape = (image_width, image_height, num_channels)
     model = models.Sequential()
 
     model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
@@ -151,11 +154,17 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    model = constructOptBaseCNN(image_width, scenario, num_channels = NUM_CHANNELS)    ## get model
-    opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']    ## learning rate
-    opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+    if testing:
+        model = testCNN(mage_width, image_height, num_channels=NUM_CHANNELS)
+    else:
+        model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+        opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+        opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     reset_weights(model) # re-initialize model weights
-    model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
+    if testing:
+        model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit
+    else:
+        model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
                      callbacks = [model_metrics]) #, early_stopping])     
@@ -180,14 +189,15 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     ## Classification report
     report = classification_report(np.argmax(test_labels, axis=-1), y_pred, zero_division=0,
                                    labels = np.arange(len(class_labels)), target_names=class_labels, output_dict=True)
-    print("Classification report for scenario " + scenario + ", resolution: " + str(image_size) + ":")
+    print("Classification report for scenario " + scenario + ", width: " + str(image_width) + ", height: " + str(image_height) + ":")
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists('../../results/classification-reports/'):  
         os.makedirs('../../results/classification-reports/')
+    classification_report_suffix = scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "px.csv"
     if testing == True:
-        report.to_csv("../../results/classification-reports/test-opt-classification-report-" + scenario + "-" + str(image_size) + "-px.csv")
+        report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
     else:
-        report.to_csv("../../results/classification-reports/opt-classification-report-" + scenario + "-" + str(image_size) + "-px.csv")        
+        report.to_csv("../../results/classification-reports/opt-classification-report-" + classification_report_suffix)        
     print(report)
     
     ## Confusion matrix

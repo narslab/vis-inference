@@ -129,14 +129,14 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, train=Tru
     return(image_dict)
 
 def getOptCNNHyperparams(image_width, image_height, scenario):
-    with open('../../results/optimal-hyperparameters/' + 'w' + str(image_width) + 'h' + str(image_height) + '/' + scenario + '/hyperparameters.txt') as f: 
+    with open('../../results/optimal-hyperparameters/' + 'w-' + str(image_width) + 'px-h-' + str(image_height) + 'px/' + scenario + '/hyperparameters.txt') as f: 
         data = f.read() 
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
 def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
     image_shape = (image_width, image_height, num_channels)
-    p_dict = getOptCNNHyperparams(image_size, scenario)
+    p_dict = getOptCNNHyperparams(image_width, image_height, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3
     else:

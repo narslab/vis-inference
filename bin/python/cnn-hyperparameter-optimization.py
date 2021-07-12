@@ -28,7 +28,7 @@ from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
 
-NUM_CHANNELS = 1
+NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [189, 252, 336]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
@@ -119,7 +119,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
-        scenario_path = os.path.join(OPTIMAL_HYPERPARAMETERS_PATH, 'w-'+str(image_width) + '-h-' + str(image_height), scenario)
+        scenario_path = os.path.join(OPTIMAL_HYPERPARAMETERS_PATH, 'w-'+str(image_width) + 'px-h-' + str(image_height) + 'px', scenario)
         if not os.path.exists(scenario_path):
             os.makedirs(scenario_path)
         # with open(os.path.join(scenario_path, 'results-summary.txt'), 'w') as f:
