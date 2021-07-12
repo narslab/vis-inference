@@ -148,8 +148,9 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
     #     image_selection_array = [random_image_selection_class_0, random_image_selection_class_1, random_image_selection_class_2]
     
     #data_filename = 'size' + str(img_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
-    data_filename_train = 'w_' + str(img_width) + 'px_h_' + str(img_height) + "px_scenario_" + class_scenario + "_train.npy"
-    data_filename_test = 'w_' + str(img_width) + 'px_h_' + str(img_height) + "px_scenario_" + class_scenario + "_test.npy"
+    filename_prefix = 'w-' + str(img_width) + 'px-h-' + str(img_height) + "px-scenario-" + class_scenario
+    data_filename_train = filename_prefix+ "-train.npy"
+    data_filename_test = filename_prefix + "-test.npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
     if save_image_binary_files == True:

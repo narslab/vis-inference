@@ -107,6 +107,11 @@ def getClassLabels(scenario):
         labels = ["Probable", "Possible/Improbable"]
     return(labels)	
 
+def getRectangularImageHeight(w):
+    """Gets corresponding height for rectangular image width"""
+    height = width * 4032/3024
+    return height
+
 def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False):
     image_dict = dict.fromkeys(image_width_list)
     if train==True:
@@ -117,33 +122,28 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, train=Tru
         image_dict[w] = dict.fromkeys(scenario_list)
         for s in scenario_list:
             if rectangular==True:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed_images/w_' + str(w) + 'px_h_' + str(w) + 'px_scenario_' + s + '_' + train_test + '.npy', allow_pickle = True)
+                h = getRectangularImageHeight(w)
             else:
-                if w == 189:
-                    h = 252
-                elif w == 252:
-                    h = 336
-                elif w == 336:
-                    h = 448
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed_images/w_' + str(w) + 'px_h_' + str(h) + 'px_scenario_' + s + '_' + train_test + '.npy', allow_pickle = True)
+                h = w
+            image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
     return(image_dict)
 
-def getOptCNNHyperparams(image_size, scenario):
-    with open('../../results/optimal-hyperparameters/' + str(image_size) + '/' + scenario + '/hyperparameters.txt') as f: 
+def getOptCNNHyperparams(image_width, image_height, scenario):
+    with open('../../results/optimal-hyperparameters/' + 'w' + str(image_width) + 'h' + str(image_height) + '/' + scenario + '/hyperparameters.txt') as f: 
         data = f.read() 
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
-def constructBaseCNN(image_size, scenario, num_channels = 1, opt_params = True):
-    image_shape = (image_size, image_size, num_channels)
-    if opt_params:
-        p_dict = getOptCNNHyperparams(image_size, scenario)
+def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
+    image_shape = (image_width, image_height, num_channels)
+    p_dict = getOptCNNHyperparams(image_size, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3
     else:
         num_classes = 2
     base_model = models.Sequential([
-        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", input_shape = image_shape),
+        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
+            input_shape = image_shape),
         layers.MaxPooling2D(2),
         layers.Conv2D(128, 3, activation="relu", padding="same"),
         layers.Conv2D(128, 3, activation="relu", padding="same"),

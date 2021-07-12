@@ -85,43 +85,86 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
+def testCNN(image_size, image_size, num_channels=3):
+    image_shape = (image_size, image_size, num_channels)
+    model = models.Sequential()
 
-def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_seed = 1, testing = True): 
+    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
+        input_shape = image_shape ))
+
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Flatten())
+
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(2, activation='softmax'))
+
+    # Choose an optimal value from 0.01, 0.001, or 0.0001
+    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
+                loss = 'categorical_crossentropy',
+                metrics = ['accuracy'])
+    return(model)
+
+def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     # training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
-    # validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
+    # test_images, test_labels = getImageAndLabelArrays(test_images_and_labels)
+    if rectangular:
+        image_height = getRectangularImageHeight(image_width)
+    else:
+        image_height = image_width
+
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-    training_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_train[image_width][scenario]]) ## TOD)
-    training_labels = np.array([x[1] for x in image_sets_square_train[image_width][scenario]]) 
-    validation_images = np.array([np.expand_dims(x[0],axis=2) for x in image_sets_square_test[image_width][scenario]]) ## TOD)
-    validation_labels = np.array([x[1] for x in image_sets_square_test[image_width][scenario]]) 
 
-    print("Number of class training images:", training_labels.sum(axis=0), "total: ", training_labels.sum())
-    print("Number of class validation images:", validation_labels.sum(axis=0), "total: ", validation_labels.sum())
+    if rectangular:
+        image_dictionary_train = IMAGE_SETS_RECT_TRAIN
+        image_dictionary_test = IMAGE_SETS_RECT_TEST
+    else:
+        image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
+        image_dictionary_test = IMAGE_SETS_SQUARE_TRAIN
+
+    train_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_train[image_width][scenario]]) ## TOD)
+    train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
+    test_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_test[image_width][scenario]]) ## TOD)
+    test_labels = np.array([x[1] for x in image_dictionary_test[image_width][scenario]]) 
+
+    print("Number of class training images:", training_labels.sum(axis=0), "total: ", train_labels.sum())
+    print("Number of class test images:", test_labels.sum(axis=0), "total: ", test_labels.sum())
     
     # CALLBACKS
-    model_metrics = Metrics(val_data=(validation_images, validation_labels))
+    model_metrics = Metrics(val_data=(test_images, test_labels))
     early_stopping = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    model = constructBaseCNN(image_width, scenario, num_channels = NUM_CHANNELS)    ## get model
+    model = constructOptBaseCNN(image_width, scenario, num_channels = NUM_CHANNELS)    ## get model
     opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']    ## learning rate
     opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     reset_weights(model) # re-initialize model weights
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
-    hist = model.fit(training_images, training_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
-                     validation_data=(validation_images, validation_labels),
+    hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
+                     validation_data=(test_images, test_labels),
                      callbacks = [model_metrics]) #, early_stopping])     
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     if testing == True:
-        model_name = "test-opt-cnn-" + scenario + "-" +str(image_size) + "-px"
+        model_name = "test-opt-cnn-" + scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px"
     else:
-        model_name = "opt-cnn-" + scenario + "-" +str(image_size) + "-px"
+        model_name = "opt-cnn-" + scenario + "-w-" +str(image_width) + "-px-h-" + str(image_height) + "-px"
     model_folder = "model"
     if not os.path.exists(SAVED_MODEL_DIR):  
         os.makedirs(SAVED_MODEL_DIR)
@@ -133,9 +176,9 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
         f.write(json.dumps(hist.history))    
    
     # ANALYZE PERFORMANCE AND SAVE OUTPUTS
-    y_pred = np.argmax(model.predict(validation_images), axis=-1)     ## Params
+    y_pred = np.argmax(model.predict(test_images), axis=-1)     ## Params
     ## Classification report
-    report = classification_report(np.argmax(validation_labels, axis=-1), y_pred, zero_division=0,
+    report = classification_report(np.argmax(test_labels, axis=-1), y_pred, zero_division=0,
                                    labels = np.arange(len(class_labels)), target_names=class_labels, output_dict=True)
     print("Classification report for scenario " + scenario + ", resolution: " + str(image_size) + ":")
     report = pd.DataFrame(report).transpose().round(2)
@@ -161,30 +204,36 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     ax.set_xticklabels(class_labels, ha='center',fontsize=14)
     plt.xlabel('Predicted',fontsize=16)
     #plt.show()
+    file_suffix =  scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px.png"
     if testing == True:
-        con_mat_heatmap_file = "../../figures/test-opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
+        con_mat_heatmap_file = "../../figures/test-opt-confusion-matrix-" +  file_suffix
     else:
-        con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" + scenario + "-" + str(image_size) + "-px.png"
+        con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" +  file_suffix
     figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
     return(model, hist) 
 
 
-def getScenarioModelPerformance(res = 189, num_epochs = 15, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
     df = pd.DataFrame()
+    if rect_boolean:
+        height = getRectangularImageHeight(width)
+    else:
+        height = width
     for s in SCENARIO_LIST:
-        m, h = trainModelWithDetailedMetrics(res, s, num_epochs, trial_seed = seed_val, testing = test_boolean)
-        #visualizeCNN(m, s, res, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
+        m, h = trainModelWithDetailedMetrics(width, s, num_epochs, trial_seed = seed_val, 
+            rectangular = rect_boolean, testing = test_boolean)
+        #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
         perf[['Scenario']] = s
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
         #del m
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + str(res) + "px.csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-w-" + str(width) + "-px-h" + str(height) + "-px.csv"
     else:
-        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + str(res) + "px.csv"
+        df_filename = "../../results/opt-cnn-performance-metrics-summary-w-" + str(width) + "-px-h" + str(height) +  "-px.csv"
     df.to_csv(df_filename)
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(res=189, num_epochs=13, seed_val = 2, test_boolean=True)
+    getScenarioModelPerformance(width=189, num_epochs=13, seed_val = 2, rect_boolean = True, test_boolean=True)
