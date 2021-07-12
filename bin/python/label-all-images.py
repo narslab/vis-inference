@@ -23,8 +23,8 @@ from timeit import default_timer as timer
 
 RAW_IMAGE_DIR = '../../data/raw/Pictures for AI'
 RAW_IMAGE_DIR_SUMMER = '../../data/raw/Summer 2021 AI Photos'
-TIDY_IMAGE_DIR = '../../data/tidy/labeled_images/'
-INDEX_DIR = '../../results/index_raw/'
+TIDY_IMAGE_DIR = '../../data/tidy/labeled-images/'
+INDEX_DIR = '../../results/index-raw/'
 
 def getListOfFiles(dirName):
     """Returns single list of the filepath of each of the image files"""
