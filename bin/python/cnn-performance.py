@@ -39,8 +39,8 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [189]#, 252, 336]
-SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+IMAGE_WIDTH_LIST = [252]#, 189, 252, 336]
+SCENARIO_LIST = ["PrPo_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -88,7 +88,7 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
-def testCNN(image_width, image_height, num_channels=3):
+def testCNN(image_width, image_height, num_channels=3, num_classes = 3):
     image_shape = (image_width, image_height, num_channels)
     model = models.Sequential()
 
@@ -111,7 +111,7 @@ def testCNN(image_width, image_height, num_channels=3):
     model.add(layers.Dense(units = 408, activation = 'relu'))
     model.add(layers.Dropout(.3))
 
-    model.add(layers.Dense(3, activation='softmax'))
+    model.add(layers.Dense(num_classes, activation='softmax'))
 
     # Choose an optimal value from 0.01, 0.001, or 0.0001
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
@@ -129,6 +129,10 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     else:
         image_height = image_width
 
+    if scenario == "Pr_Po_Im":
+        NUM_CLASSES = 3
+    else:
+        NUM_CLASSES = 2
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
     print("Image width" + str(image_width))
@@ -162,7 +166,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
     if testing:
-        model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS)
+        model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS, num_classes = NUM_CLASSES )
     else:
         model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
         opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
@@ -254,4 +258,4 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=189, num_epochs=1, seed_val = 2, rect_boolean = False, test_boolean=True)
+    getScenarioModelPerformance(width=252, num_epochs=20, seed_val = 2, rect_boolean = False, test_boolean=True)
