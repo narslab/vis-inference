@@ -208,7 +208,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     print(report)
     
     ## Confusion matrix
-    con_mat = tf.math.confusion_matrix(labels=np.argmax(validation_labels, axis=-1), predictions=y_pred).numpy()
+    con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
     con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
     con_mat_df = pd.DataFrame(con_mat_norm, index = class_labels, columns = class_labels)
     #print("Confusion matrix for scenario " + scenario + ", resolution: " + str(image_size) + ":")
@@ -253,4 +253,4 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=189, num_epochs=13, seed_val = 2, rect_boolean = False, test_boolean=True)
+    getScenarioModelPerformance(width=189, num_epochs=1, seed_val = 2, rect_boolean = False, test_boolean=True)
