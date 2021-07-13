@@ -105,7 +105,7 @@ def getClassLabels(scenario):
         labels = ["Improbable","Probable/Possible"]
     elif scenario=="Pr_PoIm":
         labels = ["Possible/Improbable","Probable"]
-    return(labels)
+    return(labels)	
 
 def getRectangularImageHeight(width):
     """Gets corresponding height for rectangular image width"""
