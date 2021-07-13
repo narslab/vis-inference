@@ -241,7 +241,8 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
             rectangular = rect_boolean, testing = test_boolean)
         #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
-        perf[['Scenario']] = s
+        
+        perf['Scenario'] = s
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
         #del m
