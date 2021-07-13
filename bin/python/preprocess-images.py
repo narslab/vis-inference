@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """
 The purpose of this script is to pre-process the tree images using the following approaches:
     - one-hot vector encoding

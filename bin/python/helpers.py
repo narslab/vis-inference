@@ -98,14 +98,14 @@ def getImageAndLabelArrays(image_label_tuple_array, num_channels = 1):
 
 def getClassLabels(scenario):
     if scenario=="Pr_Po_Im":
-        labels = ["Probable", "Possible", "Improbable"]
+        labels = ["Improbable", "Possible", "Probable"]
     elif scenario=="Pr_Im":
-        labels = ["Probable", "Improbable"]
+        labels = ["Improbable", "Probable"]
     elif scenario=="PrPo_Im":
-        labels = ["Probable/Possible", "Improbable"]
+        labels = ["Improbable","Probable/Possible"]
     elif scenario=="Pr_PoIm":
-        labels = ["Probable", "Possible/Improbable"]
-    return(labels)	
+        labels = ["Possible/Improbable","Probable"]
+    return(labels)
 
 def getRectangularImageHeight(width):
     """Gets corresponding height for rectangular image width"""

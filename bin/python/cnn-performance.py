@@ -253,4 +253,4 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=189, num_epochs=13, seed_val = 2, rect_boolean = False, test_boolean=True)
+    getScenarioModelPerformance(width=189, num_epochs=1, seed_val = 2, rect_boolean = False, test_boolean=True)
