@@ -39,7 +39,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # Globals
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [189, 252, 336]
+IMAGE_WIDTH_LIST = [189]#, 252, 336]
 SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
@@ -111,10 +111,10 @@ def testCNN(image_width, image_height, num_channels=3):
     model.add(layers.Dense(units = 408, activation = 'relu'))
     model.add(layers.Dropout(.3))
 
-    model.add(layers.Dense(2, activation='softmax'))
+    model.add(layers.Dense(3, activation='softmax'))
 
     # Choose an optimal value from 0.01, 0.001, or 0.0001
-    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
+    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
     return(model)
@@ -131,20 +131,27 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
 
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-
-    if rectangular:
+    print("Image width" + str(image_width))
+    print("Image height" + str(image_height))
+    if rectangular==True:
         image_dictionary_train = IMAGE_SETS_RECT_TRAIN
         image_dictionary_test = IMAGE_SETS_RECT_TEST
     else:
         image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
-        image_dictionary_test = IMAGE_SETS_SQUARE_TRAIN
+        image_dictionary_test = IMAGE_SETS_SQUARE_TEST
 
-    train_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_train[image_width][scenario]]) ## TOD)
+    train_images = np.array([x[0] for x in image_dictionary_train[image_width][scenario]]) ## TOD)
     train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
-    test_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_test[image_width][scenario]]) ## TOD)
+    test_images = np.array([x[0] for x in image_dictionary_test[image_width][scenario]]) ## TOD)
     test_labels = np.array([x[1] for x in image_dictionary_test[image_width][scenario]]) 
 
-    print("Number of class training images:", training_labels.sum(axis=0), "total: ", train_labels.sum())
+    # train_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_train[image_width][scenario]]) ## TOD)
+    # train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
+    # test_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_test[image_width][scenario]]) ## TOD)
+    # test_labels = np.array([x[1] for x in image_dictionary_test[image_width][scenario]]) 
+
+    print(train_images[0].shape)
+    print("Number of class training images:", train_labels.sum(axis=0), "total: ", train_labels.sum())
     print("Number of class test images:", test_labels.sum(axis=0), "total: ", test_labels.sum())
     
     # CALLBACKS
@@ -155,7 +162,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
     if testing:
-        model = testCNN(mage_width, image_height, num_channels=NUM_CHANNELS)
+        model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS)
     else:
         model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
         opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
@@ -246,4 +253,4 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=189, num_epochs=13, seed_val = 2, rect_boolean = True, test_boolean=True)
+    getScenarioModelPerformance(width=189, num_epochs=13, seed_val = 2, rect_boolean = False, test_boolean=True)
