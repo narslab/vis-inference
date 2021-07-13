@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """
 The purpose of this script is to pre-process the tree images using the following approaches:
     - one-hot vector encoding
@@ -25,8 +28,8 @@ IMAGE_WIDTH_LIST = [189, 252, 336]
 NUM_CHANNELS = 3
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
-LABELED_IMAGES_DIR = '../../data/tidy/labeled_images'
-PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed_images'
+LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
+PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images'
 
 SEED = 100  # 10 seed for repeatability ## NOT USED IN CURRENT IMPLEMENTATION
 NUM_PLOT_IMAGES_PER_CLASS = 1 #4 ## NOT USED IN CURRENT IMPLEMENTATION
@@ -115,7 +118,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             #     data.append([cropped_img_array, label])
         if np.array(img).shape[1] == 3024: # if original image is landscape  
             print("Image is landscape")
-            img = img.transpose(Image.rotate_270) # transpose cropped/resized version 
+            img = img.transpose(Image.ROTATE_270) # transpose cropped/resized version 
         print("Image shape: " + str(img.size))            
         resized_img = img.resize((img_width, img_height), Image.BICUBIC)  
         if test == True:
