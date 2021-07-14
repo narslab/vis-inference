@@ -132,7 +132,8 @@ def constructRN50(image_size, scenario, num_channels = 3):
                            classes=num_classes)
     return(rn50)
 
-def testCNN(image_width, image_height, num_channels=3):
+
+def testCNN(image_width, image_height, num_channels=3, num_classes=3):
     image_shape = (image_width, image_height, num_channels)
     model = models.Sequential()
 
@@ -155,7 +156,7 @@ def testCNN(image_width, image_height, num_channels=3):
     model.add(layers.Dense(units = 408, activation = 'relu'))
     model.add(layers.Dropout(.3))
 
-    model.add(layers.Dense(3, activation='softmax'))
+    model.add(layers.Dense(num_classes, activation='softmax'))
 
     # Choose an optimal value from 0.01, 0.001, or 0.0001
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
@@ -173,6 +174,10 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     else:
         image_height = image_width
 
+    if scenario == "Pr_Po_Im":
+        NUM_CLASSES = 3
+    else:
+        NUM_CLASSES = 2
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
     print("Image width" + str(image_width))
@@ -308,3 +313,4 @@ if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
             getScenarioModelPerformance(a, width=w, num_epochs=10, seed_val = 2, rect_boolean = False, test_boolean=True)
+            
