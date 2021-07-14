@@ -298,7 +298,6 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
         rectangular = rect_boolean, testing = test_boolean)
         #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
-        perf['Architecture'] = architecture
         perf['Scenario'] = s
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
@@ -312,5 +311,6 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
 if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
+            K.clear_session()
             getScenarioModelPerformance(a, width=w, num_epochs=10, seed_val = 2, rect_boolean = False, test_boolean=True)
             
