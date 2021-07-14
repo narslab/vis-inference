@@ -35,12 +35,25 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 #from sklearn.preprocessing import OrdinalEncoder
 #enc = OrdinalEncoder()
 
+"ResNet 50 dependencies"
+from tensorflow.keras.applications.resnet50 import ResNet50 
+from tensorflow.keras.applications import resnet50
+
+"GoogLeNet dependencies"
+from tensorflow.keras import regularizers
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Input, Flatten, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, ZeroPadding2D
+from tensorflow.keras.layers import Concatenate
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 #from contextlib import redirect_stdout
 
 # Globals
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [189]#, 252, 336]
+IMAGE_WIDTH_LIST = [252]#, 189]#, 336]
 SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["resnet50","inception-v3","base"]
 NUM_EPOCHS = 20
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -88,6 +101,37 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
+def constructIV3(image_size, scenario, num_channels = 3):
+    image_shape = (image_size, image_size, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2
+    iv3 = tf.keras.applications.InceptionV3(
+        include_top=True,
+        weights=None,
+        input_tensor=None,
+        input_shape=image_shape,
+        pooling='avg',
+        classes=num_classes,
+        classifier_activation="softmax",
+    )
+    return(iv3)
+
+def constructRN50(image_size, scenario, num_channels = 3):
+    image_shape = (image_size, image_size, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2
+    rn50 = resnet50.ResNet50(include_top=True, 
+                           weights=None, 
+                           input_tensor=None, 
+                           input_shape=image_shape, 
+                           pooling= 'max', 
+                           classes=num_classes)
+    return(rn50)
+
 def testCNN(image_width, image_height, num_channels=3):
     image_shape = (image_width, image_height, num_channels)
     model = models.Sequential()
@@ -119,7 +163,7 @@ def testCNN(image_width, image_height, num_channels=3):
                 metrics = ['accuracy'])
     return(model)
 
-def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
+def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
     # training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
@@ -161,12 +205,20 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    if testing:
-        model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS)
+    if architecture == 'resnet50':
+        if testing:
+            model = constructRN50(image_width, scenario, NUM_CHANNELS)
+    elif architecture == 'inception-v3':
+        if testing:
+            model = constructIV3(image_width, scenario, NUM_CHANNELS)
     else:
-        model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
-        opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
-        opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+        if testing:
+            model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS)
+        else:
+            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+    
     reset_weights(model) # re-initialize model weights
     if testing:
         model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit
@@ -178,9 +230,9 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     if testing == True:
-        model_name = "test-opt-cnn-" + scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px"
+        model_name = "test-opt-cnn-" + architecture + "-" + scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px"
     else:
-        model_name = "opt-cnn-" + scenario + "-w-" +str(image_width) + "-px-h-" + str(image_height) + "-px"
+        model_name = "opt-cnn-" + architecture + "-" + scenario + "-w-" +str(image_width) + "-px-h-" + str(image_height) + "-px"
     model_folder = "model"
     if not os.path.exists(SAVED_MODEL_DIR):  
         os.makedirs(SAVED_MODEL_DIR)
@@ -196,11 +248,11 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     ## Classification report
     report = classification_report(np.argmax(test_labels, axis=-1), y_pred, zero_division=0,
                                    labels = np.arange(len(class_labels)), target_names=class_labels, output_dict=True)
-    print("Classification report for scenario " + scenario + ", width: " + str(image_width) + ", height: " + str(image_height) + ":")
+    print("Classification report for scenario " + scenario + ", width: " + str(image_width) + ", height: " + str(image_height) + ", architecture: " + architecture + ":")
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists('../../results/classification-reports/'):  
         os.makedirs('../../results/classification-reports/')
-    classification_report_suffix = scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "px.csv"
+    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "px.csv"
     if testing == True:
         report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
     else:
@@ -221,7 +273,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     ax.set_xticklabels(class_labels, ha='center',fontsize=14)
     plt.xlabel('Predicted',fontsize=16)
     #plt.show()
-    file_suffix =  scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px.png"
+    file_suffix =  architecture+"-"+scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px.png"
     if testing == True:
         con_mat_heatmap_file = "../../figures/test-opt-confusion-matrix-" +  file_suffix
     else:
@@ -230,28 +282,29 @@ def trainModelWithDetailedMetrics(image_width, scenario, num_epochs = 10, trial_
     return(model, hist) 
 
 
-def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
+def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
     df = pd.DataFrame()
     if rect_boolean:
         height = getRectangularImageHeight(width)
     else:
         height = width
     for s in SCENARIO_LIST:
-        m, h = trainModelWithDetailedMetrics(width, s, num_epochs, trial_seed = seed_val, 
-            rectangular = rect_boolean, testing = test_boolean)
+        m, h = trainModelWithDetailedMetrics(width, s, architecture, num_epochs, trial_seed = seed_val, 
+        rectangular = rect_boolean, testing = test_boolean)
         #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
-        
+        perf['Architecture'] = architecture
         perf['Scenario'] = s
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
-        #del m
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-w-" + str(width) + "-px-h" + str(height) + "-px.csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px.csv"
     else:
-        df_filename = "../../results/opt-cnn-performance-metrics-summary-w-" + str(width) + "-px-h" + str(height) +  "-px.csv"
+        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-px.csv"
     df.to_csv(df_filename)
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=189, num_epochs=1, seed_val = 2, rect_boolean = False, test_boolean=True)
+    for w in IMAGE_WIDTH_LIST:
+        for a in ARCHITECTURE_LIST:
+            getScenarioModelPerformance(a, width=w, num_epochs=10, seed_val = 2, rect_boolean = False, test_boolean=True)
