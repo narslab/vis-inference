@@ -5,7 +5,7 @@
 import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 import pandas as pd
-
+import time
 from timeit import default_timer as timer
 import random
 
@@ -51,10 +51,10 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [252]#, 189]#, 336]
-SCENARIO_LIST = ["Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["resnet50","inception-v3","base"]
-NUM_EPOCHS = 20
+IMAGE_WIDTH_LIST = [189, 252]#,252 189, 336
+SCENARIO_LIST = ["PrPo_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["inception-v3", "resnet50"]#, "base"
+NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
@@ -112,7 +112,7 @@ def constructIV3(image_size, scenario, num_channels = 3):
         weights=None,
         input_tensor=None,
         input_shape=image_shape,
-        pooling='avg',
+        pooling='max',
         classes=num_classes,
         classifier_activation="softmax",
     )
@@ -289,6 +289,8 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
 
 def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
     df = pd.DataFrame()
+    tm = time.strftime('%d-%b-%Y-%H-%M-%S')
+    print(tm)
     if rect_boolean:
         height = getRectangularImageHeight(width)
     else:
@@ -302,9 +304,9 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px.csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-" + tm +".csv"
     else:
-        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-px.csv"
+        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + ts + "-px.csv"
     df.to_csv(df_filename)
     return df
 
@@ -312,5 +314,5 @@ if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, width=w, num_epochs=10, seed_val = 2, rect_boolean = False, test_boolean=True)
+            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=True)
             
