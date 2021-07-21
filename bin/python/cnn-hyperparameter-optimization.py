@@ -30,19 +30,23 @@ from sklearn import model_selection
 
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [189, 252, 336]
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 10 #10
 EXECUTIONS_PER_TRIAL = 2 #5
 HYPERBAND_ITER = 3 #80
 
-# TODO: make image_dict a function
-image_dict = dict.fromkeys(RESOLUTION_LIST)
-for p in RESOLUTION_LIST:
-    image_dict[p] = dict.fromkeys(SCENARIO_LIST)
-    for s in SCENARIO_LIST:
-        image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
+# # TODO: make image_dict a function
+# image_dict = dict.fromkeys(RESOLUTION_LIST)
+# for p in RESOLUTION_LIST:
+#     image_dict[p] = dict.fromkeys(SCENARIO_LIST)
+#     for s in SCENARIO_LIST:
+#         image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
 
+IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
+IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
 class CNNHyperModel(HyperModel):
     def __init__(self, input_image_shape, num_classes):
@@ -101,7 +105,7 @@ class ClearTrainingOutput(tf.keras.callbacks.Callback):
     def on_train_end(*args, **kwargs):
         IPython.display.clear_output(wait = True)
 
-def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1, save_results=True):
+def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1, save_results=True, rectangular=False):
     if scenario=="Pr_Po_Im":
         NUM_CLASSES = 3
     else:
@@ -111,11 +115,20 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
                          objective = 'val_accuracy', overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
-    training_images_and_labels, test_images_and_labels = splitData(image_dict[image_widthimage_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
-    training_images, training_labels = getImageAndLabelArrays(training_images_and_labels)
-    validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
+    #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
+    if rectangular==True:
+        image_dictionary_train = IMAGE_SETS_RECT_TRAIN
+        #image_dictionary_test = IMAGE_SETS_RECT_TEST
+    else:
+        image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
+        #image_dictionary_test = IMAGE_SETS_SQUARE_TEST    
+    training_images, training_labels = getImageAndLabelArrays(image_dictionary_train[image_width][scenario])
+    training_images = np.squeeze(training_images)
+    print("Training image shape: ", training_images[0].shape)
+    #validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     
-    tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
+    # tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
+    tuner.search(training_images, training_labels, validation_split = 0.2, callbacks = [ClearTrainingOutput()])    
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
@@ -129,18 +142,19 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     return #(console_printout, summary, best_hps_dict)
 
 
-def main(rectangular = True):
+def main(rect_boolean = False):
     for w in IMAGE_WIDTH_LIST:
         for s in SCENARIO_LIST:     
-            if rectangular:
+            if rect_boolean:
                 h = getRectangularImageHeight(w)
             else:
                 h = w
-            print("Beginning search for scenario: " + s + ", width: " + w)
-            optimizeCNNHyperparameters(s, w, h, seed_val = 1, save_results = True)
-            print("Search for scenario: " + s + ", width: " + w + ", height: " + h + " is complete.")
+            print("Beginning search for scenario: " + s + ", width: " + str(w))
+            optimizeCNNHyperparameters(s, w, h, seed_val = 1, save_results = True, rectangular = rect_boolean)
+            print("Search for scenario: " + s + ", width: " + str(w) + ", height: " + str(h) + " is complete.")
     return
 
 if __name__ == "__main__":
-    main()
+    main(False)
+    #main(True)
 

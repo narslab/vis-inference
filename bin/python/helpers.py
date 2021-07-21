@@ -92,7 +92,7 @@ def getImageAndLabelArrays(image_label_tuple_array, num_channels = 1):
 		image_array = np.array([np.expand_dims(x[0],axis=2) for x in image_label_tuple_array])
 	elif num_channels == 3:
 		image_array = np.array([x[0] for x in image_label_tuple_array]) 
-		image_array = np.moveaxis(image_array, 1, -1)
+		#image_array = np.moveaxis(image_array, 1, -1)
 	label_array = np.array([x[1] for x in image_label_tuple_array])
 	return(image_array, label_array)
 

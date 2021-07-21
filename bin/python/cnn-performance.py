@@ -89,7 +89,7 @@ class Metrics(Callback):
         return
 
 def testCNN(image_width, image_height, num_channels=3, num_classes = 3):
-    image_shape = (image_width, image_height, num_channels)
+    image_shape = (image_height, image_width, num_channels)
     model = models.Sequential()
 
     model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
@@ -258,4 +258,4 @@ def getScenarioModelPerformance(width = 189, num_epochs = 15, seed_val = 1, rect
     return df
 
 if __name__ == "__main__":
-    getScenarioModelPerformance(width=252, num_epochs=20, seed_val = 2, rect_boolean = False, test_boolean=True)
+    getScenarioModelPerformance(width=252, num_epochs=20, seed_val = 2, rect_boolean = False, test_boolean=False)
