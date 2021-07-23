@@ -48,13 +48,18 @@ from tensorflow.keras.layers import Concatenate
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 #from contextlib import redirect_stdout
+# geom_line()
+# facet_wrap( vars(transportation_type), ncol = 1 )
+# + geom_line(aes(col = region), color = "Gray")
+
+
 
 # Globals
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [189, 252]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["inception-v3", "resnet50"]#, "base"
-NUM_EPOCHS = 50
+IMAGE_WIDTH_LIST = [252]#,252 189, 336
+SCENARIO_LIST = ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["inception_v3"]#, "base", "resnet50"
+NUM_EPOCHS = 100
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
@@ -114,7 +119,7 @@ def constructIV3(image_size, scenario, num_channels = 3):
         input_shape=image_shape,
         pooling='max',
         classes=num_classes,
-        classifier_activation="softmax",
+        classifier_activation="softmax"
     )
     return(iv3)
 
@@ -213,7 +218,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     if architecture == 'resnet50':
         if testing:
             model = constructRN50(image_width, scenario, NUM_CHANNELS)
-    elif architecture == 'inception-v3':
+    elif architecture == 'inception_v3':
         if testing:
             model = constructIV3(image_width, scenario, NUM_CHANNELS)
     else:
