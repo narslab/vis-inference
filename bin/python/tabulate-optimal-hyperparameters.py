@@ -37,6 +37,6 @@ def getOptHyperparamsSummary(scenario_list, resolution_list, orientation="landsc
 
 
 if __name__ == "__main__":
-    getOptHyperparamsSummary(SCENARIO_LIST, RESOLUTION_LIST)
-    #getOptHyperparamsSummary(SCENARIO_LIST, RESOLUTION_LIST, orientation='portrait')
+    #getOptHyperparamsSummary(SCENARIO_LIST, RESOLUTION_LIST)
+    getOptHyperparamsSummary(SCENARIO_LIST, RESOLUTION_LIST, orientation='portrait')
 
