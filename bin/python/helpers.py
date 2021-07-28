@@ -135,7 +135,7 @@ def getOptCNNHyperparams(image_width, image_height, scenario):
     return(opt_params_dict)
 
 def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
-    image_shape = (image_width, image_height, num_channels)
+    image_shape = (image_height, image_width, num_channels)
     p_dict = getOptCNNHyperparams(image_width, image_height, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3

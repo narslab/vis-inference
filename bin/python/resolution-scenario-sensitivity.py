@@ -31,9 +31,13 @@ NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [189, 252, 336]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 NUM_MODEL_RUNS = 5
-NUM_EPOCHS = 15
-RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests-07122021' #'../../results/sensitivity-tests'
+NUM_EPOCHS = 20
+RESOLUTION_PERFORMANCE_METRICS_DIR = '../../results/sensitivity-tests-07272021' #'../../results/sensitivity-tests'
 
+IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+#IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+#IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
+#IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
 
 class Metrics(Callback):
@@ -100,12 +104,11 @@ class Metrics(Callback):
 #     return
 
 
-def testResolutionScenarioPerformance(training_images, training_labels, validation_images, validation_labels, image_size, scenario, num_epochs = 10): #, trial_seed = 1): 
+def testResolutionScenarioPerformance(training_images, training_labels, validation_images, validation_labels, image_width, image_height, scenario, num_epochs = 10): #, trial_seed = 1): 
     K.clear_session()
-    input_shape = (image_size, image_size, NUM_CHANNELS)
-    model = constructBaseCNN(image_size, scenario, num_channels = NUM_CHANNELS)
+    model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    opt_learning_rate = getOptCNNHyperparams(image_size, scenario)['learning_rate']
+    opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']
     reset_weights(model) # re-initialize model weights
     opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)
     model.compile(loss='categorical_crossentropy',  optimizer = opt, metrics = ['accuracy'])
@@ -113,28 +116,35 @@ def testResolutionScenarioPerformance(training_images, training_labels, validati
                         validation_data=(validation_images, validation_labels), callbacks=[model_metrics])
     performance_dict = {}    
     performance_dict['scenario'] = scenario
-    performance_dict['image_size'] = image_size
+    performance_dict['image_width'] = image_width
+    performance_dict['image_height'] = image_height
     performance_dict['metrics'] = hist.history
     performance_dict['total_params'] = model.count_params()
     del model
     return(performance_dict)
 
-def main(num_trials = NUM_MODEL_RUNS):
+def main(num_trials = NUM_MODEL_RUNS, rect_boolean = False):
     if not os.path.exists(RESOLUTION_PERFORMANCE_METRICS_DIR):  
         os.makedirs(RESOLUTION_PERFORMANCE_METRICS_DIR) 
-    image_sets = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST)
     for s in SCENARIO_LIST:
-        for p in RESOLUTION_LIST:
+        for w in IMAGE_WIDTH_LIST:
             skf = StratifiedKFold(n_splits = NUM_MODEL_RUNS, random_state = 1, shuffle=True)
-            X = np.array([np.expand_dims(x[0],axis=2) for x in image_sets[p][s]])
-            y = np.array([x[1] for x in image_sets[p][s]])
+            if rect_boolean==True:
+                image_dictionary_train = IMAGE_SETS_RECT_TRAIN
+                h = getRectangularImageHeight(w)
+            else:
+                image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
+                h = w
+            X, y = getImageAndLabelArrays(image_dictionary_train[w][s])
+            X = np.squeeze(X)
+            print("Training image shape: ", X[0].shape)
             for i, (train_index, test_index) in enumerate(skf.split(X, y.argmax(1))):
-                print("Conducting performance test: Scenario - " + s + "; Resolution - " + str(p) + "px; Trial - " + str(i+1))
+                print("Conducting performance test: Scenario - " + s + "; Width - " + str(w) + "px; Height - "  + str(h) + "px; Trial - " + str(i+1))
                 X_train, X_test = X[train_index], X[test_index]
                 y_train, y_test = y[train_index], y[test_index]
-                scenario_performance_dict = testResolutionScenarioPerformance(X_train, y_train, X_test, y_test, p, s, 
-                    num_epochs = NUM_EPOCHS)
-                scenario_filename = "scenario_resolution_performance_" + s + str(p) + "px_trial_" + str(i+1) + ".txt"
+                scenario_performance_dict = testResolutionScenarioPerformance(X_train, y_train, X_test, y_test, 
+                    w, h, s, num_epochs = NUM_EPOCHS)
+                scenario_filename = "scenario-resolution-performance-" + s + '-w-' + str(w) + "px-h-" + str(h) + "px-trial-" + str(i+1) + ".txt"
                 with open(os.path.join(RESOLUTION_PERFORMANCE_METRICS_DIR, scenario_filename), 'w') as f:
                    f.write(json.dumps(scenario_performance_dict )) # use `json.loads` to do the reverse)
     return
