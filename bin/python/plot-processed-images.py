@@ -21,10 +21,11 @@ def plotSelectedProcessedImages(image_array):
                               'improbable-example-2.png', 'improbable-example-2-flipped.png',                            
                               ]
     for i,n in enumerate(example_image_list):
-        plt.imshow(image_array[n][0], cmap = 'gist_gray')
+        #plt.imshow(image_array[n][0], cmap = 'gist_gray')
+        plt.imshow(np.rot90(image_array[n][0]), cmap = 'gist_gray')
         plt.tight_layout()
-        plt.yticks([0,40,80,120],fontsize=16)
-        plt.xticks([0,40,80,120],fontsize=16)
+        plt.yticks(fontsize=16) #[0,40,80,120],
+        plt.xticks(fontsize=16) #[0,40,80,120],
         plt.savefig('../../figures/processed-' + example_image_filenames[i], dpi=180,bbox_inches='tight')
 
 def exploreProcessedImages(image_array):

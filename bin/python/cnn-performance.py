@@ -57,9 +57,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 # Globals
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [252]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["inception_v3"]#, "base", "resnet50"
-NUM_EPOCHS = 100
+SCENARIO_LIST = ["Pr_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["base"]#, "base", "resnet50" inception_v3
+NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
@@ -138,8 +138,12 @@ def constructRN50(image_size, scenario, num_channels = 3):
     return(rn50)
 
 
-def testCNN(image_width, image_height, num_channels=3, num_classes=3):
+def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3):
     image_shape = (image_width, image_height, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2     
     model = models.Sequential()
 
     model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
@@ -179,10 +183,6 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     else:
         image_height = image_width
 
-    if scenario == "Pr_Po_Im":
-        NUM_CLASSES = 3
-    else:
-        NUM_CLASSES = 2
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
     print("Image width" + str(image_width))
@@ -223,7 +223,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
             model = constructIV3(image_width, scenario, NUM_CHANNELS)
     else:
         if testing:
-            model = testCNN(image_width, image_height, num_channels=NUM_CHANNELS)
+            model = testCNN(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
@@ -301,8 +301,7 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
     else:
         height = width
     for s in SCENARIO_LIST:
-        m, h = trainModelWithDetailedMetrics(width, s, architecture, num_epochs, trial_seed = seed_val, 
-        rectangular = rect_boolean, testing = test_boolean)
+        m, h = trainModelWithDetailedMetrics(width, s, architecture, num_epochs, trial_seed = seed_val, rectangular = rect_boolean, testing = test_boolean)
         #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
         perf['Scenario'] = s
