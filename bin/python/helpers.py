@@ -36,12 +36,12 @@ def getListOfFiles(dirName):
     return allFiles
 
 def splitData(image_array, prop = 0.80, seed_num = 111):
-	"""Returns training and test arrays of images with specified proportion - prop:1-prop"""
-	random.Random(seed_num).shuffle(image_array)
-	train_size = int(prop*np.shape(image_array)[0])
-	train = image_array[:train_size]
-	test = image_array[train_size:]
-	return(train, test)
+    """Returns training and test arrays of images with specified proportion - prop:1-prop"""
+    random.Random(seed_num).shuffle(image_array)
+    train_size = int(prop*np.shape(image_array)[0])
+    train = image_array[:train_size]
+    test = image_array[train_size:]
+    return(train, test)
 
 # Reference: https://colab.research.google.com/drive/17tAC7xx2IJxjK700bdaLatTVeDA02GJn#scrollTo=4-OduFD-wH14&line=15&uniqifier=1
 def deprocess_image(x):
@@ -112,7 +112,7 @@ def getRectangularImageHeight(width):
     height = int(width * 4032/3024)
     return height
 
-def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False):
+def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False, testing=False):
     image_dict = dict.fromkeys(image_width_list)
     if train==True:
         train_test = 'train'
@@ -125,7 +125,11 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, train=Tru
                 h = getRectangularImageHeight(w)
             else:
                 h = w
-            image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+            if testing:
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+            else:
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+    print(image_dict)
     return(image_dict)
 
 def getOptCNNHyperparams(image_width, image_height, scenario):
