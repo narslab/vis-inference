@@ -1,24 +1,38 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-IMAGE_ARRAY = np.load('../../data/tidy/preprocessed_images/size128_exp5_Pr_Po_Im.npy',allow_pickle = True)
+IMAGE_ARRAY = np.load('../../data/tidy/preprocessed-images/w-252px-h-252px-scenario-Pr_Po_Im-train.npy',allow_pickle = True)
+
+def getFigure2sub(images):
+    pr = []
+    po = []
+    im = []
+    for i in range(len(images)):
+        if (images[i][1] == np.array([0, 0, 1])).all():
+            pr.append(i)
+        elif (images[i][1] == np.array([0, 1, 0])).all(): 
+            po.append(i)
+        elif (images[i][1] == np.array([1, 0, 0])).all():
+            im.append(i)
+    return pr, po, im
 
 def plotSelectedProcessedImages(image_array):
     ## Generates the subfigures in Figure 2 in the paper.
-    example_image_list = [1790, 1792, 
-                          2235, 2237, 
-                          950, 951, 
-                          1180, 1181, 
-                          2110, 2111,
-                          1301, 1302
-                         ]
-    example_image_filenames = ['probable-example-1.png', 'probable-example-1-flipped.png',
-                              'probable-example-2.png', 'probable-example-2-flipped.png',
-                              'possible-example-1.png', 'possible-example-1-flipped.png',
-                              'possible-example-2.png', 'possible-example-2-flipped.png',   
-                              'improbable-example-1.png', 'improbable-example-1-flipped.png',
-                              'improbable-example-2.png', 'improbable-example-2-flipped.png',                            
+    pr, po, im = getFigure2sub(image_array)
+    example_image_list = [pr[3], pr[25], 
+                          pr[91], po[17], 
+                          po[39], po[71], 
+                          im[23], im[45], im[87]]
+    #print(example_image_list)
+    example_image_filenames = ['probable-example-1.png', 'probable-example-2.png',
+                               'probable-example-3.png', 'possible-example-1.png', 
+                               'possible-example-2.png', 'possible-example-3.png',
+                               'improbable-example-1.png', 'improbable-example-2.png',
+                               'improbable-example-3.png',                            
                               ]
     for i,n in enumerate(example_image_list):
         #plt.imshow(image_array[n][0], cmap = 'gist_gray')
@@ -26,7 +40,7 @@ def plotSelectedProcessedImages(image_array):
         plt.tight_layout()
         plt.yticks(fontsize=16) #[0,40,80,120],
         plt.xticks(fontsize=16) #[0,40,80,120],
-        plt.savefig('../../figures/processed-' + example_image_filenames[i], dpi=180,bbox_inches='tight')
+        plt.savefig('../../figures/processed-252px-' + example_image_filenames[i], dpi=180,bbox_inches='tight')
 
 def exploreProcessedImages(image_array):
     rows= 15
@@ -44,6 +58,7 @@ def exploreProcessedImages(image_array):
 
 def main():
     plotSelectedProcessedImages(IMAGE_ARRAY)
+    exploreProcessedImages
     return
 
 if __name__ == "__main__":
