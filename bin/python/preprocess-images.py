@@ -22,7 +22,7 @@ from helpers import *
 
 
 ## GLOBAL VARIABLES
-IMAGE_WIDTH_LIST = [189, 252, 336]
+IMAGE_WIDTH_LIST = [252] #[189, 252, 336]
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
 # Reduction factor of 12: 252 x 336
@@ -81,7 +81,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
     data_train = []
     data_test = []
     if test==True: # test just a few images to see what is going on
-        image_list = os.listdir(LABELED_IMAGES_DIR)[0:10]
+        image_list = os.listdir(LABELED_IMAGES_DIR) #[0:10]
     else:
         image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
@@ -94,7 +94,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             continue
         path = os.path.join(LABELED_IMAGES_DIR, image_index)
         image = Image.open(path) # read in image
-        #print(np.array(image).shape)
+        print(np.array(image).shape)
         image_width = int(image_width) 
         if rectangular==True:
             image_height = getRectangularImageHeight(image_width) #int(image.size[0] * image_width/image.size[1]) ##because of input orientation, this is flipped.
@@ -118,10 +118,10 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             #     if value <= 0.5: # flip horizontally with 50% probability
             #         cropped_image_array = np.fliplr(cropped_image_array)  
             #     data.append([cropped_image_array, label])
-        if np.array(image).shape[1] == 3024: # if original image is landscape  
+        if np.array(image).shape[1] == 4032: #3024 earlier; # if original image is landscape (rotated)
             print("Image is landscape")
             image = image.transpose(Image.ROTATE_270) # transpose cropped/resized version 
-        #print("Image shape: " + str(image.size))            
+        print("Image shape: " + str(image.size))            
         resized_image = image.resize((image_width, image_height), Image.BICUBIC)  
         if test == True:
             pass
@@ -160,6 +160,9 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
     if save_image_binary_files == True:
+        if test == True:
+            data_filename_train = 'testing-' + data_filename_train
+            data_filename_test = 'testing-' + data_filename_test
         np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_train), data_train) #save as .npy (binary) file
         np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_test), data_test) #save as .npy (binary) file        
         print("Saved " + data_filename_train + " to data/tidy/" + PROCESSED_IMAGES_DIR)
@@ -191,13 +194,13 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
 #     fig.savefig(image_filename, dpi=180)
 #     return
 
-def main():
+def main(testing_boolean=True):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = False, save_image_binary_files=True, test=False)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = False, save_image_binary_files=True, test=testing_boolean)
+            #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return 
 
 if __name__ == "__main__":
-    main()
+    main(True)
