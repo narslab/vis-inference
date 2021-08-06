@@ -22,7 +22,7 @@ from helpers import *
 
 
 ## GLOBAL VARIABLES
-IMAGE_WIDTH_LIST = [252] #[189, 252, 336]
+IMAGE_WIDTH_LIST = [189, 252, 336]
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
 # Reduction factor of 12: 252 x 336
@@ -194,7 +194,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
 #     fig.savefig(image_filename, dpi=180)
 #     return
 
-def main(testing_boolean=True):
+def main(testing_boolean=False):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
             processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = False, save_image_binary_files=True, test=testing_boolean)
