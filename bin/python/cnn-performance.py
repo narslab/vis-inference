@@ -56,6 +56,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
+TESTING = True
 IMAGE_WIDTH_LIST = [252]#,252 189, 336
 SCENARIO_LIST = ["Pr_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["base"]#, "base", "resnet50" inception_v3
@@ -63,11 +64,17 @@ NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
-#
-IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
-IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
-IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
-IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
+# Define a set of images with different rotation
+if TESTING:
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False, testing=True)
+    #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True, testing=True)
+    #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True, testing=True)
+else:
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+    IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
+    IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
 
 # image_sets = dict.fromkeys(RESOLUTION_LIST)
@@ -185,8 +192,8 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
 
     class_labels = getClassLabels(scenario)
     print("Class labels:", class_labels)
-    print("Image width" + str(image_width))
-    print("Image height" + str(image_height))
+    print("Image width: " + str(image_width))
+    print("Image height: " + str(image_height))
     if rectangular==True:
         image_dictionary_train = IMAGE_SETS_RECT_TRAIN
         image_dictionary_test = IMAGE_SETS_RECT_TEST
@@ -232,6 +239,8 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     
     reset_weights(model) # re-initialize model weights
+    
+    start = timer()
     if testing:
         model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit
     else:
@@ -239,6 +248,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
                      callbacks = [model_metrics]) #, early_stopping])     
+    end = timer()
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
     if testing == True:
@@ -270,7 +280,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     else:
         report.to_csv("../../results/classification-reports/opt-classification-report-" + classification_report_suffix)        
     print(report)
-    
+    print("Completion time in seconds: ", end - start)
     ## Confusion matrix
     con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
     con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
@@ -312,7 +322,7 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
     if test_boolean == True:
         df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-" + tm +".csv"
     else:
-        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + ts + "-px.csv"
+        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + tm + "-px.csv"
     df.to_csv(df_filename)
     return df
 
@@ -320,5 +330,5 @@ if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=True)
+            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=False)
             
