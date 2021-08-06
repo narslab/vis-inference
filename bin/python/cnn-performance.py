@@ -215,6 +215,8 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
+    opt = tf.keras.optimizer.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
+
     if architecture == 'resnet50':
         if testing:
             model = constructRN50(image_width, scenario, NUM_CHANNELS)
