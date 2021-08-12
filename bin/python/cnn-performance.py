@@ -56,9 +56,10 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
+PATIENCE = 7
 TESTING = True
 IMAGE_WIDTH_LIST = [252]#,252 189, 336
-SCENARIO_LIST = ["Pr_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["PrPo_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["base"]#, "base", "resnet50" inception_v3
 NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
@@ -217,12 +218,12 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
     #input_shape = (image_size, image_size, NUM_CHANNELS) ## shape of images
-    opt = tf.keras.optimizer.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
+    opt = tf.keras.optimizers.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
 
     if architecture == 'resnet50':
         if testing:
@@ -247,7 +248,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
-                     callbacks = [model_metrics]) #, early_stopping])     
+                     callbacks = [model_metrics, early_stopping])     
     end = timer()
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
@@ -274,12 +275,13 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists('../../results/classification-reports/'):  
         os.makedirs('../../results/classification-reports/')
-    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "px.csv"
+    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "-patience-" + str(PATIENCE) + "px.csv"
     if testing == True:
         report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
     else:
         report.to_csv("../../results/classification-reports/opt-classification-report-" + classification_report_suffix)        
     print(report)
+    print("Patience value: ", PATIENCE)
     print("Completion time in seconds: ", end - start)
     ## Confusion matrix
     con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
@@ -320,7 +322,7 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-" + tm +".csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-patience-" + str(PATIENCE) + "-" + tm +".csv"
     else:
         df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + tm + "-px.csv"
     df.to_csv(df_filename)
@@ -330,5 +332,5 @@ if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=False)
+            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=True)
             
