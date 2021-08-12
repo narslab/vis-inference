@@ -60,7 +60,7 @@ PATIENCE = 7
 TESTING = True
 IMAGE_WIDTH_LIST = [252]#,252 189, 336
 SCENARIO_LIST = ["PrPo_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base"]#, "base", "resnet50" inception_v3
+ARCHITECTURE_LIST = ["resnet50" "inception_v3"]#, "base", "resnet50", "inception_v3"
 NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -218,7 +218,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True)
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
