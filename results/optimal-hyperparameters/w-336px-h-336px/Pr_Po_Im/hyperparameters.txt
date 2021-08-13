@@ -1,1 +1,1 @@
-{"kernel_size": 7, "units_1": 480, "units_2": 448, "dropout_1": 0.1, "dropout_2": 0.30000000000000004, "activation_1": "relu", "activation_2": "relu", "learning_rate": 0.0001029562160619873, "tuner/epochs": 10, "tuner/initial_epoch": 0, "tuner/bracket": 0, "tuner/round": 0}
+{"kernel_size": 5, "units_1": 384, "units_2": 256, "dropout_1": 0.25, "dropout_2": 0.35000000000000003, "activation_1": "tanh", "activation_2": "relu", "learning_rate": 0.00010913747652406281, "tuner/epochs": 10, "tuner/initial_epoch": 0, "tuner/bracket": 0, "tuner/round": 0}
