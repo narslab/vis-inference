@@ -27,7 +27,10 @@ def getOptHyperparamsSummary(scenario_list, width_list, rectangular=False, orien
             print(df)
             df['Scenario'] = s
             df['Resolution'] = w
-            df = df.drop(["tuner/bracket", "tuner/epochs", "tuner/initial_epoch", "tuner/round"])
+            try:
+                df = df.drop(["tuner/bracket", "tuner/epochs", "tuner/initial_epoch", "tuner/round", "tuner/trial_id"])
+            except:
+                df = df.drop(["tuner/bracket", "tuner/epochs", "tuner/initial_epoch", "tuner/round"])
             df_all = df_all.append(df)
     df_all['Hyperparameters'] = df_all.index
     print(df_all['Hyperparameters'])
