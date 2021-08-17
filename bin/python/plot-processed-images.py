@@ -46,7 +46,7 @@ def plotSelectedProcessedImages(image_array, save=True):
         plt.tight_layout()
         plt.yticks(fontsize=16) #[0,40,80,120],
         plt.xticks(fontsize=16) #[0,40,80,120],
-        plt.show()
+        #plt.show()
         if save==True:
           plt.savefig('../../figures/processed-252px-' + example_image_filenames[i], dpi=180,bbox_inches='tight')
 
