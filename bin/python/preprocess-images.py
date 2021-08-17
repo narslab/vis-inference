@@ -203,4 +203,4 @@ def main(testing_boolean=False):
     return 
 
 if __name__ == "__main__":
-    main(True)
+    main(False)
