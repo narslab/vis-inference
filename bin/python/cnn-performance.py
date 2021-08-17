@@ -218,7 +218,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
