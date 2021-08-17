@@ -12,7 +12,7 @@ import pandas as pd
 IMAGE_WIDTH_LIST = [189, 252, 336] #, 384]
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 
-def getOptHyperparamsSummary(scenario_list, width_list, rectangular=False, orientation="landscape"):
+def getOptHyperparamsSummary(scenario_list, IMAGE_WIDTH_LISTist, rectangular=False, orientation="landscape"):
     df_all = pd.DataFrame()
     for s in scenario_list:
         for w in width_list:

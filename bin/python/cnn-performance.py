@@ -57,7 +57,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 # Globals
 NUM_CHANNELS = 3
 PATIENCE = 7
-TESTING = True
+TESTING = False
 IMAGE_WIDTH_LIST = [252]#,252 189, 336
 SCENARIO_LIST = ["PrPo_Im"] # ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #, PrPo_Im "Pr_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["resnet50", "inception_v3"]#, "base", "resnet50", "inception_v3"
@@ -226,11 +226,11 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     opt = tf.keras.optimizers.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
 
     if architecture == 'resnet50':
-        if testing:
-            model = constructRN50(image_width, scenario, NUM_CHANNELS)
+        # if testing: # no real reason to make these 2 models exclusive to just testing mode.
+        model = constructRN50(image_width, scenario, NUM_CHANNELS)
     elif architecture == 'inception_v3':
-        if testing:
-            model = constructIV3(image_width, scenario, NUM_CHANNELS)
+        # if testing:
+        model = constructIV3(image_width, scenario, NUM_CHANNELS)
     else:
         if testing:
             model = testCNN(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
@@ -332,5 +332,5 @@ if __name__ == "__main__":
     for w in IMAGE_WIDTH_LIST:
         for a in ARCHITECTURE_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=True)
+            getScenarioModelPerformance(a, width=w, num_epochs=NUM_EPOCHS, seed_val = 2, rect_boolean = False, test_boolean=False)
             
