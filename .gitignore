@@ -10,6 +10,7 @@ opt/
 variables/
 optimization-log*
 test-*
+index-raw/
 
 ## Visualizations
 plottingActivationMaximizations/*

@@ -56,11 +56,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 7
+PATIENCE = 10
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base"]#, "base", "resnet50", "inception_v3"
+SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["inception_v3"]#, "base", "resnet50", "inception_v3"
 NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
