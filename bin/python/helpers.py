@@ -129,7 +129,6 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, train=Tru
                 image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
             else:
                 image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
-    print(image_dict)
     return(image_dict)
 
 def getOptCNNHyperparams(image_width, image_height, scenario):

@@ -58,7 +58,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 NUM_CHANNELS = 3
 PATIENCE = 7
 TESTING = False
-IMAGE_WIDTH_LIST = [336]#,252 189, 336
+IMAGE_WIDTH_LIST = [252]#,252 189, 336
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["base"]#, "base", "resnet50", "inception_v3"
 NUM_EPOCHS = 50
