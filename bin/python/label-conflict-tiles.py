@@ -57,15 +57,17 @@ def plotTilesGrid(tiles, directory):
 def preprocessConflictImages():
     csv_col_classifier = ['Filename', 'Classification']
     classifier = {}
+    collective_dir = CONFLICT_SPLIT_DIR+'all_tiles/'
+    print(collective_dir)
+    if not os.path.exists(collective_dir):
+            os.makedirs(collective_dir)
     for filename in os.listdir(LABELED_IMAGES_DIR):
         f_name = os.path.splitext(filename)
-        f_name_dir = CONFLICT_SPLIT_DIR+f_name[0]
-        if not os.path.exists(f_name_dir):
-            os.makedirs(f_name_dir)
-        t = generateTiles(filename, LABELED_IMAGES_DIR, f_name_dir)
+#         f_name_dir = CONFLICT_SPLIT_DIR+f_name[0]
+        t = generateTiles(filename, LABELED_IMAGES_DIR, collective_dir)
         for k in t[0]:
             classifier[k] = ''
-        plotTilesGrid(t, f_name_dir)
+        plotTilesGrid(t, CONFLICT_SPLIT_DIR)
     with open(CONFLICT_SPLIT_DIR + 'tiles_assignment.csv', 'w') as f:
         writer = csv.DictWriter(f, fieldnames=csv_col_classifier)
         writer.writeheader()
