@@ -11,6 +11,7 @@ variables/
 optimization-log*
 test-*
 index-raw/
+index-raw-test/
 
 ## Visualizations
 plottingActivationMaximizations/*
