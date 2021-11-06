@@ -35,6 +35,15 @@ def getListOfFiles(dirName):
                 
     return allFiles
 
+def get_nth_key(dictionary, n=0):
+    """Get dictionary keys by index"""
+    if n < 0:
+        n += len(dictionary)
+    for i, key in enumerate(dictionary.keys()):
+        if i == n:
+            return key
+    raise IndexError("dictionary index out of range")
+
 def splitData(image_array, prop = 0.80, seed_num = 111):
     """Returns training and test arrays of images with specified proportion - prop:1-prop"""
     random.Random(seed_num).shuffle(image_array)

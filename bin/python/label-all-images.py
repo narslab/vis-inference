@@ -3,11 +3,13 @@
 
 """
 The purpose of this script is to consolidate all images taken by arborists and label them according to their classification.
-An index containing the newly labeled image name and its original file path is also genereated.
+An index containing the newly labeled image name and its original file path is also genereated under '../../results/index-raw/'.
 """
 
 import pandas as pd
-from PIL import Image # used for loading images
+import openpyxl
+import time
+from PIL import Image # used for loading images 
 import numpy as np
 import os # used for navigating to image path
 import imageio # used for writing images
@@ -15,23 +17,32 @@ import natsort
 from natsort import natsorted
 import re # for matching image file name classes
 import matplotlib.pyplot as plt
+import PythonMagick # used for .HEIC to .JPG conversion
 import random
 import ntpath
 import shutil
 import csv
 from timeit import default_timer as timer
+from datetime import timedelta
 import platform
+
+SEED = 100
 
 RAW_IMAGE_DIR = '../../data/raw/Pictures for AI'
 RAW_IMAGE_DIR_SUMMER = '../../data/raw/Summer 2021 AI Photos'
+RAW_IMAGE_DIR_FALL = '../../data/raw/Likelihood of Failure Images/'
 TIDY_IMAGE_DIR = '../../data/tidy/labeled-images/'
 INDEX_DIR = '../../results/index-raw/'
+
+INDEX_LABELS = INDEX_DIR + 'labels_index.csv'
+TEMP = RAW_IMAGE_DIR_FALL+'likelihood.csv'
+TRIMMED = RAW_IMAGE_DIR_FALL+'likelihood_of_failure_trimmed.csv'
 
 def getListOfFiles(dirName):
     """Returns single list of the filepath of each of the image files"""
     # source: https://thispointer.com/python-how-to-get-list-of-files-in-directory-and-sub-directories/
     allFiles = list()
-    if 'Pictures for AI' in dirName: # 
+    if 'Pictures for AI' or 'Likelihood of Failure Images' in dirName: # 
         listOfFile = os.listdir(dirName)
         # Iterate over all the entries
         for entry in listOfFile:
@@ -128,40 +139,72 @@ def getUniqueImages(images, arb_list, idx_label, descr):
             print(selected_filename)                
             unique_image_list.append(selected_filename)
     return unique_image_list
-    
+
+def trimTrailingChars(data):
+    """Converts original excel file containing classification categories for Fall 2021 images to csv"""
+    read_file = pd.read_excel(data,engine='openpyxl')
+    read_file.to_csv(TEMP, index = None, header=True)
+    read_file = pd.read_csv(TEMP)
+    read_file['Likelihood of Failure Rating'] = read_file['Likelihood of Failure Rating'].str.replace('\xa0','')
+    df = read_file.rename({"Image":"image", "File Name":"file_name", "Likelihood of Failure Rating": "likelihood_of_failure_rating"}, axis='columns')
+    df.to_csv(TRIMMED, index = None, header=True)
+    print(df.head())
+    print(df['likelihood_of_failure_rating'].unique())
+    if os.path.isfile(TEMP):
+        os.remove(TEMP)
+        
+def encrypt(file_name):
+    """Cryptographically encrypts each failure likelihood category using Python's built-in hash function"""
+    if any(re.findall(r'improbable', file_name, re.IGNORECASE)):
+        h = hash('improbable')
+    elif any(re.findall(r'probable', file_name, re.IGNORECASE)):
+        h = hash('probable')
+    elif any(re.findall(r'possible', file_name, re.IGNORECASE)):
+        h = hash('possible')
+    else:
+        h = hash('unknown')
+    return h
+
+def updateNameCount(word, d):
+    """Creates a uniform label for all saved images and updates the global count"""
+    h  = encrypt(word)
+    save_name = ''
+    for key in d.keys():
+        if h == hash(key):
+            save_name = TIDY_IMAGE_DIR + key + '-' + str(d[key]) + '.jpg'
+            d[key] += 1
+    return save_name
+
 def saveImageFiles(image_file_list):
     """Serially labels all images by class:  and saves them to the designated tidy image directory."""
-    improbable_counter = 1
-    possible_counter = 1
-    probable_counter = 1
-    unknown_counter = 1
-    csv_col_index = ['Labeled Image', 'Original File Path']
+    counts = {'improbable':1,
+                'possible':1,
+                'probable':1,
+                'unknown':1}
+    csv_col_index = ['labeled_image', 'original_file_path']
     index = {}
     shutil.rmtree(TIDY_IMAGE_DIR, ignore_errors=True) # Deletes the directory containing any existing labeled images
+    shutil.rmtree(INDEX_DIR, ignore_errors=True)
     if not os.path.exists(TIDY_IMAGE_DIR):
         os.makedirs(TIDY_IMAGE_DIR)
     for filename in image_file_list:
-        if '.JPG' in filename or '.jpg' in filename:        
-            if any(re.findall(r'improbable', filename, re.IGNORECASE)):
-                save_name = TIDY_IMAGE_DIR + 'improbable' + '-' + str(improbable_counter) + '.jpg'
-                improbable_counter += 1
-            elif any(re.findall(r'probable', filename, re.IGNORECASE)):
-                save_name = TIDY_IMAGE_DIR + 'probable' + '-' + str(probable_counter) + '.jpg'
-                probable_counter += 1 
-            elif any(re.findall(r'possible', filename, re.IGNORECASE)):
-                save_name = TIDY_IMAGE_DIR + 'possible' + '-' + str(possible_counter) + '.jpg'
-                possible_counter += 1
-            else:
-                print(filename)
-                unknown_counter += 1
-            index[save_name] = filename
+        if '.JPG'.casefold() in filename.casefold():
+            save_name = updateNameCount(filename, counts)
             imageio.imwrite(save_name, np.array(Image.open(filename)))
-        else:
-            print(filename)
-            unknown_counter += 1
+            index[save_name] = filename
+        if '.HEIC'.casefold() in filename.casefold():
+            df = pd.read_csv(TRIMMED)
+            for row in df.itertuples():
+                image_name = row.file_name
+                rating = row.likelihood_of_failure_rating
+                if image_name == filename.split("Failure Images/",1)[1]:
+                    save_name = updateNameCount(rating, counts)
+                    PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                    continue                    
+            index[save_name] = filename
     if not os.path.exists(INDEX_DIR):
         os.makedirs(INDEX_DIR)
-    with open(INDEX_DIR + 'labels_index.csv', 'w', newline='') as f: # TODO: separate by tab not comma
+    with open(INDEX_LABELS, 'w', newline='') as f: # TODO: separate by tab not comma
         writer = csv.DictWriter(f, fieldnames=csv_col_index)
         writer.writeheader()
         for key in natsort.natsorted(index.keys()): # iterate through the alphanumeric keys in a natural order
@@ -169,18 +212,23 @@ def saveImageFiles(image_file_list):
             val_name = index[key]
             f.write("%s,%s\n"%(key_name,val_name))
     
-    print('Number of improbable images saved:', improbable_counter-1)    
-    print('Number of possible images saved:', possible_counter-1)
-    print('Number of probable images saved:', probable_counter-1)
-    print('Number of unknown images (not saved):', unknown_counter-1)
-    print('Total number of images saved:', improbable_counter+possible_counter+probable_counter-3)
+    print('Number of improbable images:', counts['improbable']-1)    
+    print('Number of possible images:', counts['possible']-1)
+    print('Number of probable images:', counts['probable']-1)
+    print('Number of unknown images:', counts['unknown']-1)
+    print('Total number of classified images:', counts['improbable']+counts['possible']+counts['probable']-3)
 
 def main():    
+    trimTrailingChars(RAW_IMAGE_DIR_FALL+'Likelihood of Failure Images.xlsx')
     original_photos = getListOfFiles(RAW_IMAGE_DIR)
     summer_photos = getListOfFiles(RAW_IMAGE_DIR_SUMMER)
+    fall_photos = getListOfFiles(RAW_IMAGE_DIR_FALL)
     index_list, description_list, arborist_list = splitIndexDescrArb(summer_photos)
     unique_image_list_summer = getUniqueImages(summer_photos, arborist_list, index_list, description_list)
-    saveImageFiles(original_photos+unique_image_list_summer)
+    start = time.time()
+    saveImageFiles(original_photos+unique_image_list_summer+fall_photos)
+    elapsed = (time.time() - start)
+    print("Saved images in (h/m/s/ms):", str(timedelta(seconds=elapsed)))
 
 if __name__ == "__main__":
     main()    
