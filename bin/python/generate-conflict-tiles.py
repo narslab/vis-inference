@@ -98,7 +98,7 @@ def plotTilesGrid(tiles, directory):
     for i in range(len(tiles[0])):
         plt.subplot(9,9,i+1)    # the number of images in the grid is 9*9 (81)
         plt.imshow(tiles[0][get_nth_key(tiles[0], i)])
-        plt.title(get_nth_key(tiles[0], i), fontsize=16)
+        plt.title(get_nth_key(tiles[0], i).split(".", 1)[0], fontsize=16)
         plt.axis('off')
 
     plt.tight_layout()
@@ -117,7 +117,7 @@ def preprocessConflictImages():
         writer = csv.DictWriter(f, fieldnames=csv_col_classifier)
         writer.writeheader()
         for key in classifier.keys():
-            f.write("%s,%s\n"%(key,classifier[key]))
+            f.write("%s,%s\n"%(key.split(".", 1)[0],classifier[key]))
 
 if __name__ == "__main__":
     start = time.time()
