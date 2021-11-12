@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import time
+from datetime import timedelta
 import sys
 import os # used for navigating to image path
+import shutil
 import numpy as np
 import pandas as pd
 import csv
@@ -12,18 +15,21 @@ from sklearn.model_selection import train_test_split
 from helpers import *
 
 SEED = 100
-ALL_TILES = '../../data/tidy/conflict-split-images/all_tiles/'
-PROCESSED_TILES_DIR = '../../data/tidy/conflict-split-images/preprocessed-tiles'
-TILES_ASSIGNMENT = '../../data/tidy/conflict-split-images/tiles_assignment.csv'
+IMAGE_WIDTH_LIST = [189, 252]#, 336]
+CONF_DIR = '../../data/tidy/conflict-detection/'
+ORIGINAL_TILES = os.path.join(CONF_DIR,'split-images/all_tiles/')
+CLASSIFIED_TILES_DIR = os.path.join(CONF_DIR, 'classified-tiles/')
+PREPROCESSED_TILES_DIR = os.path.join(CONF_DIR, 'preprocessed-tiles/')
+TILES_ASSIGNMENT = os.path.join(CONF_DIR, 'split-images/tiles_assignment.csv')
 
 def assign_sample_tiles(unassigned_tiles_path):
     """Randomly classifies tiles as 'c'(conflict) or 'n'(no conflict)"""
-    
+    np.random.seed(SEED) # ensure repeatability
     data = pd.read_csv(unassigned_tiles_path)
     data['Classification'] = np.random.choice(['c','n'], size=len(data))
     
-    return(data)
-    
+    return data
+
 def generate_index(sample_data): #path_to_tiles_assignment
     """Serially labels all tiles by class and generates an index to data/tidy/conflict_split_images"""
     
@@ -32,10 +38,9 @@ def generate_index(sample_data): #path_to_tiles_assignment
     
     df = pd.DataFrame(columns=['original', 'tile', 'classification'])
     
-    conflict_counter    = 1
-    no_conflict_counter = 1
-    unknown_counter = 1
-    counters = {}
+    counts = {'conflict':1,
+             'no_conflict':1,
+             'unknown':1}
         
     for row in sample_data.itertuples():
         tile = row.Filename
@@ -43,37 +48,41 @@ def generate_index(sample_data): #path_to_tiles_assignment
         classification = row.Classification
 
         if classification.lower() == 'c':        
-            save_label = 'conflict' + '-' + str(conflict_counter) + '.jpg'
+            save_label = 'conflict' + '-' + str(counts['conflict']) + '.jpg'
             df.loc[row.Index] = [original_image] + [tile] + [save_label]
-            conflict_counter += 1
+            counts['conflict'] += 1
         elif classification.lower() == 'n':
-            save_label = 'no_conflict' + '-' + str(no_conflict_counter) + '.jpg'
+            save_label = 'no_conflict' + '-' + str(counts['no_conflict']) + '.jpg'
             df.loc[row.Index] = [original_image] + [tile] + [save_label]
-            no_conflict_counter += 1
+            counts['no_conflict'] += 1
         else:
-            save_label = 'unknown' + '-' + str(unknown_counter) + '.jpg'
+            save_label = 'unknown' + '-' + str(counts['unknown']) + '.jpg'
             df.loc[row.Index] = [original_image] + [tile] + [save_label]
-            unknown_counter += 1
+            counts['unknown'] += 1
     
-    df.to_csv('../../data/tidy/conflict-split-images/tile_index_mapping.csv', encoding='utf-8', index=False)
+    df.to_csv(CONF_DIR+'tile_index_mapping.csv', encoding='utf-8', index=False)
     
-    counters['conflict'] = conflict_counter - 1
-    counters['no_conflict'] = no_conflict_counter - 1
-    counters['unknown'] = unknown_counter -1 
+    counts['conflict'] -= 1
+    counts['no_conflict'] -= 1
+    counts['unknown'] -= 1 
     
-    print('Number of conflict tiles recorded:', counters['conflict'])    
-    print('Number of no-conflict tiles recorded:', counters['no_conflict'])
-    print('Number of unknown tiles:', counters['unknown'])
+    print('Number of conflict tiles recorded:', counts['conflict'])    
+    print('Number of no-conflict tiles recorded:', counts['no_conflict'])
+    print('Number of unknown tiles:', counts['unknown'])
         
-    return df, counters
+    return df, counts
     
 def rename_tiles_conflict(data):
-    for filename in os.listdir(ALL_TILES):
+    """Rename each tile with its respective classification category"""
+    shutil.rmtree(CLASSIFIED_TILES_DIR, ignore_errors=True)
+    if not os.path.exists(CLASSIFIED_TILES_DIR):
+        os.makedirs(CLASSIFIED_TILES_DIR)
+    for filename in os.listdir(ORIGINAL_TILES):
         for row in data.itertuples():
-            tile = row.tile
+            tile = row.tile + '.jpg'
             classification = row.classification
             if tile == filename:
-                os.rename(ALL_TILES + filename, ALL_TILES + classification)
+                imageio.imwrite(CLASSIFIED_TILES_DIR+classification, imageio.imread(ORIGINAL_TILES+filename))
                 continue
                 
 def getImageOneHotVector(image_file_name):
@@ -90,50 +99,69 @@ def getImageOneHotVector(image_file_name):
     else:
         return -1 # if label is not present for current image
 
-def processConflictTiles(seed_value, save_image_binary_files=True, test = False): # original size 4032 × 3024 px
+def processConflictTiles(image_width, seed_value, save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
     data_train = []
     data_test = []
-    image_list = os.listdir(ALL_TILES) 
+    if test==True: # test just a few images to see what is going on
+        image_list = os.listdir(CLASSIFIED_TILES_DIR) #[0:10]
+    else:
+        image_list = os.listdir(CLASSIFIED_TILES_DIR)
     random.seed(seed_value) #seed for repeatability
+    print("Preprocessing images for image width " + str(image_width) + "px")
     image_list_train, image_list_test =  train_test_split(image_list, test_size = .2, random_state = seed_value)
 
     for image_index in image_list:
         label = getImageOneHotVector(image_index)
-        if label == -1: # if image labeled as unknown, move to next one
+        if label == -1: # if image unlabeled, move to next one
             continue
-        path = os.path.join(ALL_TILES, image_index)
+        path = os.path.join(CLASSIFIED_TILES_DIR, image_index)
         image = Image.open(path) # read in image
-        image_width, image_height = image.size
+        print(np.array(image).shape)
+        image_width = int(image_width) 
+        if rectangular==True:
+            image_height = getRectangularImageHeight(image_width)
+        else:
+            image_height = image_width
+        resized_image = image.resize((image_width, image_height), Image.BICUBIC)  
         if test == True:
             pass
+        resized_image_array = np.array(resized_image)/255. # convert to array and scale to 0-1
+        print("Resized Image shape: " + str(resized_image_array.shape))  
         if image_index in image_list_train:
-            data_train.append([image_list_train, label])
+            data_train.append([resized_image_array, label])                        
         else:
-            data_test.append([image_list_train, label])            
-    print("Training Images:", (np.array([x[1] for x in data_train])).sum(axis=0) )
-    print("Test Images:", (np.array([x[1] for x in data_test])).sum(axis=0) )
-    filename_prefix = 'w-' + str(image_width) + 'px-h-' + str(image_height)+ 'px'
+            data_test.append([resized_image_array, label])            
+    print(len(data_train))
+    print(len(data_test))  
+    print("Training Images:", (np.array([x[1] for x in data_train])).sum(axis=0))
+    print("Test Images:", (np.array([x[1] for x in data_test])).sum(axis=0))
+        
+    filename_prefix = 'w-' + str(image_width) + 'px-h-' + str(image_height) + "px"
     data_filename_train = filename_prefix+ "-train.npy"
     data_filename_test = filename_prefix + "-test.npy"
-    if not os.path.exists(PROCESSED_TILES_DIR): # check if 'tidy/preprocessed_tiles' subdirectory does not exist
-        os.makedirs(PROCESSED_TILES_DIR) # if not, create it    
+    if not os.path.exists(PREPROCESSED_TILES_DIR): 
+        os.makedirs(PREPROCESSED_TILES_DIR)
     if save_image_binary_files == True:
         if test == True:
             data_filename_train = 'testing-' + data_filename_train
             data_filename_test = 'testing-' + data_filename_test
-        np.save(os.path.join(PROCESSED_TILES_DIR, data_filename_train), data_train) #save as .npy (binary) file
-        np.save(os.path.join(PROCESSED_TILES_DIR, data_filename_test), data_test) #save as .npy (binary) file        
-        print("Saved " + data_filename_train + " to data/tidy/" + PROCESSED_TILES_DIR)
-        print("Saved " + data_filename_test + " to data/tidy/" + PROCESSED_TILES_DIR)        
+        print(os.path.join(PREPROCESSED_TILES_DIR, data_filename_train))
+        np.save(os.path.join(PREPROCESSED_TILES_DIR, data_filename_train), data_train) #save as .npy (binary) file
+        np.save(os.path.join(PREPROCESSED_TILES_DIR, data_filename_test), data_test) #save as .npy (binary) file        
+        print("Saved " + data_filename_train + " to " + PREPROCESSED_TILES_DIR.split("../../",1)[1])
+        print("Saved " + data_filename_test + " to " + PREPROCESSED_TILES_DIR.split("../../",1)[1])        
     return  #(image_selection_array, class_list)
     
 def main():
-    d = pd.read_csv(TILES_ASSIGNMENT)
-    #Use randomly classified tiles until all are properly labeled
+    #Use randomly classified tiles until all are labeled
     sample_df = assign_sample_tiles(TILES_ASSIGNMENT) 
     df, c = generate_index(sample_df)
+    start = time.time()
     rename_tiles_conflict(df)
-    processConflictTiles(seed_value=SEED, save_image_binary_files=True, test=False)
-
+    for width in IMAGE_WIDTH_LIST:
+        processConflictTiles(width, seed_value=SEED, rectangular = False, save_image_binary_files=True, test=False)
+    elapsed = (time.time() - start)
+    print("Tile renaming and preprocessing completed in (h/m/s/ms):", str(timedelta(seconds=elapsed)))
+    
 if __name__ == "__main__":
     main()
