@@ -44,6 +44,19 @@ def get_nth_key(dictionary, n=0):
             return key
     raise IndexError("dictionary index out of range")
 
+def convertToCoords(d):
+    """Transforms a sequential list l=d*d+1 into an xy coordinate space
+    Example: convertToCoords(2) -> [(1, 1), (1, 2), (2, 1), (2, 2)]"""
+    l = []
+    for k in range(1, d*d+1,1):
+        dm = (k//d,k%d) #divmod(k,d)
+        if dm[1] != 0:
+            t = (dm[0]+1, dm[1])
+        else:
+            t = (dm[0], d)
+        l.append(t)
+    return l    
+    
 def splitData(image_array, prop = 0.80, seed_num = 111):
     """Returns training and test arrays of images with specified proportion - prop:1-prop"""
     random.Random(seed_num).shuffle(image_array)

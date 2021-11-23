@@ -22,7 +22,6 @@ import random
 import matplotlib.pyplot as plt
 sys.path.append("../python/")
 from helpers import *
-from itertools import product
 import csv
 
 SEED = 100
@@ -82,10 +81,11 @@ def generateTiles(filename, dir_in, dir_out, d=9):
     print(os.path.join(dir_in, filename))
     img = Image.open(os.path.join(dir_in, filename))
     w, h = img.size
-    grid = product(range(0, h, int(h/d)), range(0, w, int(w/d)))
-    for i, j in grid:
-        box = (j, i, j+int(w/d), i+int(h/d))
-        tile_name = f'{name}_{i}_{j}{ext}'
+    grid = [(a, b) for a in range(0, h, int(h/d)) for b in range(0, w, int(w/d))]
+    coords = convertToCoords(d)
+    for i, j in enumerate(grid):
+        box = (j[1], j[0], j[1]+int(w/d), j[0]+int(h/d))
+        tile_name = f'{name}_{coords[i][0]}_{coords[i][1]}{ext}'
         out = os.path.join(dir_out, tile_name)
         t = img.crop(box)
         t.save(out)
@@ -98,7 +98,7 @@ def plotTilesGrid(tiles, directory):
     for i in range(len(tiles[0])):
         plt.subplot(9,9,i+1)    # the number of images in the grid is 9*9 (81)
         plt.imshow(tiles[0][get_nth_key(tiles[0], i)])
-        plt.title(get_nth_key(tiles[0], i).split(".", 1)[0], fontsize=16)
+        plt.title(get_nth_key(tiles[0], i).split(".", 1)[0], fontsize=20)
         plt.axis('off')
 
     plt.tight_layout()
