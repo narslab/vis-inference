@@ -56,12 +56,12 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 10
+PATIENCE = 5
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
 SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base"]#, "base", "resnet50", "inception_v3"
-NUM_EPOCHS = 50
+ARCHITECTURE_LIST = ["base-a", "base-b", "base-c", "all_conv"]#, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c"
+NUM_EPOCHS = 15
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
@@ -145,7 +145,7 @@ def constructRN50(image_size, scenario, num_channels = 3):
                            classes=num_classes)
     return(rn50)
 
-def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3):
+def testCNNA(image_width, image_height,  scenario, num_channels=3, num_classes=3):
     image_shape = (image_width, image_height, num_channels)
     if scenario=="Pr_Po_Im":
         num_classes = 3
@@ -164,7 +164,7 @@ def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3)
     model.add(layers.MaxPooling2D(2))
 
     model.add(layers.Flatten())
-
+    
     model.add(layers.Dense(units = 408, activation = 'relu'))
     
     #model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
@@ -181,41 +181,116 @@ def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3)
                 metrics = ['accuracy'])
     return(model)
 
-# def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3):
-#     image_shape = (image_width, image_height, num_channels)
-#     if scenario=="Pr_Po_Im":
-#         num_classes = 3
-#     else:
-#         num_classes = 2     
-#     model = models.Sequential()
+ 
+def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classes=3):
+    image_shape = (image_width, image_height, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2    
+    model = models.Sequential()    
+        
+    model.add(Convolution2D(128, 3, border_mode = 'same', input_shape=image_shape))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(128, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(128, 3, border_mode='same'))
+    model.add(Dropout(0.5))
 
-#     model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
-#         input_shape = image_shape ))
+    model.add(Convolution2D(256, 3, border_mode = 'same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(256, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(256, 3, border_mode='same'))
+    model.add(Dropout(0.5))
 
-#     model.add(layers.MaxPooling2D(2))
-#     model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
-#     model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
-#     model.add(layers.MaxPooling2D(2))
-#     model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-#     model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-#     model.add(layers.MaxPooling2D(2))
-#     model.add(layers.Flatten())
+    model.add(Convolution2D(512, 3, border_mode = 'same'))
+    model.add(Activation('relu'))    
 
-#     model.add(layers.Dense(units = 408, activation = 'relu'))
-#     model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
-#     model.add(layers.Dropout(.3))
+    model.add(GlobalAveragePooling2D())
+    model.add(Activation('softmax'))
 
-#     model.add(layers.Dense(units = 408, activation = 'relu'))
-#     model.add(layers.Dropout(.3))
+    # Choose an optimal value from 0.01, 0.001, or 0.0001
+    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
+                loss = 'categorical_crossentropy',
+                metrics = ['accuracy'])
+    return(model)
 
-#     model.add(layers.Dense(num_classes, activation='softmax'))
+def testCNNB(image_width, image_height,  scenario, num_channels=3, num_classes=3):
+    image_shape = (image_width, image_height, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2     
+    model = models.Sequential()
 
-#     # Choose an optimal value from 0.01, 0.001, or 0.0001
-#     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
-#                 loss = 'categorical_crossentropy',
-#                 metrics = ['accuracy'])
-#     return(model)
+    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
+        input_shape = image_shape ))
 
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    #experimenting with 2 additional convolutional layers, with an increased number of units
+    model.add(layers.Conv2D(512, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(512, 3, activation="relu", padding="same"))
+    model.add(layers.Flatten())
+    
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(num_classes, activation='softmax'))
+
+    # Choose an optimal value from 0.01, 0.001, or 0.0001
+    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
+                loss = 'categorical_crossentropy',
+                metrics = ['accuracy'])
+    return(model)
+
+
+def testCNNC(image_width, image_height,  scenario, num_channels=3, num_classes=3):
+    image_shape = (image_width, image_height, num_channels)
+    if scenario=="Pr_Po_Im":
+        num_classes = 3
+    else:
+        num_classes = 2     
+    model = models.Sequential()
+
+    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
+        input_shape = image_shape ))
+
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Flatten())
+    
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    #change location of batch normalization 
+    model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(num_classes, activation='softmax'))
+
+    # Choose an optimal value from 0.01, 0.001, or 0.0001
+    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
+                loss = 'categorical_crossentropy',
+                metrics = ['accuracy'])
+    return(model)
+ 
 def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
@@ -261,14 +336,34 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     opt = tf.keras.optimizers.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
 
     if architecture == 'resnet50':
-        # if testing: # no real reason to make these 2 models exclusive to just testing mode.
         model = constructRN50(image_width, scenario, NUM_CHANNELS)
     elif architecture == 'inception_v3':
-        # if testing:
         model = constructIV3(image_width, scenario, NUM_CHANNELS)
-    else:
+    elif architecture == 'all_conv':
         if testing:
-            model = testCNN(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+            model = testAllConv(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+        else:
+            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+    elif architecture == 'base-a':
+        if testing:
+            model = testCNNA(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+        else:
+            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+    elif architecture == 'base-b':
+        if testing:
+            model = testCNNB(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+        else:
+            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+
+    elif architecture == 'base-c':
+        if testing:
+            model = testCNNC(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
