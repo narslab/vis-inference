@@ -11,6 +11,10 @@ The purpose of this script is to pre-process the tree images using the following
     - horizontal flipping
 """
 
+import datetime
+import time
+from datetime import timedelta
+
 from PIL import Image, ImageOps, ExifTags # used for loading images
 import numpy as np
 import os # used for navigating to image path
@@ -20,9 +24,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from helpers import *
 
-
 ## GLOBAL VARIABLES
-IMAGE_WIDTH_LIST = [189, 252, 336]
+IMAGE_WIDTH_LIST = [336] #189, 252,
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
 # Reduction factor of 12: 252 x 336
@@ -80,15 +83,25 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
 def processImageData(image_width, class_scenario, seed_value, channels=1, save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
     data_train = []
     data_test = []
-    eraser = get_random_eraser()
+    log_dir = "../../logs/processed_image_data/"
     if test==True: # test just a few images to see what is going on
         image_list = os.listdir(LABELED_IMAGES_DIR) #[0:10]
     else:
         image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
-    print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px")
-    image_list_train, image_list_test =  train_test_split(image_list, test_size = .2, random_state = seed_value)
-
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts)
+    subdir = os.path.join(log_dir, st.strftime('%Y-%m-%d_%H-%M'))
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+    f = open(subdir+"/processed_images_"+class_scenario+"_"+str(image_width)+"px.txt", "a")
+    print("Timestamp: ", st.strftime('%Y-%m-%d %H:%M:%S'), "\n", file=f)
+    print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px\n", file=f)
+    image_list_train, image_list_test =  train_test_split(image_list, test_size = 0.2, random_state = seed_value)
+    print("Training (before augmentation): ", str(len(image_list_train)), "\n", file=f)
+    print("Test (before augmentation): ", str(len(image_list_test)), "\n", file=f)
     for image_index in image_list:
         label = getImageOneHotVector(image_index, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
@@ -131,17 +144,27 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
         #print("Resized Image shape: " + str(resized_image_array.shape))  
         if image_index in image_list_train:
             flipped_resized_image_array = np.fliplr(resized_image_array)
-            erased_resized_image_array = eraser(resized_image_array) 
-            data_train.append([resized_image_array, label])  
-            data_train.append([erased_resized_image_array, label])
-            data_train.append([flipped_resized_image_array, label])
+            for i in range(3):
+                data_train.append([eraser(resized_image_array), label])
+            for i in range(3):
+                data_train.append([eraser(flipped_resized_image_array), label])
+#             erased_resized_image_array = eraser(resized_image_array) 
+#             data_train.append([resized_image_array, label])  
+#             data_train.append([erased_resized_image_array, label])
+#             data_train.append([flipped_resized_image_array, label])
             #print("Flipped and Resized Image shape: " + str(flipped_resized_image_array.shape))              
         else:
-            data_test.append([resized_image_array, label])            
+            flipped_resized_image_array = np.fliplr(resized_image_array)
+            for i in range(3):
+                data_test.append([eraser(resized_image_array), label])
+            for i in range(3):
+                data_test.append([eraser(flipped_resized_image_array), label])
+#             data_test.append([resized_image_array, label])            
     print(len(data_train))
     print(len(data_test))  
-    print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
-    print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
+    
+    print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0),"\n", file=f)
+    print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0),"\n", file=f)
     # random_image_selection_class_0 = random.sample([i[0] for i in data if i[1][0] == 1], k = images_per_class)
     # random_image_selection_class_1 = random.sample([i[0] for i in data if i[1][1] == 1], k = images_per_class)
     # image_selection_array = [random_image_selection_class_0, random_image_selection_class_1]
@@ -168,8 +191,10 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             data_filename_test = 'testing-' + data_filename_test
         np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_train), data_train) #save as .npy (binary) file
         np.save(os.path.join(PROCESSED_IMAGES_DIR, data_filename_test), data_test) #save as .npy (binary) file        
-        print("Saved " + data_filename_train + " to data/tidy/" + PROCESSED_IMAGES_DIR)
-        print("Saved " + data_filename_test + " to data/tidy/" + PROCESSED_IMAGES_DIR)        
+        print("Saved " + data_filename_train + " to data/tidy/" + PROCESSED_IMAGES_DIR + "\n", file=f)
+        print("Saved " + data_filename_test + " to data/tidy/" + PROCESSED_IMAGES_DIR + "\n", file=f)    
+    
+    f.close()
     return  #(image_selection_array, class_list)
 
 ## The plotting routine can be here, but perhaps better in a separate fiel.
@@ -198,11 +223,14 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
 #     return
 
 def main(testing_boolean=False):
+    start = time.time()
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
             processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = False, save_image_binary_files=True, test=testing_boolean)
             #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
+    elapsed = (time.time() - start)
+    print("Preprocessed images in (h/m/s/ms):", str(timedelta(seconds=elapsed)))
     return 
 
 if __name__ == "__main__":

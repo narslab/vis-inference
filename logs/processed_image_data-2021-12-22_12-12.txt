@@ -1,0 +1,14 @@
+Timestamp:  2021-12-22 12:12:30 
+
+Preprocessing images for scenario Pr_PoIm; image width 336px
+
+Training (before augmentation):  650
+Test (before augmentation):  163
+Training Images: Pr_PoIm [3108  678] 
+
+Test Images: Pr_PoIm [846 108] 
+
+Saved w-336px-h-336px-scenario-Pr_PoIm-train.npy to data/tidy/../../data/tidy/preprocessed-images
+
+Saved w-336px-h-336px-scenario-Pr_PoIm-test.npy to data/tidy/../../data/tidy/preprocessed-images
+

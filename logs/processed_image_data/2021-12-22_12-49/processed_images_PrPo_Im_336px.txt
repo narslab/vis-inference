@@ -1,0 +1,16 @@
+Timestamp:  2021-12-22 12:49:45 
+
+Preprocessing images for scenario PrPo_Im; image width 336px
+
+Training (before augmentation):  650 
+
+Test (before augmentation):  163 
+
+Training Images: PrPo_Im [2400 1386] 
+
+Test Images: PrPo_Im [618 336] 
+
+Saved w-336px-h-336px-scenario-PrPo_Im-train.npy to data/tidy/../../data/tidy/preprocessed-images
+
+Saved w-336px-h-336px-scenario-PrPo_Im-test.npy to data/tidy/../../data/tidy/preprocessed-images
+

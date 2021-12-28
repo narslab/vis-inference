@@ -1,0 +1,16 @@
+Timestamp:  2021-12-24 18:37:43 
+
+Class labels: ['Improbable', 'Probable'] 
+
+Image width: 336 
+
+Image height: 336 
+
+Number of class training images: [2400  678] total:  3078 
+
+Number of class test images: [618 108] total:  726 
+
+../../results/models/opt-cnn-base-a-Pr_Im-w-336-px-h-336-px\summary.txt 
+
+Completion time in seconds:  7781.5403858 
+

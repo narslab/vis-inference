@@ -6,8 +6,11 @@ import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 import pandas as pd
 import time
+import datetime
+from datetime import timedelta
 from timeit import default_timer as timer
 import random
+
 
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
@@ -20,6 +23,7 @@ import seaborn as sns
 import matplotlib.ticker as tkr
 
 from matplotlib import cm
+from keras_visualizer import visualizer 
 from tf_keras_vis.gradcam import Gradcam
 from tf_keras_vis.saliency import Saliency
 from tf_keras_vis.utils import normalize
@@ -59,9 +63,9 @@ NUM_CHANNELS = 3
 PATIENCE = 5
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base-a", "base-b", "base-c", "all_conv"]#, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c"
-NUM_EPOCHS = 15
+SCENARIO_LIST = ["Pr_Im", "PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["base-a", "base-b", "all_conv"] #, "base-c", "all_conv"]#, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+NUM_EPOCHS = 25
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
@@ -179,6 +183,7 @@ def testCNNA(image_width, image_height,  scenario, num_channels=3, num_classes=3
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
+#     visualizer(model, format='png', view=True)
     return(model)
 
 def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classes=3):
@@ -213,6 +218,7 @@ def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classe
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
+#     visualizer(model, format='png', view=True)
     return(model)
 
 def testCNNB(image_width, image_height,  scenario, num_channels=3, num_classes=3):
@@ -251,6 +257,7 @@ def testCNNB(image_width, image_height,  scenario, num_channels=3, num_classes=3
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
+#     visualizer(model, format='png', view=True)
     return(model)
 
 
@@ -288,6 +295,7 @@ def testCNNC(image_width, image_height,  scenario, num_channels=3, num_classes=3
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
+#     visualizer(model, format='png', view=True)
     return(model)
 
 def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
@@ -299,11 +307,20 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         image_height = getRectangularImageHeight(image_width)
     else:
         image_height = image_width
-
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts)
+    log_dir = "../../logs/trained_models/" 
+    subdir = os.path.join(log_dir, architecture)
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+    l = open(subdir+"/"+st.strftime('%Y-%m-%d_%H-%M')+".txt", "a")
+    print("Timestamp: ", st.strftime('%Y-%m-%d %H:%M:%S'), "\n", file=l)
     class_labels = getClassLabels(scenario)
-    print("Class labels:", class_labels)
-    print("Image width: " + str(image_width))
-    print("Image height: " + str(image_height))
+    print("Class labels:", class_labels, "\n", file=l)
+    print("Image width: " + str(image_width), "\n", file=l)
+    print("Image height: " + str(image_height), "\n", file=l)
     if rectangular==True:
         image_dictionary_train = IMAGE_SETS_RECT_TRAIN
         image_dictionary_test = IMAGE_SETS_RECT_TEST
@@ -322,12 +339,12 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     # test_labels = np.array([x[1] for x in image_dictionary_test[image_width][scenario]]) 
 
     print(train_images[0].shape)
-    print("Number of class training images:", train_labels.sum(axis=0), "total: ", train_labels.sum())
-    print("Number of class test images:", test_labels.sum(axis=0), "total: ", test_labels.sum())
+    print("Number of class training images:", train_labels.sum(axis=0), "total: ", train_labels.sum(), "\n", file=l)
+    print("Number of class test images:", test_labels.sum(axis=0), "total: ", test_labels.sum(), "\n", file=l)
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+#     early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -377,7 +394,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
-                     callbacks = [model_metrics, early_stopping])     
+                     callbacks = [model_metrics])#, early_stopping])     
     end = timer()
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
@@ -389,7 +406,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     if not os.path.exists(SAVED_MODEL_DIR):  
         os.makedirs(SAVED_MODEL_DIR)
     model.save(os.path.join(SAVED_MODEL_DIR, model_name, model_folder))     ## Save model summary
-    #print(os.path.join(SAVED_MODEL_DIR, model_name, "summary.txt"))
+    print(os.path.join(SAVED_MODEL_DIR, model_name, "summary.txt"), "\n", file=l)
     with open(os.path.join(SAVED_MODEL_DIR, model_name, "summary.txt"), 'w') as f:
         model.summary(print_fn=lambda x: f.write(x + '\n'))
     with open(os.path.join(SAVED_MODEL_DIR, model_name, "history.txt"), 'w') as f:
@@ -404,18 +421,18 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists('../../results/classification-reports/'):  
         os.makedirs('../../results/classification-reports/')
-    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "-patience-" + str(PATIENCE) + "px.csv"
+    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "px.csv" #"-patience-" + str(PATIENCE) +
     if testing == True:
         report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
     else:
         report.to_csv("../../results/classification-reports/opt-classification-report-" + classification_report_suffix)        
     print(report)
-    print("Patience value: ", PATIENCE)
-    print("Completion time in seconds: ", end - start)
+#     print("Patience value: ", PATIENCE)
+    print("Completion time in seconds: ", end - start, "\n", file=l)
     ## Confusion matrix
     con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
     con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
-    con_mat_df = pd.DataFrame(con_mat_norm, index = class_labels, columns = class_labels)
+    con_mat_df = pd.DataFrame(con_mat, index = class_labels, columns = class_labels)
     #print("Confusion matrix for scenario " + scenario + ", resolution: " + str(image_size) + ":")
     #print(con_mat_df)
     figure = plt.figure()#figsize=(4, 4))    ## Confusion matrix heatmap
@@ -432,6 +449,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     else:
         con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" +  file_suffix
     figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
+    l.close()
     return(model, hist) 
 
 
@@ -451,10 +469,11 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-patience-" + str(PATIENCE) + "-" + tm +".csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + tm +".csv" #"-px-patience-" + str(PATIENCE) + "-" +
     else:
         df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + tm + "-px.csv"
     df.to_csv(df_filename)
+    del m
     return df
 
 if __name__ == "__main__":
