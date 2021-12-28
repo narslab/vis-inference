@@ -80,7 +80,6 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
 def processImageData(image_width, class_scenario, seed_value, channels=1, save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
     data_train = []
     data_test = []
-    eraser = get_random_eraser()
     if test==True: # test just a few images to see what is going on
         image_list = os.listdir(LABELED_IMAGES_DIR) #[0:10]
     else:
@@ -131,13 +130,17 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
         #print("Resized Image shape: " + str(resized_image_array.shape))  
         if image_index in image_list_train:
             flipped_resized_image_array = np.fliplr(resized_image_array)
-            erased_resized_image_array = eraser(resized_image_array) 
-            data_train.append([resized_image_array, label])  
-            data_train.append([erased_resized_image_array, label])
-            data_train.append([flipped_resized_image_array, label])
+            for i in range(3):
+                data_train.append([eraser(resized_image_array), label])
+            for i in range(3):
+                data_train.append([eraser(flipped_resized_image_array), label])
             #print("Flipped and Resized Image shape: " + str(flipped_resized_image_array.shape))              
         else:
-            data_test.append([resized_image_array, label])            
+            flipped_resized_image_array = np.fliplr(resized_image_array)
+            for i in range(3):
+                data_test.append([eraser(resized_image_array), label])
+            for i in range(3):
+                data_test.append([eraser(flipped_resized_image_array), label])            
     print(len(data_train))
     print(len(data_test))  
     print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
