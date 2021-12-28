@@ -88,43 +88,47 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-def get_random_eraser(p=0.5, s_l=0.02, s_h=0.4, r_1=0.3, r_2=1/0.3, v_l=0, v_h=255, pixel_level=False):
-    """Regularizes the model by randomly masking parts of the training image with random values"""
-    def eraser(input_img):
-        if input_img.ndim == 3:
-            img_h, img_w, img_c = input_img.shape
-        elif input_img.ndim == 2:
-            img_h, img_w = input_img.shape
+def eraser(input_img, p=1.0, s_l=0.01, s_h=0.05, r_1=0.3, r_2=1/0.3, v_l=0, v_h=255, pixel_level=False):
+    """Regularizes the model by randomly masking parts of the training image with random values
+    p : the probability that random erasing is performed
+    s_l, s_h : minimum / maximum proportion of erased area against input image
+    r_1, r_2 : minimum / maximum aspect ratio of erased area
+    v_l, v_h : minimum / maximum value for erased area
+    pixel_level : pixel-level randomization for erased area
+    """
+    if input_img.ndim == 3:
+        img_h, img_w, img_c = input_img.shape
+    elif input_img.ndim == 2:
+        img_h, img_w = input_img.shape
 
-        p_1 = np.random.rand()
+    p_1 = np.random.rand()
 
-        if p_1 > p:
-            return input_img
-
-        while True:
-            s = np.random.uniform(s_l, s_h) * img_h * img_w
-            r = np.random.uniform(r_1, r_2)
-            w = int(np.sqrt(s / r))
-            h = int(np.sqrt(s * r))
-            left = np.random.randint(0, img_w)
-            top = np.random.randint(0, img_h)
-
-            if left + w <= img_w and top + h <= img_h:
-                break
-
-        if pixel_level:
-            if input_img.ndim == 3:
-                c = np.random.uniform(v_l, v_h, (h, w, img_c))
-            if input_img.ndim == 2:
-                c = np.random.uniform(v_l, v_h, (h, w))
-        else:
-            c = np.random.uniform(v_l, v_h)
-
-        input_img[top:top + h, left:left + w] = c
-
+    if p_1 > p:
         return input_img
 
-    return eraser
+    while True:
+        s = np.random.uniform(s_l, s_h) * img_h * img_w
+        r = np.random.uniform(r_1, r_2)
+        w = int(np.sqrt(s / r))
+        h = int(np.sqrt(s * r))
+        left = np.random.randint(0, img_w)
+        top = np.random.randint(0, img_h)
+
+        if left + w <= img_w and top + h <= img_h:
+            break
+
+    if pixel_level:
+        if input_img.ndim == 3:
+            c = np.random.uniform(v_l, v_h, (h, w, img_c))
+        if input_img.ndim == 2:
+            c = np.random.uniform(v_l, v_h, (h, w))
+    else:
+        c = np.random.uniform(v_l, v_h)
+
+    output_img = np.copy(input_img)
+    output_img[top:top + h, left:left + w] = c
+
+    return output_img
 
 def standardizePlot(index, plot_dir, title):
     '''Standardizing the plotting functionality when rendering the visual output of each technique'''
