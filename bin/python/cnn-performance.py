@@ -60,7 +60,7 @@ PATIENCE = 10
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
 SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["inception_v3"]#, "base", "resnet50", "inception_v3"
+ARCHITECTURE_LIST = ["base"]#, "base", "resnet50", "inception_v3"
 NUM_EPOCHS = 50
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -145,7 +145,6 @@ def constructRN50(image_size, scenario, num_channels = 3):
                            classes=num_classes)
     return(rn50)
 
-
 def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3):
     image_shape = (image_width, image_height, num_channels)
     if scenario=="Pr_Po_Im":
@@ -154,20 +153,21 @@ def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3)
         num_classes = 2     
     model = models.Sequential()
 
-    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
-        input_shape = image_shape ))
+    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", input_shape = image_shape ))
+    model.add(layers.Conv2D(64, 5, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
 
-    model.add(layers.MaxPooling2D(2))
-    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
-    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
-    model.add(layers.MaxPooling2D(2))
-    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-    model.add(layers.MaxPooling2D(2))
     model.add(layers.Flatten())
 
     model.add(layers.Dense(units = 408, activation = 'relu'))
-    model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+    
+    #model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
     model.add(layers.Dropout(.3))
 
     model.add(layers.Dense(units = 408, activation = 'relu'))
@@ -180,6 +180,41 @@ def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3)
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
     return(model)
+
+# def testCNN(image_width, image_height,  scenario, num_channels=3, num_classes=3):
+#     image_shape = (image_width, image_height, num_channels)
+#     if scenario=="Pr_Po_Im":
+#         num_classes = 3
+#     else:
+#         num_classes = 2     
+#     model = models.Sequential()
+
+#     model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
+#         input_shape = image_shape ))
+
+#     model.add(layers.MaxPooling2D(2))
+#     model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+#     model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+#     model.add(layers.MaxPooling2D(2))
+#     model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+#     model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+#     model.add(layers.MaxPooling2D(2))
+#     model.add(layers.Flatten())
+
+#     model.add(layers.Dense(units = 408, activation = 'relu'))
+#     model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+#     model.add(layers.Dropout(.3))
+
+#     model.add(layers.Dense(units = 408, activation = 'relu'))
+#     model.add(layers.Dropout(.3))
+
+#     model.add(layers.Dense(num_classes, activation='softmax'))
+
+#     # Choose an optimal value from 0.01, 0.001, or 0.0001
+#     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
+#                 loss = 'categorical_crossentropy',
+#                 metrics = ['accuracy'])
+#     return(model)
 
 def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
     # IMAGES (former approach)
@@ -240,7 +275,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     
     reset_weights(model) # re-initialize model weights
-    
+    print(model.summary)
     start = timer()
     if testing:
         model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit

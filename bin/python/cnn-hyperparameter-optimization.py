@@ -29,10 +29,10 @@ from sklearn import metrics
 from sklearn import model_selection
 
 NUM_CHANNELS = 3
-IMAGE_WIDTH_LIST = [189, 252, 336]
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
+SCENARIO_LIST = [ "PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
-HYPERBAND_MAX_EPOCHS = 10 #10
+HYPERBAND_MAX_EPOCHS = 15 #10
 EXECUTIONS_PER_TRIAL = 2 #5
 HYPERBAND_ITER = 3 #80
 
