@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-IMAGE_ARRAY = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Po_Im-train.npy',allow_pickle = True)
-IMAGE_ARRAY_TEST = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Po_Im-test.npy',allow_pickle = True)
+IMAGE_ARRAY = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Im-train.npy',allow_pickle = True)
+IMAGE_ARRAY_TEST = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Im-test.npy',allow_pickle = True)
 
 def getFigure2sub(images):
     pr = []
@@ -81,7 +81,7 @@ def exploreProcessedImages(image_array):
     return
 
 def main():
-    plotSelectedProcessedImages(IMAGE_ARRAY, save=True)
+    #plotSelectedProcessedImages(IMAGE_ARRAY, save=True)
     #exploreProcessedImages(IMAGE_ARRAY)
     return
 

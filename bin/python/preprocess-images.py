@@ -22,14 +22,14 @@ from helpers import *
 
 
 ## GLOBAL VARIABLES
-IMAGE_WIDTH_LIST = [189, 252, 336]
+IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 # Original image size: 3024 x 4032
 # Reduction factor of 9: 336 x 448
 # Reduction factor of 12: 252 x 336
 # Reduction factor of 16: 189 x 252
 NUM_CHANNELS = 3
 CLASSIFICATION_SCENARIO = "Pr_Im"
-CLASSIFICATION_SCENARIO_LIST = ["Pr_Po_Im", "Pr_Im", "PrPo_Im", "Pr_PoIm"]  
+CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images'
 
@@ -86,7 +86,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
         image_list = os.listdir(LABELED_IMAGES_DIR)
     random.seed(seed_value) #seed for repeatability
     print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px")
-    image_list_train, image_list_test =  train_test_split(image_list, test_size = .2, random_state = seed_value)
+    image_list_train, image_list_test =  train_test_split(image_list, test_size = .25, random_state = seed_value)
 
     for image_index in image_list:
         label = getImageOneHotVector(image_index, class_scenario)
@@ -128,19 +128,14 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, save_i
             # resized_image.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
         resized_image_array = np.array(resized_image)/255. # convert to array and scale to 0-1
         #print("Resized Image shape: " + str(resized_image_array.shape))  
+        flipped_resized_image_array = np.fliplr(resized_image_array)
         if image_index in image_list_train:
-            flipped_resized_image_array = np.fliplr(resized_image_array)
-            for i in range(3):
+            for i in range(3):                                    
                 data_train.append([eraser(resized_image_array), label])
-            for i in range(3):
-                data_train.append([eraser(flipped_resized_image_array), label])
+                data_train.append([eraser(flipped_resized_image_array), label]) 
             #print("Flipped and Resized Image shape: " + str(flipped_resized_image_array.shape))              
         else:
-            flipped_resized_image_array = np.fliplr(resized_image_array)
-            for i in range(3):
-                data_test.append([eraser(resized_image_array), label])
-            for i in range(3):
-                data_test.append([eraser(flipped_resized_image_array), label])            
+            data_test.append([resized_image_array, label])
     print(len(data_train))
     print(len(data_test))  
     print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
