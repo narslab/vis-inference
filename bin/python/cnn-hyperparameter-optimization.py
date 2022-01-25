@@ -16,8 +16,8 @@ sys.path.append("../python/")
 from helpers import *
 
 """HP Tuning"""
-from kerastuner import HyperModel
-from kerastuner.tuners import RandomSearch
+from keras_tuner import HyperModel
+from keras_tuner.tuners import RandomSearch
 
 import IPython
 
