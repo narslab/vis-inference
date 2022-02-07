@@ -212,7 +212,7 @@ def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
     base_model = models.Sequential([
         layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
             input_shape = image_shape),
-        layers.Conv2D(64, 3, activation="relu", padding="same")
+        layers.Conv2D(64, 3, activation="relu", padding="same"),
         layers.MaxPooling2D(2),
         layers.Conv2D(128, 3, activation="relu", padding="same"),
         layers.Conv2D(128, 3, activation="relu", padding="same"),

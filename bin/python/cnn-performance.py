@@ -56,11 +56,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 5
+PATIENCE = 10
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base-a", "base-b", "base-c", "all_conv"]#, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c"
+SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["base-a"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 15
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
@@ -378,7 +378,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
-                     callbacks = [model_metrics, early_stopping])     
+                     callbacks = [model_metrics, early_stopping])
     end = timer()
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
