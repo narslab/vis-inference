@@ -88,7 +88,7 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-def eraser(input_img, p=1.0, s_l=0.01, s_h=0.05, r_1=0.3, r_2=1/0.3, v_l=0, v_h=1, pixel_level=True):
+def eraser(input_img, p=1.0, s_l=0.01, s_h=0.05, r_1=0.3, v_l=0, v_h=1, pixel_level=True):
     """Regularizes the model by randomly masking parts of the training image with random values
     p : the probability that random erasing is performed
     s_l, s_h : minimum / maximum proportion of erased area against input image
@@ -96,6 +96,8 @@ def eraser(input_img, p=1.0, s_l=0.01, s_h=0.05, r_1=0.3, r_2=1/0.3, v_l=0, v_h=
     v_l, v_h : minimum / maximum pixel value for erased area
     pixel_level : pixel-level randomization for erased area
     """
+    r_2=1/r_1
+    
     if input_img.ndim == 3:
         img_h, img_w, img_c = input_img.shape
     elif input_img.ndim == 2:
@@ -176,7 +178,7 @@ def getRectangularImageHeight(width):
     height = int(width * 4032/3024)
     return height
 
-def createResolutionScenarioImageDict(image_width_list, scenario_list, train=True, rectangular=False, testing=False):
+def createResolutionScenarioImageDict(image_width_list, scenario_list, augmentation='occlusion', train=True, rectangular=False, testing=False):
     image_dict = dict.fromkeys(image_width_list)
     if train==True:
         train_test = 'train'
@@ -190,9 +192,9 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, train=Tru
             else:
                 h = w
             if testing:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
             else:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
     print(image_dict)
     return(image_dict)
 
@@ -212,7 +214,7 @@ def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
     base_model = models.Sequential([
         layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
             input_shape = image_shape),
-        layers.Conv2D(64, 3, activation="relu", padding="same"),
+        # layers.Conv2D(64, 3, activation="relu", padding="same"),
         layers.MaxPooling2D(2),
         layers.Conv2D(128, 3, activation="relu", padding="same"),
         layers.Conv2D(128, 3, activation="relu", padding="same"),
