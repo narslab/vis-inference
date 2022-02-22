@@ -199,6 +199,7 @@ def saveImageFiles(image_file_list):
                 rating = row.likelihood_of_failure_rating
                 if image_name == filename.split("Failure Images/",1)[1]:
                     save_name = updateNameCount(rating, counts)
+                    # Install wheel for matching Python version: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonmagick
                     PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
                     continue                    
             index[save_name] = filename
