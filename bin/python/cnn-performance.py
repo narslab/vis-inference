@@ -56,24 +56,24 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 10
+PATIENCE = 3
 TESTING = False
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base-a"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
-NUM_EPOCHS = 15
+SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"]#, "Pr_Im, PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+NUM_EPOCHS = 10
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 
 # Define a set of images with different rotation
 if TESTING:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False, testing=True)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=True, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=False, rectangular = False, testing=True)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True, testing=True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True, testing=True)
 else:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = False)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = False)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=True, rectangular = False)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=False, rectangular = False)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
@@ -339,35 +339,35 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         model = constructRN50(image_width, scenario, NUM_CHANNELS)
     elif architecture == 'inception_v3':
         model = constructIV3(image_width, scenario, NUM_CHANNELS)
-    elif architecture == 'all_conv':
+    elif architecture == 'base':
         if testing:
             model = testAllConv(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
-    elif architecture == 'base-a':
-        if testing:
-            model = testCNNA(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
-        else:
-            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
-            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
-            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
-    elif architecture == 'base-b':
-        if testing:
-            model = testCNNB(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
-        else:
-            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
-            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
-            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+#     elif architecture == 'base-a':
+#         if testing:
+#             model = testCNNA(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+#         else:
+#             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+#             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+#             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+#     elif architecture == 'base-b':
+#         if testing:
+#             model = testCNNB(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+#         else:
+#             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+#             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+#             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
 
-    elif architecture == 'base-c':
-        if testing:
-            model = testCNNC(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
-        else:
-            model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
-            opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
-            opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
+#     elif architecture == 'base-c':
+#         if testing:
+#             model = testCNNC(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+#         else:
+#             model = constructOptBaseCNN(image_width, image_height, scenario, num_channels = NUM_CHANNELS)    ## get model
+#             opt_learning_rate = getOptCNNHyperparams(image_width, image_height, scenario)['learning_rate']    ## learning rate
+#             opt = tf.keras.optimizers.Adam(learning_rate = opt_learning_rate)    
     
     reset_weights(model) # re-initialize model weights
     print(model.summary)
