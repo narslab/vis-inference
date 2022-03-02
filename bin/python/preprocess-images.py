@@ -19,6 +19,8 @@ import random
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from helpers import *
+import time
+from datetime import timedelta
 
 
 ## GLOBAL VARIABLES
@@ -28,7 +30,9 @@ IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 # Reduction factor of 12: 252 x 336
 # Reduction factor of 16: 189 x 252
 NUM_CHANNELS = 3
-TEST_SET_SIZE = 0.25
+# initial test set size of 0.4 corresponds to 0.25 after doubling training images
+TEST_SET_SIZE = 0.4
+AUGMENTATION = 'occlusion_double'
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
@@ -131,9 +135,8 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
             # resized_image.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
         resized_image_array = np.array(resized_image)/255. # convert to array and scale to 0-1
         flipped_resized_img_array = np.fliplr(resized_image_array)
-        #print("Resized Image shape: " + str(resized_image_array.shape))  
         # Horizontal flipping implementation
-        if augmentation == 'fliplr':
+        if augmentation == 'fliplr': 
             if image_index in image_list_train:
                 data_train.append([resized_image_array, label])            
                 data_train.append([flipped_resized_img_array, label])
@@ -141,12 +144,25 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
             else:
                 data_test.append([resized_image_array, label]) 
         ## Occlusion implementation
-        if augmentation == 'occlusion':
+        if augmentation == 'occlusion_all': # occludes a flipped and resized image with 100% probability
             if image_index in image_list_train:
-                for i in range(2):                                    
-                    data_train.append([eraser(resized_image_array, pixel_level=False), label])
-                    data_train.append([eraser(flipped_resized_image_array, pixel_level=False), label]) 
-                print("Occluded and Resized Image shape: " + str(flipped_resized_image_array.shape))              
+                data_train.append([eraser(resized_image_array), label])
+                data_train.append([eraser(flipped_resized_img_array), label]) 
+                print("Occluded, Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            else:
+                data_test.append([resized_image_array, label])
+        if augmentation == 'occlusion_half': # occludes a flipped and resized image with 50% probability 
+            if image_index in image_list_train:
+                data_train.append([eraser(resized_image_array, p=0.5), label])
+                data_train.append([eraser(flipped_resized_img_array, p=0.5), label]) 
+                print("Occluded, Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            else:
+                data_test.append([resized_image_array, label])
+        if augmentation == 'occlusion_double':
+            if image_index in image_list_train:
+                for i in range(2):
+                    data_train.append([eraser(resized_image_array), label])
+                print("Occluded and Resized Image shape: " + str(resized_image_array.shape))              
             else:
                 data_test.append([resized_image_array, label])
     print(len(data_train))
@@ -202,10 +218,13 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
 def main(testing_boolean=False):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation='fliplr', rectangular = False, save_image_binary_files=True, test=testing_boolean)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=True, test=testing_boolean)
             #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return 
 
 if __name__ == "__main__":
+    start = time.time()
     main(False)
+    elapsed = (time.time() - start)
+    print("Image preprocessing completed in (h/m/s/ms):", str(timedelta(seconds=elapsed)))

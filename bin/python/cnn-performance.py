@@ -56,24 +56,26 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 3
+PATIENCE = 4
 TESTING = False
+AUGMENTATION = 'occlusion_all'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
 SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"]#, "Pr_Im, PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
-NUM_EPOCHS = 10
+ARCHITECTURE_LIST = ["resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+NUM_EPOCHS = 12
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
+TM = time.strftime('%d-%b-%Y-%H-%M-%S')
 
 # Define a set of images with different rotation
 if TESTING:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=True, rectangular = False, testing=True)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=False, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=True, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=False, rectangular = False, testing=True)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True, testing=True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True, testing=True)
 else:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=True, rectangular = False)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion', train=False, rectangular = False)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=True, rectangular = False)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=False, rectangular = False)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
@@ -405,7 +407,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists('../../results/classification-reports/'):  
         os.makedirs('../../results/classification-reports/')
-    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "-patience-" + str(PATIENCE) + "px.csv"
+    classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "-" + AUGMENTATION + ".csv"
     if testing == True:
         report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
     else:
@@ -414,9 +416,11 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     print("Patience value: ", PATIENCE)
     print("Completion time in seconds: ", end - start)
     ## Confusion matrix
+    if not os.path.exists('../../figures/confusion-matrix/'):  
+        os.makedirs('../../figures/confusion-matrix/')
     con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
-    con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
-    con_mat_df = pd.DataFrame(con_mat_norm, index = class_labels, columns = class_labels)
+    # con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
+    con_mat_df = pd.DataFrame(con_mat, index = class_labels, columns = class_labels)
     #print("Confusion matrix for scenario " + scenario + ", resolution: " + str(image_size) + ":")
     #print(con_mat_df)
     figure = plt.figure()#figsize=(4, 4))    ## Confusion matrix heatmap
@@ -427,19 +431,18 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     ax.set_xticklabels(class_labels, ha='center',fontsize=14)
     plt.xlabel('Predicted',fontsize=16)
     #plt.show()
-    file_suffix =  architecture+"-"+scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + "-px.png"
+    file_suffix =  architecture+"-"+scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + '-px-' + AUGMENTATION + ".png"
     if testing == True:
-        con_mat_heatmap_file = "../../figures/test-opt-confusion-matrix-" +  file_suffix
+        con_mat_heatmap_file = "../../figures/confusion-matrix/test-opt-confusion-matrix-" +  file_suffix
     else:
-        con_mat_heatmap_file = "../../figures/opt-confusion-matrix-" +  file_suffix
+        con_mat_heatmap_file = "../../figures/confusion-matrix/opt-confusion-matrix-" +  file_suffix
     figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
     return(model, hist) 
 
 
 def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
     df = pd.DataFrame()
-    tm = time.strftime('%d-%b-%Y-%H-%M-%S')
-    print(tm)
+    print(TM)
     if rect_boolean:
         height = getRectangularImageHeight(width)
     else:
@@ -452,9 +455,9 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
         perf['epoch'] = perf.index + 1
         df = df.append(perf, ignore_index=True)
     if test_boolean == True:
-        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) + "-px-patience-" + str(PATIENCE) + "-" + tm +".csv"
+        df_filename = "../../results/test-opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h-" + str(height) + "-px-" + AUGMENTATION + "-" + TM +".csv"
     else:
-        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h" + str(height) +  "-" + tm + "-px.csv"
+        df_filename = "../../results/opt-cnn-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h-" + str(height) +  "-px-" + AUGMENTATION + "-" + TM + ".csv"
     df.to_csv(df_filename)
     return df
 
