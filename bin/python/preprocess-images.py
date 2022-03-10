@@ -32,7 +32,7 @@ IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 NUM_CHANNELS = 3
 # initial test set size of 0.4 corresponds to 0.25 after doubling training images
 TEST_SET_SIZE = 0.4
-AUGMENTATION = 'occlusion_double'
+AUGMENTATION = 'occlusion_all'
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
