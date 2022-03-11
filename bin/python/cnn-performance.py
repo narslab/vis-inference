@@ -56,13 +56,13 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 4
+PATIENCE = 10
 TESTING = False
 AUGMENTATION = 'occlusion_all'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"]#, "Pr_Im, PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
-ARCHITECTURE_LIST = ["resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
-NUM_EPOCHS = 12
+SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/model-performance/'
 TM = time.strftime('%d-%b-%Y-%H-%M-%S')
@@ -284,7 +284,6 @@ def testCNNC(image_width, image_height,  scenario, num_channels=3, num_classes=3
     #change location of batch normalization 
     model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
     model.add(layers.Dropout(.3))
-
     model.add(layers.Dense(num_classes, activation='softmax'))
 
     # Choose an optimal value from 0.01, 0.001, or 0.0001
@@ -330,7 +329,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -404,20 +403,23 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     report = classification_report(np.argmax(test_labels, axis=-1), y_pred, zero_division=0,
                                    labels = np.arange(len(class_labels)), target_names=class_labels, output_dict=True)
     print("Classification report for scenario " + scenario + ", width: " + str(image_width) + ", height: " + str(image_height) + ", architecture: " + architecture + ":")
+    class_report_path = os.path.join('../../results/classification-reports/', TM + '/')
     report = pd.DataFrame(report).transpose().round(2)
-    if not os.path.exists('../../results/classification-reports/'):  
-        os.makedirs('../../results/classification-reports/')
+    if not os.path.exists(class_report_path):  
+        os.makedirs(class_report_path)
     classification_report_suffix = architecture + "-" + scenario + "-w-" + str(image_width) + "-h-" + str(image_height) + "-" + AUGMENTATION + ".csv"
     if testing == True:
-        report.to_csv("../../results/classification-reports/test-opt-classification-report-" + classification_report_suffix)
+        report.to_csv(class_report_path + "test-opt-classification-report-" + classification_report_suffix)
     else:
-        report.to_csv("../../results/classification-reports/opt-classification-report-" + classification_report_suffix)        
+        report.to_csv(class_report_path + "opt-classification-report-" + classification_report_suffix)        
     print(report)
     print("Patience value: ", PATIENCE)
     print("Completion time in seconds: ", end - start)
     ## Confusion matrix
-    if not os.path.exists('../../figures/confusion-matrix/'):  
-        os.makedirs('../../figures/confusion-matrix/')
+    con_mat_path = os.path.join('../../figures/confusion-matrix/', TM + '/')
+    print(con_mat_path)
+    if not os.path.exists(con_mat_path):  
+        os.makedirs(con_mat_path)
     con_mat = tf.math.confusion_matrix(labels=np.argmax(test_labels, axis=-1), predictions=y_pred).numpy()
     # con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
     con_mat_df = pd.DataFrame(con_mat, index = class_labels, columns = class_labels)
@@ -433,9 +435,9 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     #plt.show()
     file_suffix =  architecture+"-"+scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + '-px-' + AUGMENTATION + ".png"
     if testing == True:
-        con_mat_heatmap_file = "../../figures/confusion-matrix/test-opt-confusion-matrix-" +  file_suffix
+        con_mat_heatmap_file = con_mat_path + "test-opt-confusion-matrix-" + file_suffix
     else:
-        con_mat_heatmap_file = "../../figures/confusion-matrix/opt-confusion-matrix-" +  file_suffix
+        con_mat_heatmap_file = con_mat_path + "opt-confusion-matrix-" + file_suffix
     figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
     return(model, hist) 
 

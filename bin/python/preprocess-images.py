@@ -32,7 +32,7 @@ IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 NUM_CHANNELS = 3
 # initial test set size of 0.4 corresponds to 0.25 after doubling training images
 TEST_SET_SIZE = 0.4
-AUGMENTATION = 'occlusion_double'
+AUGMENTATION = 'occlusion_all'
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
@@ -218,7 +218,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
 def main(testing_boolean=False):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=True, test=testing_boolean)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=False, test=testing_boolean)
             #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return 
