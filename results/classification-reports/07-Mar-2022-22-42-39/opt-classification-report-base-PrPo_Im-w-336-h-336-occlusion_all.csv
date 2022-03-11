@@ -1,0 +1,6 @@
+,precision,recall,f1-score,support
+Improbable,0.66,0.85,0.75,211.0
+Probable/Possible,0.61,0.35,0.44,139.0
+accuracy,0.65,0.65,0.65,0.65
+macro avg,0.64,0.6,0.59,350.0
+weighted avg,0.64,0.65,0.63,350.0

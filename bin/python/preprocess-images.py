@@ -218,7 +218,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
 def main(testing_boolean=False):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=True, test=testing_boolean)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=False, test=testing_boolean)
             #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return 
