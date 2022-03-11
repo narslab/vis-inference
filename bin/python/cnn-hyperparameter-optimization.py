@@ -75,14 +75,14 @@ class CNNHyperModel(HyperModel):
         hp_learning_rate = hp.Float('learning_rate', min_value = 1e-4, max_value = 1e-2, sampling = 'LOG', default = 1e-3) 
 
         model.add(layers.Conv2D(filters = 64, kernel_size = hp_k_size, strides = 2, activation="relu", padding="same", input_shape = self.input_image_shape))
-        #model.add(layers.Conv2D(64, 3, activation="relu", padding="same"))
+        model.add(layers.Conv2D(64, 3, activation="relu", padding="same"))
         model.add(layers.MaxPooling2D(2))
         model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
         model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
         model.add(layers.MaxPooling2D(2))
-        model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-        model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-        model.add(layers.MaxPooling2D(2))
+        # model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+        # model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+        # model.add(layers.MaxPooling2D(2))
         model.add(layers.Flatten())
 
         model.add(layers.Dense(units = dense_units_l, activation = dense_activation_1))
@@ -113,7 +113,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     
     hypermodel = CNNHyperModel(input_image_shape = (image_width, image_height, NUM_CHANNELS), num_classes=NUM_CLASSES)
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
-                         objective = 'val_accuracy', overwrite=True, #factor = 3,
+                         objective = kt.Objective("val_f1", direction="max"), overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
