@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import Callback
 
 import matplotlib.pyplot as plt
         
-from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, confusion_matrix
 from sklearn.datasets import make_classification
 
 import json

@@ -27,6 +27,7 @@ from sklearn import datasets
 from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
+from sklearn.metrics import f1_score
 
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
@@ -47,6 +48,16 @@ IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SC
 IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion_all', train=False, rectangular = False)
 #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
 #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
+
+ 
+def f1_score(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    observed_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    recall = true_positives / (observed_positives + K.epsilon())
+    f1_scr = 2*(precision*recall)/(precision+recall+K.epsilon())
+    return f1_scr
 
 class CNNHyperModel(HyperModel):
     def __init__(self, input_image_shape, num_classes):
@@ -97,13 +108,40 @@ class CNNHyperModel(HyperModel):
         # Choose an optimal value from 0.01, 0.001, or 0.0001
         model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
                     loss = 'categorical_crossentropy',
-                    metrics = ['accuracy'])
+                    metrics = [f1_score])
         return model
 
 
 class ClearTrainingOutput(tf.keras.callbacks.Callback):
     def on_train_end(*args, **kwargs):
         IPython.display.clear_output(wait = True)
+
+# class Metrics(Callback):
+#     def __init__(self, val_data):#, batch_size = 64):
+#         super().__init__()
+#         self.validation_data = val_data
+
+#     def on_train_begin(self, logs={}):
+#         self.val_f1s = []
+#         self.val_recalls = []
+#         self.val_precisions = []
+
+#     def on_epoch_end(self, epoch, logs={}):
+#         xVal, yVal = self.validation_data
+#         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
+#         val_true = np.argmax(yVal, axis=1)        
+#         _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
+#         _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
+#         _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+
+#         self.val_f1s.append(_val_f1)
+#         self.val_recalls.append(_val_recall)
+#         self.val_precisions.append(_val_precision)
+#         logs["val_f1"] = _val_f1
+#         logs["val_recall"] = _val_recall
+#         logs["val_precision"] = _val_precision
+#         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
+#         return
 
 def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1, save_results=True, rectangular=False):
     if scenario=="Pr_Po_Im":
@@ -113,7 +151,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     
     hypermodel = CNNHyperModel(input_image_shape = (image_width, image_height, NUM_CHANNELS), num_classes=NUM_CLASSES)
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
-                         objective = kt.Objective("val_f1", direction="max"), overwrite=True, #factor = 3,
+                         objective = kt.Objective("f1_score", direction="max"), overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
