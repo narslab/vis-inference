@@ -60,7 +60,7 @@ PATIENCE = 10
 TESTING = False
 AUGMENTATION = 'occlusion_all'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["PrPo_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/models/'
@@ -329,7 +329,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_accuracy', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -374,12 +374,13 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     print(model.summary)
     start = timer()
     if testing:
-        model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit
+        model.compile(loss='categorical_crossentropy', metrics =  [tf.keras.metrics.Recall()])     ## compile and fit
     else:
-        model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
+        model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  [tf.keras.metrics.Recall()])     ## compile and fit
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
                      callbacks = [model_metrics, early_stopping])
+    print(opt)
     end = timer()
     
     # SAVE MODEL, SUMMARY AND PERFORMANCE
