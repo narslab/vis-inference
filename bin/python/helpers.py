@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import Callback
 
 import matplotlib.pyplot as plt
         
-from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, confusion_matrix
+from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, recall_score, confusion_matrix
 from sklearn.datasets import make_classification
 
 import json
@@ -214,18 +214,18 @@ def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
     base_model = models.Sequential([
         layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
             input_shape = image_shape),
-        # layers.Conv2D(64, 3, activation="relu", padding="same"), 
-        layers.AveragePooling2D(2), 
+        layers.Conv2D(64, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
         layers.Conv2D(128, 3, activation="relu", padding="same"),
-        layers.Conv2D(128, 3, activation="relu", padding="same"), 
-        layers.AveragePooling2D(2), 
-        layers.Conv2D(256, 3, activation="relu", padding="same"), 
-        layers.Conv2D(256, 3, activation="relu", padding="same"), 
-        layers.AveragePooling2D(2), 
+        layers.Conv2D(128, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        # layers.Conv2D(256, 3, activation="relu", padding="same"),
+        # layers.Conv2D(256, 3, activation="relu", padding="same"),
+        # layers.MaxPooling2D(2),
         layers.Flatten(),
         
         layers.Dense(p_dict['units_1'], activation = p_dict['activation_1']),
-        layers.BatchNormalization(), 
+        layers.BatchNormalization(),
         layers.Dropout(p_dict['dropout_1']), 
         
         layers.Dense(p_dict['units_2'], activation = p_dict['activation_2']), 
