@@ -10,6 +10,7 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 from timeit import default_timer as timer
 from tensorflow.keras import backend as K
+from tensorflow.keras.callbacks import EarlyStopping
 
 import sys
 sys.path.append("../python/")
@@ -36,6 +37,7 @@ OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 12 #10
 EXECUTIONS_PER_TRIAL = 2 #5
 HYPERBAND_ITER = 3 #80
+PATIENCE = 6
 
 # # TODO: make image_dict a function
 # image_dict = dict.fromkeys(RESOLUTION_LIST)
@@ -108,8 +110,9 @@ class CNNHyperModel(HyperModel):
         # Choose an optimal value from 0.01, 0.001, or 0.0001
         model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
                     loss = 'categorical_crossentropy',
-                    metrics = [tf.keras.metrics.Precision(name='precision'), 
-                    tf.keras.metrics.Recall(name='recall')])
+                    metrics = ['accuracy']#, tf.keras.metrics.Precision(name='precision'), 
+                    #tf.keras.metrics.Recall(name='recall')]
+                    )
         return model
 
 
@@ -117,6 +120,8 @@ class ClearTrainingOutput(tf.keras.callbacks.Callback):
     def on_train_end(*args, **kwargs):
         IPython.display.clear_output(wait = True)
 
+early_stopping = EarlyStopping(monitor='val_accuracy', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
+                                mode = "max")
 
 def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1, save_results=True, rectangular=False):
     if scenario=="Pr_Po_Im":
@@ -126,7 +131,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     
     hypermodel = CNNHyperModel(input_image_shape = (image_width, image_height, NUM_CHANNELS), num_classes=NUM_CLASSES)
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
-                         objective = kt.Objective("val_recall", direction="max"), overwrite=True, #factor = 3,
+                         objective = kt.Objective("val_accuracy", direction="max"), overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
@@ -141,7 +146,8 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     #validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
     
     # tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
-    tuner.search(training_images, training_labels, validation_split = 0.2, callbacks = [ClearTrainingOutput()])    
+    tuner.search(training_images, training_labels, validation_split = 0.2, 
+        callbacks = [early_stopping, ClearTrainingOutput()])    
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
