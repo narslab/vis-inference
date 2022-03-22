@@ -29,6 +29,7 @@ from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
 from sklearn.metrics import f1_score
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
@@ -51,15 +52,33 @@ IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCE
 #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
 #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
- 
-def f1_score(y_true, y_pred):
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    observed_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (observed_positives + K.epsilon())
-    f1_scr = 2*(precision*recall)/(precision+recall+K.epsilon())
-    return f1_scr
+class Metrics(Callback):
+    def __init__(self, val_data):#, batch_size = 64):
+        super().__init__()
+        self.validation_data = val_data
+
+    def on_train_begin(self, logs={}):
+        self.val_f1s = []
+        self.val_recalls = []
+        self.val_precisions = []
+
+    def on_epoch_end(self, epoch, logs={}):
+        xVal, yVal = self.validation_data
+        val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
+        val_true = np.argmax(yVal, axis=1)        
+        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+
+        self.val_f1s.append(_val_f1)
+        self.val_recalls.append(_val_recall)
+        self.val_precisions.append(_val_precision)
+        logs["val_f1"] = _val_f1
+        logs["val_recall"] = _val_recall
+        logs["val_precision"] = _val_precision
+        print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
+        return
+
 
 class CNNHyperModel(HyperModel):
     def __init__(self, input_image_shape, num_classes):
@@ -120,8 +139,6 @@ class ClearTrainingOutput(tf.keras.callbacks.Callback):
     def on_train_end(*args, **kwargs):
         IPython.display.clear_output(wait = True)
 
-early_stopping = EarlyStopping(monitor='val_accuracy', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
-                                mode = "max")
 
 def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1, save_results=True, rectangular=False):
     if scenario=="Pr_Po_Im":
@@ -131,7 +148,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     
     hypermodel = CNNHyperModel(input_image_shape = (image_width, image_height, NUM_CHANNELS), num_classes=NUM_CLASSES)
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
-                         objective = kt.Objective("val_accuracy", direction="max"), overwrite=True, #factor = 3,
+                         objective = kt.Objective("val_f1", direction="max"), overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
@@ -144,10 +161,16 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     training_images = np.squeeze(training_images)
     print("Training image shape: ", training_images[0].shape)
     #validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
-    
+
+    X_train, X_test, y_train, y_test = train_test_split(training_images, training_labels, 
+        test_size=0.25, random_state=100)
+    model_metrics = Metrics(val_data=(X_test, y_test))
+    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
+                                mode = "max")
+
     # tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
-    tuner.search(training_images, training_labels, validation_split = 0.2, 
-        callbacks = [early_stopping, ClearTrainingOutput()])    
+    tuner.search(X_train, y_train, validation_data = (X_test, y_test), #validation_split = 0.2, 
+        callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])    
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
