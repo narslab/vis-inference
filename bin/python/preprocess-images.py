@@ -30,8 +30,9 @@ IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 # Reduction factor of 12: 252 x 336
 # Reduction factor of 16: 189 x 252
 NUM_CHANNELS = 3
-# initial test set size of 0.4 corresponds to 0.25 after doubling training images
-TEST_SET_SIZE = 0.4
+# Train/test/validation: 60/20/20
+TEST_SET_SIZE = 0.34
+VALIDATION_SET_SIZE = 0.25
 AUGMENTATION = 'occlusion_all'
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
@@ -81,11 +82,11 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
         else :
             return np.array([0, 0]) # if label is not present for current image        
 
-
 def processImageData(image_width, class_scenario, seed_value, channels=1, augmentation='fliplr', save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
     """Processes labeled images into train/test numpy arrays based on a specified augmentation technique: fliplr (horizontal flipping) or occlusion"""
     data_train = []
     data_test = []
+    data_validation = []
     if test==True: # test just a few images to see what is going on
         image_list = os.listdir(LABELED_IMAGES_DIR) #[0:10]
     else:
@@ -93,8 +94,11 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
     random.seed(seed_value) #seed for repeatability
     print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px")
     image_list_train, image_list_test =  train_test_split(image_list, test_size = TEST_SET_SIZE, random_state = seed_value)
-    
-       
+    image_list_train, image_list_validation = train_test_split(image_list_train, test_size = VALIDATION_SET_SIZE, random_state=seed_value)
+    print("Total images (before augmentation):", len(image_list))
+    print("Training images (initial): ", len(image_list_train)) 
+    print("Test images (initial): ", len(image_list_test))
+    print("Validation images (initial): ", len(image_list_validation))
     for image_index in image_list:
         label = getImageOneHotVector(image_index, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
@@ -135,12 +139,14 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
             # resized_image.rotate(270).show() # DISPLAY IMAGES if function is run in test mode
         resized_image_array = np.array(resized_image)/255. # convert to array and scale to 0-1
         flipped_resized_img_array = np.fliplr(resized_image_array)
-        # Horizontal flipping implementation
         if augmentation == 'fliplr': 
             if image_index in image_list_train:
                 data_train.append([resized_image_array, label])            
                 data_train.append([flipped_resized_img_array, label])
                 print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            elif image_index in image_list_validation:
+                data_validation.append([eraser(resized_image_array), label])
+                data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label]) 
         ## Occlusion implementation
@@ -149,13 +155,20 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
                 data_train.append([eraser(resized_image_array), label])
                 data_train.append([eraser(flipped_resized_img_array), label]) 
                 print("Occluded, Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            elif image_index in image_list_validation:
+                data_validation.append([eraser(resized_image_array), label])
+                data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label])
-        if augmentation == 'occlusion_half': # occludes a flipped and resized image with 50% probability 
+        # occludes a flipped and resized image with 50% probability 
+        if augmentation == 'occlusion_half':
             if image_index in image_list_train:
                 data_train.append([eraser(resized_image_array, p=0.5), label])
                 data_train.append([eraser(flipped_resized_img_array, p=0.5), label]) 
                 print("Occluded, Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+            elif image_index in image_list_validation:
+                data_validation.append([eraser(resized_image_array), label])
+                data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label])
         if augmentation == 'occlusion_double':
@@ -163,20 +176,24 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
                 for i in range(2):
                     data_train.append([eraser(resized_image_array), label])
                 print("Occluded and Resized Image shape: " + str(resized_image_array.shape))              
+            elif image_index in image_list_validation:
+                data_validation.append([eraser(resized_image_array), label])
+                data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label])
-    print(len(data_train))
-    print(len(data_test))  
-    print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
+    print("Training Images (without validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
+    data_train = data_train + data_validation
+    print("Training Images (with validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
     print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
-    
+    print("Validation Images:", class_scenario, (np.array([x[1] for x in data_validation])).sum(axis=0) )
     #data_filename = 'size' + str(image_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
     filename_prefix = 'w-' + str(image_width) + 'px-h-' + str(image_height) + "px-scenario-" + class_scenario
     data_filename_train = filename_prefix+ "-train.npy"
     data_filename_test = filename_prefix + "-test.npy"
+    data_filename_validation = filename_prefix + "-validation.npy"
     if not os.path.exists(PROCESSED_IMAGES_DIR): # check if 'tidy/preprocessed_images' subdirectory does not exist
         os.makedirs(PROCESSED_IMAGES_DIR) # if not, create it    
-    if save_image_binary_files == True:
+    if save_image_binary_files:
         if test == True:
             data_filename_train = 'testing-' + data_filename_train
             data_filename_test = 'testing-' + data_filename_test
@@ -184,10 +201,14 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
         augmentation_directory = PROCESSED_IMAGES_DIR + '/' + augmentation + '/' #augmentation subdirectory: fliplr (default) OR occlusion
         if not os.path.exists(augmentation_directory):
             os.makedirs(augmentation_directory)
+            
         np.save(os.path.join(augmentation_directory, data_filename_train), data_train) #save as .npy (binary) file
-        np.save(os.path.join(augmentation_directory, data_filename_test), data_test) #save as .npy (binary) file        
+        np.save(os.path.join(augmentation_directory, data_filename_test), data_test) #save as .npy (binary) file    
+        np.save(os.path.join(augmentation_directory, data_filename_validation), data_validation) #save as .npy (binary) file  
+        
         print("Saved " + data_filename_train + " to " + augmentation_directory)
         print("Saved " + data_filename_test + " to " + augmentation_directory)     
+        print("Saved " + data_filename_validation + " to " + augmentation_directory) 
     return  #(image_selection_array, class_list)
 
 ## The plotting routine can be here, but perhaps better in a separate fiel.
@@ -218,7 +239,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
 def main(testing_boolean=False):
     for scenario in CLASSIFICATION_SCENARIO_LIST:
         for width in IMAGE_WIDTH_LIST:
-            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=False, test=testing_boolean)
+            processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, augmentation=AUGMENTATION, rectangular = False, save_image_binary_files=True, test=testing_boolean)
             #processImageData(width, scenario, seed_value=SEED, channels=NUM_CHANNELS, rectangular = True, save_image_binary_files=True, test=False)
             #plotProcessedImages(scenario, array_random_images, classes, images_per_class=NUM_PLOT_IMAGES_PER_CLASS, resolution=image_size)
     return 
