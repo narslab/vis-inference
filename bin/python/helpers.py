@@ -178,12 +178,8 @@ def getRectangularImageHeight(width):
     height = int(width * 4032/3024)
     return height
 
-def createResolutionScenarioImageDict(image_width_list, scenario_list, augmentation='occlusion', train=True, rectangular=False, testing=False):
+def createResolutionScenarioImageDict(image_width_list, scenario_list, augmentation='occlusion', type='train', rectangular=False, testing=False):
     image_dict = dict.fromkeys(image_width_list)
-    if train==True:
-        train_test = 'train'
-    else:
-        train_test = 'test'
     for w in image_width_list:
         image_dict[w] = dict.fromkeys(scenario_list)
         for s in scenario_list:
@@ -192,9 +188,9 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, augmentat
             else:
                 h = w
             if testing:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
             else:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + train_test + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
     print(image_dict)
     return(image_dict)
 

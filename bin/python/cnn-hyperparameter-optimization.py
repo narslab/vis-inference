@@ -47,8 +47,9 @@ PATIENCE = 6
 #     for s in SCENARIO_LIST:
 #         image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
 
-IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='occlusion_all', train=True, rectangular = False)
-IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion_all', train=False, rectangular = False)
+IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='occlusion_all', type='train', rectangular = False)
+IMAGE_SETS_SQUARE_VAL = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='occlusion_all', type='validation', rectangular = False)
+#IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion_all', type='test', rectangular = False)
 #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
 #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
@@ -80,7 +81,7 @@ class Metrics(Callback):
         return
 
 
-class CNNHyperModel(HyperModel):
+class CNNHyperModel(    HyperModel):
     def __init__(self, input_image_shape, num_classes):
         self.input_image_shape = input_image_shape
         self.num_classes = num_classes
@@ -153,24 +154,25 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
         image_dictionary_train = IMAGE_SETS_RECT_TRAIN
-        #image_dictionary_test = IMAGE_SETS_RECT_TEST
+        image_dictionary_val = IMAGE_SETS_RECT_VAL
     else:
         image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
-        #image_dictionary_test = IMAGE_SETS_SQUARE_TEST    
+        image_dictionary_val = IMAGE_SETS_SQUARE_VAL    
     training_images, training_labels = getImageAndLabelArrays(image_dictionary_train[image_width][scenario])
     training_images = np.squeeze(training_images)
     print("Training image shape: ", training_images[0].shape)
-    #validation_images, validation_labels = getImageAndLabelArrays(test_images_and_labels)
+    validation_images, validation_labels = getImageAndLabelArrays(image_dictionary_val[image_width][scenario])
+    validation_images = np.squeeze(validation_images)
 
-    X_train, X_test, y_train, y_test = train_test_split(training_images, training_labels, 
-        test_size=0.25, random_state=100)
-    model_metrics = Metrics(val_data=(X_test, y_test))
+    # X_train, X_test, y_train, y_test = train_test_split(training_images, training_labels, 
+    #     test_size=0.25, random_state=100)
+    model_metrics = Metrics(val_data=(validation_images, validation_labels))
     early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
                                 mode = "max")
 
-    # tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [ClearTrainingOutput()])
-    tuner.search(X_train, y_train, validation_data = (X_test, y_test), #validation_split = 0.2, 
-        callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])    
+    tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])
+    #tuner.search(X_train, y_train, validation_data = (X_test, y_test), #validation_split = 0.2, 
+    #    callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])    
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
     best_hps_dict = best_hps.values
     if save_results:
