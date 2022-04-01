@@ -182,7 +182,6 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
             else:
                 data_test.append([resized_image_array, label])
     print("Training Images (without validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
-    data_train = data_train + data_validation
     print("Training Images (with validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
     print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
     print("Validation Images:", class_scenario, (np.array([x[1] for x in data_validation])).sum(axis=0) )
