@@ -47,8 +47,8 @@ PATIENCE = 6
 #     for s in SCENARIO_LIST:
 #         image_dict[p][s] = np.load('../../data/tidy/preprocessed_images/size' + str(p) + '_exp5_' + s + '.npy', allow_pickle = True)
 
-IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='occlusion_all', type='train', rectangular = False)
-IMAGE_SETS_SQUARE_VAL = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='occlusion_all', type='validation', rectangular = False)
+IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='fliplr', type='train', rectangular = False)
+IMAGE_SETS_SQUARE_VAL = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST,  augmentation='fliplr', type='validation', rectangular = False)
 #IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation='occlusion_all', type='test', rectangular = False)
 #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
 #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
@@ -81,7 +81,7 @@ class Metrics(Callback):
         return
 
 
-class CNNHyperModel(    HyperModel):
+class CNNHyperModel(HyperModel):
     def __init__(self, input_image_shape, num_classes):
         self.input_image_shape = input_image_shape
         self.num_classes = num_classes

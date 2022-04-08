@@ -33,7 +33,7 @@ NUM_CHANNELS = 3
 # Train/test/validation: 60/20/20
 TEST_SET_SIZE = 0.34
 VALIDATION_SET_SIZE = 0.25
-AUGMENTATION = 'occlusion_all'
+AUGMENTATION = 'fliplr' #occlusion_all
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
