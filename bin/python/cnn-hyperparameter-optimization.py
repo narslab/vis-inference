@@ -35,9 +35,9 @@ NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 SCENARIO_LIST = ["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
-HYPERBAND_MAX_EPOCHS = 12 #10
-EXECUTIONS_PER_TRIAL = 2 #5
-HYPERBAND_ITER = 3 #80
+HYPERBAND_MAX_EPOCHS = 15 #10
+EXECUTIONS_PER_TRIAL = 3 #5
+HYPERBAND_ITER = 4 #80
 PATIENCE = 6
 
 # # TODO: make image_dict a function
@@ -90,12 +90,12 @@ class CNNHyperModel(HyperModel):
         model = models.Sequential()
 
         ## Vary kernel size in first Conv Layer between 5 and 7
-        hp_k_size = hp.Choice('kernel_size', values = [5, 7])
+        hp_k_size = hp.Choice('kernel_size', values = [3, 5, 7])
 
         # Tune the number of units in the first and second Dense layers
         # Choose an optimal value between 32-512
-        dense_units_l = hp.Int('units_1', min_value = 128, max_value = 512, step = 32, default = 128)
-        dense_units_2 = hp.Int('units_2', min_value = 128, max_value = 512, step = 32,  default = 128)  
+        dense_units_l = hp.Int('units_1', min_value = 128, max_value = 512, step = 32, default = 64)
+        dense_units_2 = hp.Int('units_2', min_value = 128, max_value = 512, step = 32,  default = 64)  
 
         dropout_rate_1 = hp.Float('dropout_1', min_value = 0.0, max_value = 0.5, step = 0.05)
         dropout_rate_2 = hp.Float('dropout_2', min_value = 0.0, max_value = 0.5, step = 0.05)
@@ -108,14 +108,14 @@ class CNNHyperModel(HyperModel):
         hp_learning_rate = hp.Float('learning_rate', min_value = 1e-4, max_value = 1e-2, sampling = 'LOG', default = 1e-3) 
 
         model.add(layers.Conv2D(filters = 64, kernel_size = hp_k_size, strides = 2, activation="relu", padding="same", input_shape = self.input_image_shape))
-        model.add(layers.Conv2D(64, 3, activation="relu", padding="same"))
+       # model.add(layers.Conv2D(64, 3, activation="relu", padding="same"))
         model.add(layers.MaxPooling2D(2))
         model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
         model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
         model.add(layers.MaxPooling2D(2))
-        # model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-        # model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
-        # model.add(layers.MaxPooling2D(2))
+        model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+        model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+        model.add(layers.MaxPooling2D(2))
         model.add(layers.Flatten())
 
         model.add(layers.Dense(units = dense_units_l, activation = dense_activation_1))
