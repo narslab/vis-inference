@@ -31,12 +31,14 @@ SEED = 100
 RAW_IMAGE_DIR = '../../data/raw/Pictures for AI'
 RAW_IMAGE_DIR_SUMMER = '../../data/raw/Summer 2021 AI Photos'
 RAW_IMAGE_DIR_FALL = '../../data/raw/Likelihood of Failure Images/'
+RAW_IMAGE_DIR_APRIL22 = '../../data/raw/More AI Tree Pics 04_22/'
 TIDY_IMAGE_DIR = '../../data/tidy/labeled-images/'
 INDEX_DIR = '../../results/index-raw/'
 
 INDEX_LABELS = INDEX_DIR + 'labels_index.csv'
 TEMP = RAW_IMAGE_DIR_FALL+'likelihood.csv'
 TRIMMED = RAW_IMAGE_DIR_FALL+'likelihood_of_failure_trimmed.csv'
+RATINGS_APRIL22 = RAW_IMAGE_DIR_APRIL22+'Likelihood of Failure Ratings.xlsx'
 
 def getListOfFiles(dirName):
     """Returns single list of the filepath of each of the image files"""
@@ -185,6 +187,19 @@ def saveImageFiles(image_file_list):
     index = {}
     shutil.rmtree(TIDY_IMAGE_DIR, ignore_errors=True) # Deletes the directory containing any existing labeled images
     shutil.rmtree(INDEX_DIR, ignore_errors=True)
+    # Convert April 2022 ratings from excel to csv
+    read_file = pd.read_excel("../../data/raw/More AI Tree Pics 04_22/Likelihood of Failure Ratings.xlsx")
+    read_file.to_csv ("april22_ratings.csv", 
+                      index = None,
+                      header=True)     
+    df = pd.read_csv(TRIMMED)
+    df1 = pd.read_csv("april22_ratings.csv")
+    # Rename April 2022 dataframe cols to match dataframe format from Fall 2021
+    df1_rename = df1.rename(columns={'Image number (file name is "IMG_18##.HEIC"':'image',
+                                'Likelihood of Failure Rating':'likelihood_of_failure_rating'})
+    df1_rename.insert(1, 'file_name', ['IMG_'+x+'.HEIC' for x in df1_rename.image])
+    frames = [df, df1_rename]
+    combined_df = pd.concat(frames)
     if not os.path.exists(TIDY_IMAGE_DIR):
         os.makedirs(TIDY_IMAGE_DIR)
     for filename in image_file_list:
@@ -193,15 +208,21 @@ def saveImageFiles(image_file_list):
             imageio.imwrite(save_name, np.array(Image.open(filename)))
             index[save_name] = filename
         if '.HEIC'.casefold() in filename.casefold():
-            df = pd.read_csv(TRIMMED)
-            for row in df.itertuples():
+            for row in combined_df.itertuples():
                 image_name = row.file_name
                 rating = row.likelihood_of_failure_rating
-                if image_name == filename.split("Failure Images/",1)[1]:
-                    save_name = updateNameCount(rating, counts)
-                    PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
-                    continue                    
-            index[save_name] = filename
+                if 'Likelihood of Failure Images' in filename:
+                    if image_name == filename.split("Failure Images/",1)[1]:
+                        save_name = updateNameCount(rating, counts)
+                        PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        continue                    
+                    index[save_name] = filename
+                else:
+                    if image_name == filename.split("04_22/",1)[1]:
+                        save_name = updateNameCount(rating, counts)
+                        PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        continue                    
+                    index[save_name] = filename
     if not os.path.exists(INDEX_DIR):
         os.makedirs(INDEX_DIR)
     with open(INDEX_LABELS, 'w', newline='') as f: # TODO: separate by tab not comma
@@ -211,7 +232,7 @@ def saveImageFiles(image_file_list):
             key_name = key.replace(TIDY_IMAGE_DIR,'')
             val_name = index[key]
             f.write("%s,%s\n"%(key_name,val_name))
-    
+    # os.remove("april22_ratings.csv")
     print('Number of improbable images:', counts['improbable']-1)    
     print('Number of possible images:', counts['possible']-1)
     print('Number of probable images:', counts['probable']-1)
@@ -223,10 +244,11 @@ def main():
     original_photos = getListOfFiles(RAW_IMAGE_DIR)
     summer_photos = getListOfFiles(RAW_IMAGE_DIR_SUMMER)
     fall_photos = getListOfFiles(RAW_IMAGE_DIR_FALL)
+    april22_photos = getListOfFiles(RAW_IMAGE_DIR_APRIL22)
     index_list, description_list, arborist_list = splitIndexDescrArb(summer_photos)
     unique_image_list_summer = getUniqueImages(summer_photos, arborist_list, index_list, description_list)
     start = time.time()
-    saveImageFiles(original_photos+unique_image_list_summer+fall_photos)
+    saveImageFiles(original_photos+unique_image_list_summer+fall_photos+april22_photos)
     elapsed = (time.time() - start)
     print("Saved images in (h/m/s/ms):", str(timedelta(seconds=elapsed)))
 

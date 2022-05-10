@@ -3,6 +3,7 @@
 
 
 import numpy as np
+from numpy.random import seed
 np.seterr(divide='ignore', invalid='ignore')
 import pandas as pd
 import time
@@ -47,6 +48,9 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Zero
 from tensorflow.keras.layers import Concatenate
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+"Produce the same results every time the experiment is run"
+#seed(1)
+#tf.random.set_seed(2)
 #from contextlib import redirect_stdout
 # geom_line()
 # facet_wrap( vars(transportation_type), ncol = 1 )
@@ -58,7 +62,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 NUM_CHANNELS = 3
 PATIENCE = 10
 TESTING = False
-AUGMENTATION = 'occlusion_all'
+AUGMENTATION = 'fliplr'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
 SCENARIO_LIST = ["PrPo_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
@@ -69,13 +73,15 @@ TM = time.strftime('%d-%b-%Y-%H-%M-%S')
 
 # Define a set of images with different rotation
 if TESTING:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=True, rectangular = False, testing=True)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=False, rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='train', rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='test', rectangular = False, testing=True)
+    IMAGE_SETS_SQUARE_VALIDATION = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='validation', rectangular = False, testing=True)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True, testing=True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True, testing=True)
 else:
-    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=True, rectangular = False)
-    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, train=False, rectangular = False)
+    IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='train', rectangular = False)
+    IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='test', rectangular = False)
+    IMAGE_SETS_SQUARE_VALIDATION = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='validation', rectangular = False, testing=False)
     #IMAGE_SETS_RECT_TRAIN = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=True, rectangular = True)
     #IMAGE_SETS_RECT_TEST = createResolutionScenarioImageDict(IMAGE_WIDTH_LIST, SCENARIO_LIST, train=False, rectangular = True)
 
@@ -291,7 +297,16 @@ def testCNNC(image_width, image_height,  scenario, num_channels=3, num_classes=3
                 loss = 'categorical_crossentropy',
                 metrics = ['accuracy'])
     return(model)
- 
+
+# def f1_score(y_true, y_pred):
+#     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+#     observed_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+#     predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+#     precision = true_positives / (predicted_positives + K.epsilon())
+#     recall = true_positives / (observed_positives + K.epsilon())
+#     f1_scr = 2*(precision*recall)/(precision+recall+K.epsilon())
+#     return f1_scr
+
 def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epochs = 10, trial_seed = 1, rectangular = True, testing = True): 
     # IMAGES (former approach)
     # training_images_and_labels, test_images_and_labels = splitData(image_sets[image_size][scenario], prop = 0.8, seed_num = trial_seed)
@@ -309,15 +324,23 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     if rectangular==True:
         image_dictionary_train = IMAGE_SETS_RECT_TRAIN
         image_dictionary_test = IMAGE_SETS_RECT_TEST
+        
     else:
         image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
         image_dictionary_test = IMAGE_SETS_SQUARE_TEST
+        image_dictionary_validation = IMAGE_SETS_SQUARE_VALIDATION
 
     train_images = np.array([x[0] for x in image_dictionary_train[image_width][scenario]]) ## TOD)
     train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
     test_images = np.array([x[0] for x in image_dictionary_test[image_width][scenario]]) ## TOD)
     test_labels = np.array([x[1] for x in image_dictionary_test[image_width][scenario]]) 
+    validation_images = np.array([x[0] for x in image_dictionary_validation[image_width][scenario]]) ## TOD)
+    validation_labels = np.array([x[1] for x in image_dictionary_validation[image_width][scenario]]) 
 
+    #Combining taining and validation images and lables
+    train_images = np.concatenate((train_images,validation_images))
+    train_labels = np.concatenate((train_labels,validation_labels))
+    
     # train_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_train[image_width][scenario]]) ## TOD)
     # train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
     # test_images = np.array([np.expand_dims(x[0],axis=2) for x in image_dictionary_test[image_width][scenario]]) ## TOD)
@@ -329,7 +352,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
@@ -374,9 +397,10 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     print(model.summary)
     start = timer()
     if testing:
-        model.compile(loss='categorical_crossentropy', metrics =  [tf.keras.metrics.Recall()])     ## compile and fit
+        model.compile(loss='categorical_crossentropy', metrics =  ['accuracy'])     ## compile and fit
     else:
-        model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  [tf.keras.metrics.Recall()])     ## compile and fit
+        model.compile(loss='categorical_crossentropy', optimizer = opt, metrics =  ['accuracy'])     ## compile and fit
+    #with tf.device('/cpu:0'): 
     hist = model.fit(train_images, train_labels, batch_size = 32, epochs = num_epochs, verbose=1, 
                      validation_data=(test_images, test_labels),
                      callbacks = [model_metrics, early_stopping])
@@ -440,7 +464,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     else:
         con_mat_heatmap_file = con_mat_path + "opt-confusion-matrix-" + file_suffix
     figure.savefig(con_mat_heatmap_file, dpi=180)#, bbox_inches='tight')
-    return(model, hist) 
+    return(hist) #model
 
 
 def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed_val = 1, rect_boolean = True, test_boolean = True):
@@ -451,7 +475,7 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
     else:
         height = width
     for s in SCENARIO_LIST:
-        m, h = trainModelWithDetailedMetrics(width, s, architecture, num_epochs, trial_seed = seed_val, rectangular = rect_boolean, testing = test_boolean)
+        h = trainModelWithDetailedMetrics(width, s, architecture, num_epochs, trial_seed = seed_val, rectangular = rect_boolean, testing = test_boolean)
         #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
         perf = pd.DataFrame.from_dict(h.history)
         perf['Scenario'] = s
@@ -465,6 +489,7 @@ def getScenarioModelPerformance(architecture, width = 189, num_epochs = 15, seed
     return df
 
 if __name__ == "__main__":
+    # for i in range(5):
     for w in IMAGE_WIDTH_LIST: 
         for a in ARCHITECTURE_LIST:
             K.clear_session()

@@ -31,8 +31,8 @@ IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
 # Reduction factor of 16: 189 x 252
 NUM_CHANNELS = 3
 # Train/test/validation: 60/20/20
-TEST_SET_SIZE = 0.34
-VALIDATION_SET_SIZE = 0.25
+TEST_SET_SIZE = 0.1
+VALIDATION_SET_SIZE = 0.1
 AUGMENTATION = 'fliplr' #occlusion_all
 CLASSIFICATION_SCENARIO = "Pr_Im"
 CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
@@ -91,13 +91,15 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
         image_list = os.listdir(LABELED_IMAGES_DIR) #[0:10]
     else:
         image_list = os.listdir(LABELED_IMAGES_DIR)
+    test_set_size = return_augmented_ratio(TEST_SET_SIZE, len(image_list))
+    print("Test set size is: ", test_set_size)
     random.seed(seed_value) #seed for repeatability
     print("Preprocessing images for scenario " + class_scenario + "; image width " + str(image_width) + "px")
-    image_list_train, image_list_test =  train_test_split(image_list, test_size = TEST_SET_SIZE, random_state = seed_value)
+    image_list_train, image_list_test =  train_test_split(image_list, test_size = test_set_size, random_state = seed_value)
     image_list_train, image_list_validation = train_test_split(image_list_train, test_size = VALIDATION_SET_SIZE, random_state=seed_value)
     print("Total images (before augmentation):", len(image_list))
     print("Training images (initial): ", len(image_list_train)) 
-    print("Test images (initial): ", len(image_list_test))
+    print("Test images: ", len(image_list_test))
     print("Validation images (initial): ", len(image_list_validation))
     for image_index in image_list:
         label = getImageOneHotVector(image_index, class_scenario)
@@ -181,8 +183,8 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
                 data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label])
-    print("Training Images (without validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
-    print("Training Images (with validation):", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
+    print("After augmentation:")
+    print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
     print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
     print("Validation Images:", class_scenario, (np.array([x[1] for x in data_validation])).sum(axis=0) )
     #data_filename = 'size' + str(image_size) + "_exp" + str(expansion_factor) + "_" + class_scenario + ".npy"
