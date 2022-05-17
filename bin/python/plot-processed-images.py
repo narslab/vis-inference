@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 IMAGE_ARRAY = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Im-train.npy',allow_pickle = True)
-IMAGE_ARRAY_TEST = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-Pr_Im-test.npy',allow_pickle = True)
+IMAGE_ARRAY_TEST = np.load('../../data/tidy/preprocessed-images/w-336px-h-336px-scenario-PrPo_Im-test.npy',allow_pickle = True)
 
 def getFigure2sub(images):
     pr = []
