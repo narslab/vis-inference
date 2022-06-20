@@ -28,12 +28,11 @@ from sklearn import datasets
 from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
-from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
-SCENARIO_LIST = ["PrPo_Im", "Pr_Im", "Pr_PoIm", "Pr_Po_Im"] #["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["PrPo_Im", "Pr_Im", "Pr_PoIm"]#, "Pr_Po_Im"] #["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 12 #10
 EXECUTIONS_PER_TRIAL = 2 #5
@@ -63,13 +62,13 @@ class Metrics(Callback):
         self.val_recalls = []
         self.val_precisions = []
 
-    def on_epoch_end(self, epoch, logs={}):
+    def on_epoch_end(self, epoch, logs={}): #changed average to binary
         xVal, yVal = self.validation_data
         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
         val_true = np.argmax(yVal, axis=1)        
-        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_f1 = f1_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='binary', zero_division = 0)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
@@ -130,7 +129,7 @@ class CNNHyperModel(HyperModel):
         # Choose an optimal value from 0.01, 0.001, or 0.0001
         model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
                     loss = 'categorical_crossentropy',
-                    metrics = ['accuracy']#, tf.keras.metrics.Precision(name='precision'), 
+                    metrics = ['accuracy', 'f1']#, tf.keras.metrics.Precision(name='precision'), 
                     #tf.keras.metrics.Recall(name='recall')]
                     )
         return model
