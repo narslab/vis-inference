@@ -129,7 +129,7 @@ class CNNHyperModel(HyperModel):
         # Choose an optimal value from 0.01, 0.001, or 0.0001
         model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
                     loss = 'categorical_crossentropy',
-                    metrics = ['accuracy', 'f1']#, tf.keras.metrics.Precision(name='precision'), 
+                    metrics = ['accuracy']#, tf.keras.metrics.Precision(name='precision'), 
                     #tf.keras.metrics.Recall(name='recall')]
                     )
         return model
@@ -148,7 +148,7 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     
     hypermodel = CNNHyperModel(input_image_shape = (image_width, image_height, NUM_CHANNELS), num_classes=NUM_CLASSES)
     tuner = kt.Hyperband(hypermodel, seed = seed_val, hyperband_iterations = HYPERBAND_ITER, executions_per_trial=EXECUTIONS_PER_TRIAL, max_epochs = HYPERBAND_MAX_EPOCHS,
-                         objective = kt.Objective("val_f1", direction="max"), overwrite=True, #factor = 3,
+                         objective = kt.Objective("val_loss", direction="min"), overwrite=True, #factor = 3,
                          directory = '../../results/opt', project_name = 'tuner-w-' + str(image_width) + 'px-h-' + str(image_height) + 'px-' + scenario)
     #training_images_and_labels, test_images_and_labels = splitData(image_dict[image_width][scenario], prop = 0.80, seed_num = 100 + seed_val)
     if rectangular==True:
@@ -166,10 +166,10 @@ def optimizeCNNHyperparameters(scenario, image_width, image_height, seed_val = 1
     # X_train, X_test, y_train, y_test = train_test_split(training_images, training_labels, 
     #     test_size=0.25, random_state=100)
     model_metrics = Metrics(val_data=(validation_images, validation_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
-                                mode = "max")
+    # early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
+    #                             mode = "min") # not needed for Hyberband; already built-in.
 
-    tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])
+    tuner.search(training_images, training_labels, validation_data = (validation_images, validation_labels), callbacks = [model_metrics, ClearTrainingOutput()])
     #tuner.search(X_train, y_train, validation_data = (X_test, y_test), #validation_split = 0.2, 
     #    callbacks = [model_metrics, early_stopping, ClearTrainingOutput()])    
     best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]

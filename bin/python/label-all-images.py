@@ -17,7 +17,7 @@ import natsort
 from natsort import natsorted
 import re # for matching image file name classes
 import matplotlib.pyplot as plt
-import PythonMagick # used for .HEIC to .JPG conversion
+#import PythonMagick # used for .HEIC to .JPG conversion
 import random
 import ntpath
 import shutil
@@ -25,6 +25,7 @@ import csv
 from timeit import default_timer as timer
 from datetime import timedelta
 import platform
+import pillow_heif
 
 SEED = 100
 
@@ -214,13 +215,19 @@ def saveImageFiles(image_file_list):
                 if 'Likelihood of Failure Images' in filename:
                     if image_name == filename.split("Failure Images/",1)[1]:
                         save_name = updateNameCount(rating, counts)
-                        PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        # PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        heif_file = pillow_heif.read_heif(filename)
+                        image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
+                        image.save(save_name, format='JPEG')
                         continue                    
                     index[save_name] = filename
                 else:
                     if image_name == filename.split("04_22/",1)[1]:
                         save_name = updateNameCount(rating, counts)
-                        PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        # PythonMagick.Image(filename).write(save_name) # convert .HEIC to .JPG
+                        heif_file = pillow_heif.read_heif(filename)
+                        image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
+                        image.save(save_name, format='JPEG')                        
                         continue                    
                     index[save_name] = filename
     if not os.path.exists(INDEX_DIR):
