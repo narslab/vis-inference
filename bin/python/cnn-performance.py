@@ -64,7 +64,7 @@ PATIENCE = 10
 TESTING = False
 AUGMENTATION = 'fliplr'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["PrPo_Im"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
 ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/models/'
@@ -109,9 +109,9 @@ class Metrics(Callback):
         xVal, yVal = self.validation_data
         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
         val_true = np.argmax(yVal, axis=1)        
-        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_f1 = f1_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='binary', zero_division = 0)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
@@ -329,7 +329,9 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
         image_dictionary_test = IMAGE_SETS_SQUARE_TEST
         image_dictionary_validation = IMAGE_SETS_SQUARE_VALIDATION
-
+    
+    print("Optimal hyperparameters:\n",getOptCNNHyperparams(image_width,image_width,scenario))
+    
     train_images = np.array([x[0] for x in image_dictionary_train[image_width][scenario]]) ## TOD)
     train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
     test_images = np.array([x[0] for x in image_dictionary_test[image_width][scenario]]) ## TOD)
@@ -352,7 +354,7 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "min")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
