@@ -64,7 +64,7 @@ PATIENCE = 10
 TESTING = False
 AUGMENTATION = 'fliplr'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"]#, "Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["PrPo_Im"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
 ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/models/'
@@ -329,7 +329,9 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
         image_dictionary_train = IMAGE_SETS_SQUARE_TRAIN
         image_dictionary_test = IMAGE_SETS_SQUARE_TEST
         image_dictionary_validation = IMAGE_SETS_SQUARE_VALIDATION
-
+    
+    print("Optimal hyperparameters:\n",getOptCNNHyperparams(image_width,image_width,scenario))
+    
     train_images = np.array([x[0] for x in image_dictionary_train[image_width][scenario]]) ## TOD)
     train_labels = np.array([x[1] for x in image_dictionary_train[image_width][scenario]]) 
     test_images = np.array([x[0] for x in image_dictionary_test[image_width][scenario]]) ## TOD)
