@@ -196,7 +196,7 @@ def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classe
         num_classes = 3
     else:
         num_classes = 2    
-    model = models.Sequential()    
+    model = models.Sequential() 
         
     model.add(Convolution2D(128, 3, border_mode = 'same', input_shape=image_shape))
     model.add(Activation('relu'))
@@ -352,7 +352,8 @@ def trainModelWithDetailedMetrics(image_width, scenario, architecture, num_epoch
     
     # CALLBACKS
     model_metrics = Metrics(val_data=(test_images, test_labels))
-    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, mode = "max")
+    early_stopping = EarlyStopping(monitor='val_f1', patience=PATIENCE, min_delta = 0.001, restore_best_weights=True, 
+                                    mode = "max")
     
     # INIT MODEL AND PARAMS, FIT
     K.clear_session()
