@@ -32,7 +32,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 NUM_CHANNELS = 3
 IMAGE_WIDTH_LIST = [336] #[189, 252, 336]
-SCENARIO_LIST = ["PrPo_Im", "Pr_Im", "Pr_PoIm"]#, "Pr_Po_Im"] #["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
+SCENARIO_LIST = ["Pr_Po_Im"] #["PrPo_Im", "Pr_Im", "Pr_PoIm"]#, "Pr_Po_Im"] #["PrPo_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"] #["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]
 OPTIMAL_HYPERPARAMETERS_PATH = '../../results/optimal-hyperparameters/'
 HYPERBAND_MAX_EPOCHS = 12 #10
 EXECUTIONS_PER_TRIAL = 2 #5
