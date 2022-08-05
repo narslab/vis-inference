@@ -66,9 +66,9 @@ class Metrics(Callback):
         xVal, yVal = self.validation_data
         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
         val_true = np.argmax(yVal, axis=1)        
-        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_f1 = f1_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='binary', zero_division = 0)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)

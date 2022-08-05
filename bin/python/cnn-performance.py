@@ -60,11 +60,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Globals
 NUM_CHANNELS = 3
-PATIENCE = 10
+PATIENCE = 7
 TESTING = False
 AUGMENTATION = 'fliplr'
 IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["PrPo_Im"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
+SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
 ARCHITECTURE_LIST = ["base"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/models/'
@@ -109,9 +109,9 @@ class Metrics(Callback):
         xVal, yVal = self.validation_data
         val_pred = np.argmax(np.asarray(self.model.predict(xVal)), axis=1)
         val_true = np.argmax(yVal, axis=1)        
-        _val_f1 = f1_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_precision = precision_score(val_true, val_pred, average='macro', zero_division = 0)
-        _val_recall = recall_score(val_true, val_pred, average='macro', zero_division = 0)
+        _val_f1 = f1_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_precision = precision_score(val_true, val_pred, average='binary', zero_division = 0)
+        _val_recall = recall_score(val_true, val_pred, average='binary', zero_division = 0)
 
         self.val_f1s.append(_val_f1)
         self.val_recalls.append(_val_recall)
