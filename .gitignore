@@ -11,7 +11,7 @@ opt/
 variables/
 optimization-log*
 test-*
-index-raw/
+#index-raw/
 index-raw-test/
 *.bak
 

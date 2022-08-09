@@ -13,6 +13,9 @@ The purpose of this script is to pre-process the tree images using the following
 
 from PIL import Image, ImageOps, ExifTags # used for loading images
 import numpy as np
+import csv
+import natsort
+from natsort import natsorted
 import os # used for navigating to image path
 import imageio # used for writing images
 import random
@@ -35,9 +38,11 @@ TEST_SET_SIZE = 0.1
 VALIDATION_SET_SIZE = 0.1
 AUGMENTATION = 'fliplr' #occlusion_all
 CLASSIFICATION_SCENARIO = "Pr_Im"
-CLASSIFICATION_SCENARIO_LIST = ["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
+CLASSIFICATION_SCENARIO_LIST = ["PrPo_Im"]#["Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"]  
 LABELED_IMAGES_DIR = '../../data/tidy/labeled-images'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images'
+INDEX_DIR = '../../results/index-tidy/'
+INDEX_LABELS = INDEX_DIR + 'preprocessed_index.csv'
 
 SEED = 100  
 #NUM_PLOT_IMAGES_PER_CLASS = 1 #4 ## NOT USED IN CURRENT IMPLEMENTATION
@@ -84,6 +89,8 @@ def getImageOneHotVector(image_file_name, classification_scenario = "Pr_Im"):
 
 def processImageData(image_width, class_scenario, seed_value, channels=1, augmentation='fliplr', save_image_binary_files=True, rectangular = True, test = False): # original size 4032 × 3024 px
     """Processes labeled images into train/test numpy arrays based on a specified augmentation technique: fliplr (horizontal flipping) or occlusion"""
+    csv_col_index = ['labeled_image', 'preprocessed_index']
+    preprocessed_image_dict = {}
     data_train = []
     data_test = []
     data_validation = []
@@ -101,6 +108,7 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
     print("Training images (initial): ", len(image_list_train)) 
     print("Test images: ", len(image_list_test))
     print("Validation images (initial): ", len(image_list_validation))
+    train_cnt = val_cnt = test_cnt = 0
     for image_index in image_list:
         label = getImageOneHotVector(image_index, class_scenario)
         if label.sum() == 0: # if image unlabeled, move to next one
@@ -143,14 +151,24 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
         flipped_resized_img_array = np.fliplr(resized_image_array)
         if augmentation == 'fliplr': 
             if image_index in image_list_train:
-                data_train.append([resized_image_array, label])            
+                data_train.append([resized_image_array, label])
+                preprocessed_image_dict[image_index] = 'train-' + str(train_cnt)
+                train_cnt += 1
                 data_train.append([flipped_resized_img_array, label])
-                print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))              
+                preprocessed_image_dict[image_index] = 'train-' + str(train_cnt)
+                train_cnt += 1
+                print("Flipped and Resized Image shape: " + str(flipped_resized_img_array.shape))           
             elif image_index in image_list_validation:
-                data_validation.append([eraser(resized_image_array), label])
-                data_validation.append([eraser(flipped_resized_img_array), label])
+                data_validation.append([resized_image_array, label])
+                preprocessed_image_dict[image_index] = 'validation-' + str(val_cnt)
+                val_cnt += 1
+                data_validation.append([flipped_resized_img_array, label])
+                preprocessed_image_dict[image_index] = 'validation-' + str(val_cnt)
+                val_cnt += 1
             else:
                 data_test.append([resized_image_array, label]) 
+                preprocessed_image_dict[image_index] = 'test-' + str(test_cnt)
+                test_cnt += 1
         ## Occlusion implementation
         if augmentation == 'occlusion_all': # occludes a flipped and resized image with 100% probability
             if image_index in image_list_train:
@@ -183,6 +201,13 @@ def processImageData(image_width, class_scenario, seed_value, channels=1, augmen
                 data_validation.append([eraser(flipped_resized_img_array), label])
             else:
                 data_test.append([resized_image_array, label])
+    if not os.path.exists(INDEX_DIR):
+        os.makedirs(INDEX_DIR)
+    with open(INDEX_LABELS, 'w', newline='') as f: # TODO: separate by tab not comma
+        writer = csv.DictWriter(f, fieldnames=csv_col_index)
+        writer.writeheader()
+        for key in preprocessed_image_dict.keys():
+            f.write("%s,%s\n"%(key,preprocessed_image_dict[key]))
     print("After augmentation:")
     print("Training Images:", class_scenario, (np.array([x[1] for x in data_train])).sum(axis=0) )
     print("Test Images:", class_scenario, (np.array([x[1] for x in data_test])).sum(axis=0) )
