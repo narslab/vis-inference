@@ -25,7 +25,9 @@ import csv
 from timeit import default_timer as timer
 from datetime import timedelta
 import platform
-import pillow_heif
+from pillow_heif import register_heif_opener
+
+register_heif_opener()
 
 SEED = 100
 
@@ -261,9 +263,11 @@ def saveImageFiles(image_file_list):
                     else:
                         save_name = TIDY_IMAGE_DIR + label + '-' + str(unkn_cnt) + '.jpg'
                         unkn_cnt += 1
-                    heif_file = pillow_heif.read_heif(heic_image)
-                    image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
-                    image.save(save_name, format='JPEG')
+                    # heif_file = pillow_heif.read_heif(heic_image)
+                    # image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
+                    # image.save(save_name, format='JPEG')
+                    heif_file = Image.open(heic_image)
+                    heif_file.save(save_name, "JPEG")
                     index[save_name] = heic_image
             else:
                 if image_name == heic_image.split("04_22/",1)[1]:
@@ -279,9 +283,11 @@ def saveImageFiles(image_file_list):
                     else:
                         save_name = TIDY_IMAGE_DIR + label + '-' + str(unkn_cnt) + '.jpg'
                         unkn_cnt += 1
-                    heif_file = pillow_heif.read_heif(heic_image)
-                    image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
-                    image.save(save_name, format='JPEG')
+                    # heif_file = pillow_heif.read_heif(heic_image)
+                    # image = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
+                    # image.save(save_name, format='JPEG')
+                    heif_file = Image.open(heic_image)
+                    heif_file.save(save_name, "JPEG")
                     index[save_name] = heic_image
                 # if 'Likelihood of Failure Images' in filename:
                 #     if image_name == filename.split("Failure Images/",1)[1]:
