@@ -56,7 +56,7 @@ def processImageData(seed_value=10, test_set_size=0.2, save_image_binary_files=T
         path = os.path.join(LABELED_IMAGES_DIR, image_name)
         image = Image.open(path) # read in image
         scaled_image_array = np.array(image)/255.
-        if label == -1: # if image unlabeled, move to next one
+        if label.sum() == 0: # if image unlabeled, move to next one
             continue
         if image_name in image_list_train:
             data_train.append([scaled_image_array, label])
