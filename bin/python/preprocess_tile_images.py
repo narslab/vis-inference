@@ -23,11 +23,11 @@ def getEncoding(image_file_name):
     """
     word_label = image_file_name.split('_')[0]
     if word_label == 'c': 
-        return 1
+        return np.array([0, 1])
     elif word_label == 'n': 
-        return 0
+        return np.array([1, 0])
     else:
-        return -1
+        return np.array([0, 0])
 		
 def processImageData(seed_value=10, test_set_size=0.2, save_image_binary_files=True):
     """Processes labeled images into train/test numpy arrays based on a specified augmentation technique: fliplr (horizontal flipping) or occlusion"""
