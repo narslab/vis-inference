@@ -108,11 +108,11 @@ class CNNHyperModel(HyperModel):
         model.add(layers.Dense(units = dense_units_2, activation = dense_activation_2))
         model.add(layers.Dropout(dropout_rate_2))
 
-        model.add(layers.Dense(1, activation='sigmoid')) #self.num_classes
+        model.add(layers.Dense(self.num_classes, activation='softmax'))
 
         # Choose an optimal value from 0.01, 0.001, or 0.0001
         model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = hp_learning_rate),
-                    loss = 'binary_crossentropy',
+                    loss = 'categorical_crossentropy',
                     metrics = ['accuracy']#, tf.keras.metrics.Precision(name='precision'), 
                     #tf.keras.metrics.Recall(name='recall')]
                     )
