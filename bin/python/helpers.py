@@ -213,7 +213,7 @@ def getOptConfHyperparams(image_width, image_height):
     return(opt_params_dict)
 
 def constructOptBaseCNN(image_width, image_height, conflict = False, num_channels = 3, scenario = 'none'):
-    image_shape = (image_height, image_width, num_channels)
+    image_shape = (image_width, image_height, num_channels)
     if conflict:
         p_dict = getOptConfHyperparams(image_width, image_height)
     else:
