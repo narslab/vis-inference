@@ -206,9 +206,18 @@ def getOptCNNHyperparams(image_width, image_height, scenario):
     opt_params_dict = json.loads(data)   
     return(opt_params_dict)
 
-def constructOptBaseCNN(image_width, image_height, scenario, num_channels = 1):
+def getOptConfHyperparams(image_width, image_height):
+    with open('../../results/conflict-detection/optimal-hyperparameters/' + 'w-' + str(image_width) + 'px-h-' + str(image_height) + 'px/' + '/hyperparameters.txt') as f: 
+        data = f.read() 
+    opt_params_dict = json.loads(data)   
+    return(opt_params_dict)
+
+def constructOptBaseCNN(image_width, image_height, conflict = False, num_channels = 3, scenario = 'none'):
     image_shape = (image_height, image_width, num_channels)
-    p_dict = getOptCNNHyperparams(image_width, image_height, scenario)
+    if conflict:
+        p_dict = getOptConfHyperparams(image_width, image_height)
+    else:
+        p_dict = getOptCNNHyperparams(image_width, image_height, scenario)
     if scenario=="Pr_Po_Im":
         num_classes = 3
     else:
