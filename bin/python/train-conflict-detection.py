@@ -21,9 +21,9 @@ import seaborn as sns
 import matplotlib.ticker as tkr
 
 from matplotlib import cm
-from tf_keras_vis.gradcam import Gradcam
-from tf_keras_vis.saliency import Saliency
-from tf_keras_vis.utils import normalize
+#from tf_keras_vis.gradcam import Gradcam
+#from tf_keras_vis.saliency import Saliency
+#from tf_keras_vis.utils import normalize
 
 import json
 import pickle
@@ -194,8 +194,8 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     
     train_images = [x[0] for x in IMAGE_SET_TRAIN]
     train_labels = [x[1] for x in IMAGE_SET_TRAIN]
-    test_images = [x[0] for x in IMAGE_SET_TEST]
-    test_labels = [x[1] for x in IMAGE_SET_TEST]
+    test_images = np.array([x[0] for x in IMAGE_SET_TEST])
+    test_labels = np.array([x[1] for x in IMAGE_SET_TEST])
     validation_images = [x[0] for x in IMAGE_SET_VAL]
     validation_labels = [x[1] for x in IMAGE_SET_VAL]
 
