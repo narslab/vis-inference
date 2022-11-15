@@ -29,7 +29,7 @@ def getEncoding(image_file_name):
     else:
         return np.array([0, 0])
 		
-def processImageData(seed_value=10, test_set_size=0.2, save_image_binary_files=True):
+def processImageData(image_width=336, image_height=336, seed_value=10, test_set_size=0.2, save_image_binary_files=True):
     """Processes labeled images into train/test numpy arrays based on a specified augmentation technique: fliplr (horizontal flipping) or occlusion"""
     csv_col_index = ['labeled_image', 'preprocessed_index']
     preprocessed_image_dict = {}
@@ -55,6 +55,7 @@ def processImageData(seed_value=10, test_set_size=0.2, save_image_binary_files=T
         label = getEncoding(image_name)
         path = os.path.join(LABELED_IMAGES_DIR, image_name)
         image = Image.open(path) # read in image
+        image = image.resize((image_width, image_height), Image.NEAREST) 
         scaled_image_array = np.array(image)/255.
         if label.sum() == 0: # if image unlabeled, move to next one
             continue
@@ -70,6 +71,7 @@ def processImageData(seed_value=10, test_set_size=0.2, save_image_binary_files=T
             data_test.append([scaled_image_array, label])
             preprocessed_image_dict[image_name] = 'test-' + str(test_cnt)
             test_cnt += 1
+    print("Image dimensions: ", np.array(image).shape, "\n")
     if not os.path.exists(INDEX_DIR):
         os.makedirs(INDEX_DIR)
     with open(INDEX_LABELS, 'w', newline='') as f: # TODO: separate by tab not comma
