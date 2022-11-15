@@ -67,7 +67,7 @@ PATIENCE = 7
 # AUGMENTATION = 'fliplr'
 # IMAGE_WIDTH_LIST = [336]#,252 189, 336
 SCENARIO_LIST = ["none"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
-ARCHITECTURE_LIST = ["base","resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+ARCHITECTURE_LIST = ["resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/conflict-detection/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/conflict-detection/model-performance/'
@@ -105,42 +105,30 @@ class Metrics(Callback):
 
 def constructIV3(image_size, scenario, num_channels = 3):
     image_shape = (image_size, image_size, num_channels)
-    if scenario=="Pr_Po_Im":
-        num_classes = 3
-    else:
-        num_classes = 2
     iv3 = tf.keras.applications.InceptionV3(
         include_top=True,
         weights=None,
         input_tensor=None,
         input_shape=image_shape,
         pooling='max',
-        classes=num_classes,
+        classes=2,
         classifier_activation="softmax"
     )
     return(iv3)
 
 def constructRN50(image_size, scenario, num_channels = 3):
     image_shape = (image_size, image_size, num_channels)
-    if scenario=="Pr_Po_Im":
-        num_classes = 3
-    else:
-        num_classes = 2
     rn50 = resnet50.ResNet50(include_top=True, 
                            weights=None, 
                            input_tensor=None, 
                            input_shape=image_shape, 
                            pooling= 'max', 
-                           classes=num_classes)
+                           classes=2)
     return(rn50)
 
 
 def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classes=2):
     image_shape = (image_width, image_height, num_channels)
-    if scenario=="Pr_Po_Im":
-        num_classes = 3
-    else:
-        num_classes = 2    
     model = models.Sequential() 
         
     model.add(Convolution2D(128, 3, border_mode = 'same', input_shape=image_shape))
@@ -190,7 +178,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
 #         image_dictionary_test = IMAGE_SETS_SQUARE_TEST
 #         image_dictionary_validation = IMAGE_SETS_SQUARE_VALIDATION
     
-    print("Optimal hyperparameters:\n",getOptConfHyperparams(image_width,image_height))
+    # print("Optimal hyperparameters:\n",getOptConfHyperparams(image_width,image_height))
     
     train_images = [x[0] for x in IMAGE_SET_TRAIN]
     train_labels = [x[1] for x in IMAGE_SET_TRAIN]
@@ -303,7 +291,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     return(hist) #model
 
 
-def getScenarioModelPerformance(architecture, s, width = 448, height = 336, num_epochs = 20, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(architecture, s, width = 336, height = 336, num_epochs = 20, seed_val = 1, test_boolean = True):
     df = pd.DataFrame()
     print(TM)
     # if rect_boolean:
