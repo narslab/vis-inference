@@ -97,7 +97,7 @@ def processImageData(image_width=336, image_height=336, seed_value=10, test_set_
 	
 def main():
 	start = time.time()
-	processImageData()
+	processImageData(42, 42)
 	end = time.time()
 	elapsed = end - start
 	print('Time elapsed: {m}min {s}sec'.format(m=int(elapsed//60),s=int(np.round(elapsed%60,0))))

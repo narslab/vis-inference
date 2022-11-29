@@ -165,8 +165,8 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     # else:
     #     image_height = image_width
 
-    # class_labels = getClassLabels(scenario)
-    # print("Class labels:", class_labels)
+    class_labels = ["conflict", "no_conflict"]
+    print("Class labels:", class_labels)
     print("Image width: " + str(image_width))
     print("Image height: " + str(image_height))
 #     if rectangular==True:
