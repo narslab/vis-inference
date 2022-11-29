@@ -165,7 +165,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     # else:
     #     image_height = image_width
 
-    class_labels = ["conflict", "no_conflict"]
+    class_labels = ["no_conflict", "conflict"]
     print("Class labels:", class_labels)
     print("Image width: " + str(image_width))
     print("Image height: " + str(image_height))
@@ -316,5 +316,5 @@ if __name__ == "__main__":
     for a in ARCHITECTURE_LIST:
         for s in SCENARIO_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, s, 42, 42, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
+            getScenarioModelPerformance(a, s, 75, 75, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
             
