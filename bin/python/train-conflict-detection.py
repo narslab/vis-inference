@@ -316,5 +316,5 @@ if __name__ == "__main__":
     for a in ARCHITECTURE_LIST:
         for s in SCENARIO_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, s, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
+            getScenarioModelPerformance(a, s, 42, 42, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
             
