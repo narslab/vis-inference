@@ -66,8 +66,8 @@ PATIENCE = 7
 # TESTING = False
 # AUGMENTATION = 'fliplr'
 # IMAGE_WIDTH_LIST = [336]#,252 189, 336
-SCENARIO_LIST = ["none"] #"Pr_Im", "PrPo_Im", "Pr_PoIm", "Pr_Po_Im"
-ARCHITECTURE_LIST = ["resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+ARCHITECTURE_LIST = ["base", "all_conv"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+RESOLUTION_LIST = [150, 250, 350]
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/conflict-detection/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/conflict-detection/model-performance/'
@@ -103,7 +103,7 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
-def constructIV3(image_size, scenario, num_channels = 3):
+def constructIV3(image_size, num_channels = 3):
     image_shape = (image_size, image_size, num_channels)
     iv3 = tf.keras.applications.InceptionV3(
         include_top=True,
@@ -116,7 +116,7 @@ def constructIV3(image_size, scenario, num_channels = 3):
     )
     return(iv3)
 
-def constructRN50(image_size, scenario, num_channels = 3):
+def constructRN50(image_size, num_channels = 3):
     image_shape = (image_size, image_size, num_channels)
     rn50 = resnet50.ResNet50(include_top=True, 
                            weights=None, 
@@ -126,8 +126,33 @@ def constructRN50(image_size, scenario, num_channels = 3):
                            classes=2)
     return(rn50)
 
+def testBase(image_width, image_height, num_channels=3):
+    image_shape = (image_width, image_height, num_channels)
+    model = models.Sequential([
+        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
+            input_shape = image_shape),
+        # layers.Conv2D(64, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        layers.Conv2D(128, 3, activation="relu", padding="same"),
+        layers.Conv2D(128, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        layers.Conv2D(256, 3, activation="relu", padding="same"),
+        layers.Conv2D(256, 3, activation="relu", padding="same"),
+        layers.MaxPooling2D(2),
+        layers.Flatten(),
+        
+        layers.Dense(units = 408, activation = 'relu'),
+        layers.BatchNormalization(),
+        layers.Dropout(0.3), 
+        
+        layers.Dense(units = 408, activation = 'relu'), 
+        layers.Dropout(0.3),
 
-def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classes=2):
+        layers.Dense(num_classes, activation="softmax")   
+        ])
+    return(model)
+    
+def testAllConv(image_width, image_height,  num_channels=3):
     image_shape = (image_width, image_height, num_channels)
     model = models.Sequential() 
         
@@ -157,13 +182,10 @@ def testAllConv(image_width, image_height,  scenario, num_channels=3, num_classe
                 metrics = ['accuracy'])
     return(model)
 
-def trainModelWithDetailedMetrics(image_width, image_height, scenario, architecture, num_epochs = 30, trial_seed = 1, testing = True): 
-    # image_width = 448
-    # image_height = 336
-    # if rectangular:
-    #     image_height = getRectangularImageHeight(image_width)
-    # else:
-    #     image_height = image_width
+def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_epochs = 30, trial_seed = 1, testing = True): 
+    training_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-train.npy'.format(image_width, image_height)
+    test_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-test.npy'.format(image_width, image_height)
+    validation_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-validation.npy'.format(image_width, image_height)
 
     class_labels = ["no_conflict", "conflict"]
     print("Class labels:", class_labels)
@@ -180,12 +202,16 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     
     # print("Optimal hyperparameters:\n",getOptConfHyperparams(image_width,image_height))
     
-    train_images = [x[0] for x in IMAGE_SET_TRAIN]
-    train_labels = [x[1] for x in IMAGE_SET_TRAIN]
-    test_images = np.array([x[0] for x in IMAGE_SET_TEST])
-    test_labels = np.array([x[1] for x in IMAGE_SET_TEST])
-    validation_images = [x[0] for x in IMAGE_SET_VAL]
-    validation_labels = [x[1] for x in IMAGE_SET_VAL]
+    image_set_train = np.load(training_images, allow_pickle = True)
+    image_set_test = np.load(test_images, allow_pickle = True)
+    image_set_val = np.load(validation_images, allow_pickle = True)
+    
+    train_images = [x[0] for x in image_set_train]
+    train_labels = [x[1] for x in image_set_train]
+    test_images = np.array([x[0] for x in image_set_test])
+    test_labels = np.array([x[1] for x in image_set_test])
+    validation_images = [x[0] for x in image_set_val]
+    validation_labels = [x[1] for x in image_set_val]
 
     #Combining taining and validation images and lables
     train_images = np.concatenate((train_images,validation_images))
@@ -206,12 +232,14 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     opt = tf.keras.optimizers.Adam(learning_rate=0.001) # default value will be used for all testing cases (including ResNet/Inception)
 
     if architecture == 'resnet50':
-        model = constructRN50(image_width, scenario, NUM_CHANNELS)
+        model = constructRN50(image_width, NUM_CHANNELS)
     elif architecture == 'inception_v3':
-        model = constructIV3(image_width, scenario, NUM_CHANNELS)
-    elif architecture == 'base':
+        model = constructIV3(image_width, NUM_CHANNELS)
+    elif architecture == 'all_conv':
+        model = testAllConv(image_width, image_height, num_channels=NUM_CHANNELS)
+    else:
         if testing:
-            model = testAllConv(image_width, image_height, scenario, num_channels=NUM_CHANNELS)
+            model = testBase(image_width, image_height, num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, conflict = True, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptConfHyperparams(image_width, image_height)['learning_rate']    ## learning rate
@@ -282,7 +310,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     ax.set_xticklabels(class_labels, ha='center',fontsize=14)
     plt.xlabel('Predicted',fontsize=16)
     #plt.show()
-    file_suffix =  architecture+"-"+scenario + "-w-" + str(image_width) + "-px-h-" + str(image_height) + '-px' + ".png"
+    file_suffix =  architecture+"-w-" + str(image_width) + "-px-h-" + str(image_height) + '-px' + ".png"
     if testing == True:
         con_mat_heatmap_file = con_mat_path + "test-confusion-matrix-" + file_suffix
     else:
@@ -291,20 +319,20 @@ def trainModelWithDetailedMetrics(image_width, image_height, scenario, architect
     return(hist) #model
 
 
-def getScenarioModelPerformance(architecture, s, width = 336, height = 336, num_epochs = 20, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(architecture, width = 336, height = 336, num_epochs = 20, seed_val = 1, test_boolean = True):
     df = pd.DataFrame()
     print(TM)
     # if rect_boolean:
     #     height = getRectangularImageHeight(width)
     # else:
     #     height = width
-    for s in SCENARIO_LIST:
-        h = trainModelWithDetailedMetrics(width, height, s, architecture, num_epochs, trial_seed = seed_val, testing = test_boolean)
-        #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
-        perf = pd.DataFrame.from_dict(h.history)
-        perf['Scenario'] = s
-        perf['epoch'] = perf.index + 1
-        df = df.append(perf, ignore_index=True)
+    # for s in SCENARIO_LIST:
+    h = trainModelWithDetailedMetrics(width, height, architecture, num_epochs, trial_seed = seed_val, testing = test_boolean)
+    #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
+    perf = pd.DataFrame.from_dict(h.history)
+    # perf['Scenario'] = s
+    perf['epoch'] = perf.index + 1
+    df = df.append(perf, ignore_index=True)
     if test_boolean == True:
         df_filename = "../../results/conflict-detection/test-performance-metrics-summary-" + architecture + "-w-" + str(width) + "-px-h-" + str(height) + "-px" + "-" + TM +".csv"
     else:
@@ -314,7 +342,7 @@ def getScenarioModelPerformance(architecture, s, width = 336, height = 336, num_
 
 if __name__ == "__main__":
     for a in ARCHITECTURE_LIST:
-        for s in SCENARIO_LIST:
+        for r in RESOLUTION_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, s, 84, 84, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
+            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
             
