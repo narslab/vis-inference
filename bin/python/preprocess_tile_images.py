@@ -17,6 +17,7 @@ LABELED_IMAGES_DIR = '../../data/tidy/labeled-images/'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images/'
 INDEX_DIR = '../../results/conflict-detection/index-tidy/'
 INDEX_LABELS = INDEX_DIR + 'preprocessed_index.csv'
+TILE_RESOLUTION = [150, 250, 350]
 
 def getEncoding(image_file_name):
     """Returns binary encoding for each image.
@@ -79,7 +80,7 @@ def processImageData(image_width=336, image_height=336, seed_value=10, test_set_
         writer.writeheader()
         for key in preprocessed_image_dict.keys():
             f.write("%s,%s\n"%(key,preprocessed_image_dict[key]))
-    filename_prefix = 'conflict-tiles'
+    filename_prefix = 'conflict-tiles-w-{0}px-h-{1}px'.format(image_width, image_height)
     data_filename_train = filename_prefix+ "-train.npy"
     data_filename_test = filename_prefix + "-test.npy"
     data_filename_validation = filename_prefix + "-validation.npy"
@@ -97,7 +98,8 @@ def processImageData(image_width=336, image_height=336, seed_value=10, test_set_
 	
 def main():
 	start = time.time()
-	processImageData(75, 75)
+    for i in TILE_RESOLUTION:
+        processImageData(i, i)
 	end = time.time()
 	elapsed = end - start
 	print('Time elapsed: {m}min {s}sec'.format(m=int(elapsed//60),s=int(np.round(elapsed%60,0))))
