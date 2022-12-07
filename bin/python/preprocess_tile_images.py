@@ -17,7 +17,7 @@ LABELED_IMAGES_DIR = '../../data/tidy/labeled-images/'
 PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images/'
 INDEX_DIR = '../../results/conflict-detection/index-tidy/'
 INDEX_LABELS = INDEX_DIR + 'preprocessed_index.csv'
-TILE_RESOLUTION = [150, 250, 350]
+RESOLUTION_LIST = [150, 250, 350, 450, 550, 650, 750]
 
 def getEncoding(image_file_name):
     """Returns binary encoding for each image.

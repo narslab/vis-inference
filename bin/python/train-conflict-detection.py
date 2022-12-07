@@ -66,8 +66,8 @@ PATIENCE = 7
 # TESTING = False
 # AUGMENTATION = 'fliplr'
 # IMAGE_WIDTH_LIST = [336]#,252 189, 336
-ARCHITECTURE_LIST = ["base", "all_conv"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
-RESOLUTION_LIST = [150, 250, 350]
+ARCHITECTURE_LIST = ["base-b", "base", "resnet50", "inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+RESOLUTION_LIST = [150, 250, 350, 450, 550, 650, 750]
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/conflict-detection/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/conflict-detection/model-performance/'
@@ -152,29 +152,33 @@ def testBase(image_width, image_height, num_classes=2, num_channels=3):
         ])
     return(model)
     
-def testAllConv(image_width, image_height,  num_channels=3):
+def testCNNB(image_width, image_height, num_channels=3, num_classes=2):
     image_shape = (image_width, image_height, num_channels)
-    model = models.Sequential() 
-        
-    model.add(Convolution2D(128, 3, border_mode = 'same', input_shape=image_shape))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(128, 3, border_mode='same'))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(128, 3, border_mode='same'))
-    model.add(Dropout(0.5))
+    model = models.Sequential()
 
-    model.add(Convolution2D(256, 3, border_mode = 'same'))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(256, 3, border_mode='same'))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(256, 3, border_mode='same'))
-    model.add(Dropout(0.5))
+    model.add(layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
+        input_shape = image_shape ))
 
-    model.add(Convolution2D(512, 3, border_mode = 'same'))
-    model.add(Activation('relu'))    
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(128, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(256, 3, activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(2))
+    #experimenting with 2 additional convolutional layers, with an increased number of units
+    model.add(layers.Conv2D(512, 3, activation="relu", padding="same"))
+    model.add(layers.Conv2D(512, 3, activation="relu", padding="same"))
+    model.add(layers.Flatten())
+    
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.BatchNormalization()) # Networks train faster & converge much more quickly
+    model.add(layers.Dropout(.3))
 
-    model.add(GlobalAveragePooling2D())
-    model.add(Activation('softmax'))
+    model.add(layers.Dense(units = 408, activation = 'relu'))
+    model.add(layers.Dropout(.3))
+
+    model.add(layers.Dense(num_classes, activation='softmax'))
 
     # Choose an optimal value from 0.01, 0.001, or 0.0001
     model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = .001),
@@ -235,11 +239,11 @@ def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_e
         model = constructRN50(image_width, NUM_CHANNELS)
     elif architecture == 'inception_v3':
         model = constructIV3(image_width, NUM_CHANNELS)
-    elif architecture == 'all_conv':
-        model = testAllConv(image_width, image_height, num_channels=NUM_CHANNELS)
+    elif architecture == 'base-b':
+        model = testCNNB(image_width, image_height, num_channels=NUM_CHANNELS)
     else:
         if testing:
-            model = testBase(image_width, image_height, 2,  num_channels=NUM_CHANNELS)
+            model = testBase(image_width, image_height, 2, num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, conflict = True, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptConfHyperparams(image_width, image_height)['learning_rate']    ## learning rate
