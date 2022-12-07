@@ -56,9 +56,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 # facet_wrap( vars(transportation_type), ncol = 1 )
 # + geom_line(aes(col = region), color = "Gray")
 
-IMAGE_SET_TRAIN = np.load('../../data/tidy/preprocessed-images/conflict-tiles-train.npy', allow_pickle = True)
-IMAGE_SET_VAL = np.load('../../data/tidy/preprocessed-images/conflict-tiles-validation.npy', allow_pickle = True)
-IMAGE_SET_TEST = np.load('../../data/tidy/preprocessed-images/conflict-tiles-test.npy', allow_pickle = True)
+#IMAGE_SET_TRAIN = np.load('../../data/tidy/preprocessed-images/conflict-tiles-train.npy', allow_pickle = True)
+#IMAGE_SET_VAL = np.load('../../data/tidy/preprocessed-images/conflict-tiles-validation.npy', allow_pickle = True)
+#IMAGE_SET_TEST = np.load('../../data/tidy/preprocessed-images/conflict-tiles-test.npy', allow_pickle = True)
 
 # Globals
 NUM_CHANNELS = 3
@@ -126,10 +126,10 @@ def constructRN50(image_size, num_channels = 3):
                            classes=2)
     return(rn50)
 
-def testBase(image_width, image_height, num_channels=3):
+def testBase(image_width, image_height, num_classes=2, num_channels=3):
     image_shape = (image_width, image_height, num_channels)
     model = models.Sequential([
-        layers.Conv2D(filters = 64, kernel_size = p_dict['kernel_size'], strides = 2, activation="relu", padding="same", 
+        layers.Conv2D(filters = 64, kernel_size = 5, strides = 2, activation="relu", padding="same", 
             input_shape = image_shape),
         # layers.Conv2D(64, 3, activation="relu", padding="same"),
         layers.MaxPooling2D(2),
@@ -183,9 +183,9 @@ def testAllConv(image_width, image_height,  num_channels=3):
     return(model)
 
 def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_epochs = 30, trial_seed = 1, testing = True): 
-    training_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-train.npy'.format(image_width, image_height)
-    test_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-test.npy'.format(image_width, image_height)
-    validation_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-w-{1}px-validation.npy'.format(image_width, image_height)
+    training_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-train.npy'.format(image_width, image_height)
+    test_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-test.npy'.format(image_width, image_height)
+    validation_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-validation.npy'.format(image_width, image_height)
 
     class_labels = ["no_conflict", "conflict"]
     print("Class labels:", class_labels)
@@ -239,7 +239,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_e
         model = testAllConv(image_width, image_height, num_channels=NUM_CHANNELS)
     else:
         if testing:
-            model = testBase(image_width, image_height, num_channels=NUM_CHANNELS)
+            model = testBase(image_width, image_height, 2,  num_channels=NUM_CHANNELS)
         else:
             model = constructOptBaseCNN(image_width, image_height, conflict = True, num_channels = NUM_CHANNELS)    ## get model
             opt_learning_rate = getOptConfHyperparams(image_width, image_height)['learning_rate']    ## learning rate
@@ -344,5 +344,5 @@ if __name__ == "__main__":
     for a in ARCHITECTURE_LIST:
         for r in RESOLUTION_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=False)
+            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=True)
             
