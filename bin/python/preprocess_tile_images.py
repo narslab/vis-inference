@@ -50,8 +50,8 @@ def processImageData(image_width=336, image_height=336, seed_value=10, test_set_
     image_list_train, image_list_test =  train_test_split(image_list, test_size = test_set_size, random_state = seed_value)
     image_list_train, image_list_validation = train_test_split(image_list_train, test_size = val_ratio, random_state=seed_value)
     train_cnt = val_cnt = test_cnt = 0
-    shutil.rmtree(PROCESSED_IMAGES_DIR, ignore_errors=True) # Deletes the directory containing any existing preprocessed images
-    shutil.rmtree(INDEX_DIR, ignore_errors=True)
+    # shutil.rmtree(PROCESSED_IMAGES_DIR, ignore_errors=True) # Deletes the directory containing any existing preprocessed images
+    # shutil.rmtree(INDEX_DIR, ignore_errors=True)
     for image_name in image_list:
         label = getEncoding(image_name)
         path = os.path.join(LABELED_IMAGES_DIR, image_name)
