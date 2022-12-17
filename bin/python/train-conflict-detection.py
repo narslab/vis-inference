@@ -66,8 +66,8 @@ PATIENCE = 7
 # TESTING = False
 # AUGMENTATION = 'fliplr'
 # IMAGE_WIDTH_LIST = [336]#,252 189, 336
-ARCHITECTURE_LIST = ["inception_v3", "resnet50"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
-RESOLUTION_LIST = [210]
+ARCHITECTURE_LIST = ["inception_v3"] #, "base", "resnet50", "inception_v3", "base-a", "base-b", "base-c", "all_conv"
+RESOLUTION_LIST = [378, 420]
 NUM_EPOCHS = 30
 SAVED_MODEL_DIR = '../../results/conflict-detection/models/'
 MODEL_PERFORMANCE_METRICS_DIR = '../../results/conflict-detection/model-performance/'
@@ -103,17 +103,29 @@ class Metrics(Callback):
         print('— val_f1: %f — val_precision: %f — val_recall %f' %(_val_f1, _val_precision, _val_recall))
         return
 
-def constructIV3(image_size, num_channels = 3):
+def constructIV3(image_size, num_channels = 3, max_pooling = True):
     image_shape = (image_size, image_size, num_channels)
-    iv3 = tf.keras.applications.InceptionV3(
-        include_top=True,
-        weights=None,
-        input_tensor=None,
-        input_shape=image_shape,
-        pooling='max',
-        classes=2,
-        classifier_activation="softmax"
-    )
+    if max_pooling:
+        iv3 = tf.keras.applications.InceptionV3(
+            include_top=True,
+            weights=None,
+            input_tensor=None,
+            input_shape=image_shape,
+            pooling='max',
+            classes=2,
+            classifier_activation="softmax"
+        )
+    else:
+        iv3 = tf.keras.applications.InceptionV3(
+            include_top=True,
+            weights=None,
+            input_tensor=None,
+            input_shape=image_shape,
+            pooling='avg
+            classes=2,
+            classifier_activation="softmax"
+        )
+
     return(iv3)
 
 def constructRN50(image_size, num_channels = 3):
@@ -186,7 +198,7 @@ def testCNNB(image_width, image_height, num_channels=3, num_classes=2):
                 metrics = ['accuracy'])
     return(model)
 
-def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_epochs = 30, trial_seed = 1, testing = True): 
+def trainModelWithDetailedMetrics(image_width, image_height, architecture, max_pooling=True, num_epochs = 30, trial_seed = 1, testing = True): 
     training_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-train.npy'.format(image_width, image_height)
     test_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-test.npy'.format(image_width, image_height)
     validation_images = '../../data/tidy/preprocessed-images/conflict-tiles-w-{0}px-h-{1}px-validation.npy'.format(image_width, image_height)
@@ -238,7 +250,10 @@ def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_e
     if architecture == 'resnet50':
         model = constructRN50(image_width, NUM_CHANNELS)
     elif architecture == 'inception_v3':
-        model = constructIV3(image_width, NUM_CHANNELS)
+        if max_pooling:
+            model = constructIV3(image_width, NUM_CHANNELS)
+        else:
+            model = constructIV3(image_width, NUM_CHANNELS, False) 
     elif architecture == 'base-b':
         model = testCNNB(image_width, image_height, num_channels=NUM_CHANNELS)
     else:
@@ -323,7 +338,7 @@ def trainModelWithDetailedMetrics(image_width, image_height, architecture, num_e
     return(hist) #model
 
 
-def getScenarioModelPerformance(architecture, width = 336, height = 336, num_epochs = 20, seed_val = 1, test_boolean = True):
+def getScenarioModelPerformance(architecture, width = 336, height = 336, num_epochs = 20, seed_val = 1, max_pooling=True, test_boolean = True):
     df = pd.DataFrame()
     print(TM)
     # if rect_boolean:
@@ -331,7 +346,7 @@ def getScenarioModelPerformance(architecture, width = 336, height = 336, num_epo
     # else:
     #     height = width
     # for s in SCENARIO_LIST:
-    h = trainModelWithDetailedMetrics(width, height, architecture, num_epochs, trial_seed = seed_val, testing = test_boolean)
+    h = trainModelWithDetailedMetrics(width, height, architecture, max_pooling, num_epochs, trial_seed = seed_val, testing = test_boolean)
     #visualizeCNN(m, s, width, images_per_class = 4, trial_seed = seed_val, testing = test_boolean)       
     perf = pd.DataFrame.from_dict(h.history)
     # perf['Scenario'] = s
@@ -348,5 +363,6 @@ if __name__ == "__main__":
     for a in ARCHITECTURE_LIST:
         for r in RESOLUTION_LIST:
             K.clear_session()
-            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, test_boolean=True)
+            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, max_pooling=True, test_boolean=True)
+            getScenarioModelPerformance(a, r, r, num_epochs=NUM_EPOCHS, seed_val = 2, max_pooling=False, test_boolean=True)
             
