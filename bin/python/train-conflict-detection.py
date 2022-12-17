@@ -303,7 +303,13 @@ def trainModelWithDetailedMetrics(image_width, image_height, architecture, max_p
     report = pd.DataFrame(report).transpose().round(2)
     if not os.path.exists(class_report_path):  
         os.makedirs(class_report_path)
-    classification_report_suffix = architecture + "-" + "-w-" + str(image_width) + "-h-" + str(image_height) + ".csv"
+    if architecture == 'inception_v3':
+        if max_pooling:
+            classification_report_suffix = architecture + "-w-" + str(image_width) + "-h-" + str(image_height) + "-max-pooling" + ".csv"
+        else:
+            classification_report_suffix = architecture + "-w-" + str(image_width) + "-h-" + str(image_height) + "-avg-pooling" + ".csv"
+    else:
+        classification_report_suffix = architecture + "-w-" + str(image_width) + "-h-" + str(image_height) + ".csv"
     if testing == True:
         report.to_csv(class_report_path + "test-classification-report-" + classification_report_suffix)
     else:
