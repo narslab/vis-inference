@@ -11,7 +11,8 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.callbacks import Callback
 
 import matplotlib.pyplot as plt
-        
+from PIL import Image
+
 from sklearn.metrics import recall_score, classification_report, accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.datasets import make_classification
 
@@ -138,6 +139,18 @@ def eraser(input_img, p=1.0, s_l=0.01, s_h=0.05, r_1=0.3, v_l=0, v_h=1, pixel_le
 
     return output_img
 
+def rotate_image_to_vertical(image_path):
+    '''Rotate an image with a horizontal orientation to a vertical orientation'''
+    img = Image.open(image_path)
+    width, height = img.size
+
+    # Check if the image has a horizontal orientation
+    if width > height:
+        img = img.rotate(-90, expand=True)
+
+    # Save the rotated image, overwriting the original file
+    img.save(image_path)
+
 def standardizePlot(index, plot_dir, title):
     '''Standardizing the plotting functionality when rendering the visual output of each technique'''
     if not os.path.exists(plot_dir):
@@ -194,9 +207,9 @@ def createResolutionScenarioImageDict(image_width_list, scenario_list, augmentat
             else:
                 h = w
             if testing:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/rp/tidy/preprocessed-images/' + augmentation + '/testing-w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
             else:
-                image_dict[w][s] = np.load('../../data/tidy/preprocessed-images/' + augmentation + '/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
+                image_dict[w][s] = np.load('../../data/rp/tidy/preprocessed-images/' + augmentation + '/w-' + str(w) + 'px-h-' + str(h) + 'px-scenario-' + s + '-' + type + '.npy', allow_pickle = True)
     print(image_dict)
     return(image_dict)
 

@@ -15,11 +15,11 @@ from timeit import default_timer as timer
 from datetime import timedelta
 import platform
 
-RAW_IMAGE_DIR = '../../data/raw/conflict-detection/'
-TIDY_IMAGE_DIR = '../../data/tidy/labeled-images/'
+RAW_IMAGE_DIR = '../../data/conflict-detection/raw/'
+TIDY_IMAGE_DIR = '../../data/conflict-detection/tidy/labeled-images/'
 RAW_TILES_DIR = RAW_IMAGE_DIR+'split-images/all_tiles/'
 
-INDEX_DIR = '../../results/conflict-detection/index-raw/'
+INDEX_DIR = '../../results/conflict-detection/index/'
 
 ORIGINAL_CLASSIFICATION = RAW_IMAGE_DIR + 'tiles_assignment.xlsx'
 INDEX_LABELS = INDEX_DIR + 'labels_index.csv'
@@ -48,8 +48,8 @@ def label_conflict_tiles(image_file_list):
     read_file.to_csv(TILES_ASSIGNMENT_CSV, index = None, header=True)
     df = pd.read_csv(TILES_ASSIGNMENT_CSV)
     df = df.iloc[1: , :]
-    shutil.rmtree(TIDY_IMAGE_DIR, ignore_errors=True) # Deletes the directory containing any existing labeled images
-    shutil.rmtree(INDEX_DIR, ignore_errors=True)
+    # shutil.rmtree(TIDY_IMAGE_DIR, ignore_errors=True) # Deletes the directory containing any existing labeled images
+    # shutil.rmtree(INDEX_DIR, ignore_errors=True)
     if not os.path.exists(TIDY_IMAGE_DIR):
         os.makedirs(TIDY_IMAGE_DIR)
     for file in image_file_list:

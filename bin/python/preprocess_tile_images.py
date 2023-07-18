@@ -13,11 +13,11 @@ from helpers import *
 import time
 from datetime import timedelta
 
-LABELED_IMAGES_DIR = '../../data/tidy/labeled-images/'
-PROCESSED_IMAGES_DIR = '../../data/tidy/preprocessed-images/'
-INDEX_DIR = '../../results/conflict-detection/index-tidy/'
+LABELED_IMAGES_DIR = '../../data/conflict-detection/tidy/labeled-images/'
+PROCESSED_IMAGES_DIR = '../../data/conflict-detection/tidy/preprocessed-images/'
+INDEX_DIR = '../../results/conflict-detection/index/'
 INDEX_LABELS = INDEX_DIR + 'preprocessed_index.csv'
-RESOLUTION_LIST = [150, 250, 350, 450, 550, 650, 750]
+RESOLUTION_LIST = [336]
 
 def getEncoding(image_file_name):
     """Returns binary encoding for each image.
@@ -98,7 +98,7 @@ def processImageData(image_width=336, image_height=336, seed_value=10, test_set_
 	
 def main():
 	start = time.time()
-	for i in TILE_RESOLUTION:
+	for i in RESOLUTION_LIST:
 		processImageData(i, i)
 	end = time.time()
 	elapsed = end - start
