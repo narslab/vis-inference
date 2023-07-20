@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import os
 import sys
 import shutil
@@ -7,9 +10,10 @@ import numpy as np
 import pandas as pd
 import cv2
 
-from generate_conflict_tiles import generateTiles, plotTilesGrid
-from helpers import *
-from visualize_network import grad_cam
+import tensorflow as tf
+from tensorflow.keras import models
+
+from helpers import createResolutionScenarioImageDict, getClassLabels, getImageAndLabelArrays, generateTiles, plotTilesGrid, rotate_image_to_vertical
 
 RESOLUTION_LIST = [336]
 SCENARIO_LIST = ["PrPo_Im"]
@@ -17,17 +21,17 @@ AUGMENTATION = 'fliplr'
 RESULTS_DIR = '../../results/'
 LABELED_RP_IMAGES = '../../data/rp/tidy/labeled-images/'
 VIS_DATA_DIR = '../../data/vis/input/'
-FULL_MODEL_PATH = RESULTS_DIR + 'models/risk-prediction/opt-cnn-base-PrPo_Im-w-336-px-h-336-px/model'
+RP_MODEL_PATH = RESULTS_DIR + 'rp/models/opt-cnn-base-PrPo_Im-w-336-px-h-336-px/model'
 INDEX_PATH = RESULTS_DIR + 'rp/index/preprocessed_index.csv'
+VIS_INDEX_PATH = RESULTS_DIR + 'vis/index/'
 
-GLOBAL_MODEL = models.load_model(FULL_MODEL_PATH)
+RP_MODEL = models.load_model(RP_MODEL_PATH)
 IMAGE_SETS_SQUARE_TRAIN = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='train', rectangular = False, testing=False)
 IMAGE_SETS_SQUARE_TEST = createResolutionScenarioImageDict(RESOLUTION_LIST, SCENARIO_LIST, augmentation=AUGMENTATION, type='test', rectangular = False, testing=False)
 
 class_labels = getClassLabels(SCENARIO_LIST[0])
-
-training_images, training_labels = getImageAndLabelArrays(IMAGE_SETS_SQUARE_TRAIN[336][SCENARIO_LIST[0]])
-test_images, test_labels = getImageAndLabelArrays(IMAGE_SETS_SQUARE_TEST[336][SCENARIO_LIST[0]])
+training_images, training_labels = getImageAndLabelArrays(IMAGE_SETS_SQUARE_TRAIN[RESOLUTION_LIST[0]][SCENARIO_LIST[0]])
+test_images, test_labels = getImageAndLabelArrays(IMAGE_SETS_SQUARE_TEST[RESOLUTION_LIST[0]][SCENARIO_LIST[0]])
 
 def analyzePredictions(labels):
     """Returns the indices of the test images for both correct and incorrect predictions. 
@@ -39,9 +43,10 @@ def analyzePredictions(labels):
                    im+'_incorrect': [],
                    prPo+'_correct':[],
                    prPo+'_incorrect':[]}
+    model_predictions = RP_MODEL.predict(np.squeeze(test_images))
     for i in range(len(test_labels)):
         observed = class_labels[np.argmax(test_labels[i])]
-        predicted = str(grad_cam([i])[3])[2:-2]
+        predicted = class_labels[np.argmax(model_predictions[i])]
         if observed == im:
             if predicted == observed:
                 pred[im+'_correct'].append(i)
@@ -58,12 +63,23 @@ def retrieveTP(pred):
     ''''''
     preprocessed_index = pd.read_csv(INDEX_PATH)
     tp_ind = pred["Probable/Possible_correct"]
+    tp_ind_filename = VIS_INDEX_PATH + 'tp_index.csv'
+    shutil.rmtree(VIS_INDEX_PATH, ignore_errors=True)
+    os.makedirs(VIS_INDEX_PATH)
+    # Create a set of preprocessed_index values from tp_ind by concatenating 'test-' to each element
+    tp_preprocessed_indices = set(f'test-{i}' for i in tp_ind)
+    # Filter out the rows in index_all that are present in tp_preprocessed_indices
+    index_tp = preprocessed_index[preprocessed_index['preprocessed_index'].isin(tp_preprocessed_indices)]
+    # Reset the index and drop the original index column
+    index_tp = index_tp.reset_index(drop=True)
     # Extract corresponding labeled image paths
     labeled_image_paths = []
     for index in tp_ind:
         labeled_image = preprocessed_index[preprocessed_index["preprocessed_index"]=="test-"+str(index)]["labeled_image"].values[0]
         labeled_image_path = os.path.join(LABELED_RP_IMAGES, labeled_image)
         labeled_image_paths.append(labeled_image_path)
+    # Save the resulting DataFrame index_tp
+    index_tp.to_csv(tp_ind_filename, index=False)
     return labeled_image_paths
 
 def moveTPtoVIS(labeled_paths):
